@@ -2,6 +2,7 @@
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
@@ -28,7 +29,6 @@ public class PoC {
 		//We initialize the board and print it 
 		//init
 		init(ts);
-		printDevineBoard(ts);
 		
 		//We create a single drone
 		Agent drone = new Drone("drone");
@@ -55,7 +55,7 @@ public class PoC {
 		
 		for (int i=LB;i<UB;i++) {
 			for (int j=LB;j<UB;j++) {
-				String res="A";
+				String res=".";
 				
 				//We replace air with gold in field with 2% chance
 				if (twoPercent()) res="G";
@@ -66,6 +66,9 @@ public class PoC {
 				//Spawn base in middle
 				//Spawn drone just north of base
 				if (j==MIDDLE) {
+					if (i==1) {
+						ts.put((new Tuple(i,j,"G","U")));
+						continue;					}
 					if (i==MIDDLE) { //put base field in tuple space
 						ts.put((new Tuple(i,j,"B","B")));
 						continue;
@@ -198,19 +201,37 @@ public class PoC {
 		// This is the function invoked when the agent starts running in a node
 		@Override
 		protected void doRun() {
-			explore();
+			Scanner scanner=new Scanner(System.in);
 			
-//			printBoard(ts);
-//			printKnownBoard(ts);
+			explore();
 			printDevineBoard(ts);
+			
+			scanner.nextLine();
+			
 			move();
-			
 			explore();
-			
-//			printBoard(ts);
-//			printKnownBoard(ts);
 			printDevineBoard(ts);
+			scanner.nextLine();
 			
+			move();
+			explore();
+			printDevineBoard(ts);
+			scanner.nextLine();
+			move();
+			explore();
+			printDevineBoard(ts);
+			scanner.nextLine();
+			move2();
+			explore();
+			printDevineBoard(ts);
+			scanner.nextLine();
+			move2();
+			explore();
+			printDevineBoard(ts);
+			scanner.nextLine();
+			move2();
+			explore();
+			printDevineBoard(ts);
 		}
 		
 		private void explore () {
@@ -369,8 +390,8 @@ public class PoC {
 				i=(int) tup.getElementAt(0);
 				j= (int) tup.getElementAt(1);
 				
-				//put "A" in drones former spot
-				put(new Tuple(i,j,"A","A"), Self.SELF);
+				//put "." in drones former spot
+				put(new Tuple(i,j,".","."), Self.SELF);
 				
 				t=new Template(
 						new ActualTemplateField(i-1),
@@ -389,7 +410,41 @@ public class PoC {
 			
 			
 		}
-	
+		private void move2() {
+			try{
+				Template t=new Template(
+						new FormalTemplateField(Integer.class),
+						new FormalTemplateField(Integer.class),	
+						new ActualTemplateField("D"),
+						new FormalTemplateField(String.class)
+					);
+				Tuple tup;
+				tup = get(t,Self.SELF); 
+				
+				int i;
+				int j;
+				
+				i=(int) tup.getElementAt(0);
+				j= (int) tup.getElementAt(1);
+				
+				//put "A" in drones former spot
+				put(new Tuple(i,j,".","."), Self.SELF);
+				
+				t=new Template(
+						new ActualTemplateField(i+1),
+						new ActualTemplateField(j),	
+						new FormalTemplateField(String.class),
+						new FormalTemplateField(String.class)
+				);
+				
+				tup = get(t,Self.SELF); 
+				
+				put(new Tuple(i+1,j,"D","D"), Self.SELF);
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	
