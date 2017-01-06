@@ -103,9 +103,12 @@ public class Map {
 				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 3;
 			} else if (t.getElementAt(String.class, 0) == "WATER") {
 				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 4;
-			}
+			} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
+				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 5;
+			} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
+					N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 6;	
 		}
-		
+	}
 		return N;
 	}
 	
