@@ -131,5 +131,26 @@ class Base extends Resource {
 		harvestable = false;
 		pathable = false;
 	}
-
 }
+
+class ExplorationDrone extends Resource {
+	private static final String TYPE = "EXPDRONE";
+	
+	public ExplorationDrone(Map map, Point center, String shape, int size){
+		super(map, center, shape, size);
+		type = TYPE;
+		harvestable = false;
+		pathable = false;
+	}
+}	
+class HarvestingDrone extends Resource {
+		private static final String TYPE = "HARDRONE";
+	
+	public HarvestingDrone(Map map, Point center, String shape, int size){
+			super(map, center, shape, size);
+			type = TYPE;
+			harvestable = false;
+			pathable = false;
+		}	
+	}
+
