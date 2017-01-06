@@ -77,7 +77,12 @@ public class Map {
 	}
 	
 	public int[][] Retrieve() {
-		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		int[][] N = new int[world.X()][world.Y()];
 		
 		Retriever retriever = new Retriever(this);

@@ -232,6 +232,8 @@ public class PoC {
 			move2();
 			explore();
 			printDevineBoard(ts);
+			
+			System.exit(0);
 		}
 		
 		private void explore () {

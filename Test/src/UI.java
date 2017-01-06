@@ -17,7 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
-
+import map.*;
 
 public class UI extends Application {
     //Class containing grid (see below)
@@ -27,7 +27,7 @@ public class UI extends Application {
     public class GridDisplay {
 
         public static final double ELEMENT_SIZE = 800;
-        public static final int GRID = 4;
+        public static final int GRID = 23;
         public static final double GAP = ELEMENT_SIZE / GRID;
 
         private TilePane tilePane = new TilePane();
@@ -58,11 +58,24 @@ public class UI extends Application {
             return display;
         }
 
+        World world = new World(GRID);
+		Map map = new Map(world);
+		//Thread.sleep(100);
+		int[][] N = map.Retrieve();
+
         private void createElements() {
             tilePane.getChildren().clear();
             for (int i = 0; i < nCols; i++) {
                 for (int j = 0; j < nRows; j++) {
-                    tilePane.getChildren().add(createElement(i,j));
+                	Shape c;
+                	switch (N[i][j]) {
+					case 1: c = new Gold(i,j,GAP/2); break;
+					case 2: c = new Tree(i,j,GAP/2); break;
+					case 3: c = new Base(i,j,GAP/2); break;
+					case 4: c = new Drone(i,j,GAP/2); break;
+					default: c = new Box(GAP); c.setVisible(false); break;
+					}
+                    tilePane.getChildren().add(c);
                 }
             }
         }
