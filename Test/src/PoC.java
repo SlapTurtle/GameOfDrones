@@ -445,6 +445,46 @@ public class PoC {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		private void moveMultipleDirecitons(int dir) {
+			
+			
+			
+			try{
+				Template t=new Template(
+						new FormalTemplateField(Integer.class),
+						new FormalTemplateField(Integer.class),	
+						new ActualTemplateField("D"),
+						new FormalTemplateField(String.class)
+					);
+				Tuple tup;
+				tup = get(t,Self.SELF); 
+				
+				int i;
+				int j;
+				
+				i=(int) tup.getElementAt(0);
+				j= (int) tup.getElementAt(1);
+				
+				//put "A" in drones former spot
+				put(new Tuple(i,j,".","."), Self.SELF);
+				
+				t=new Template(
+						new ActualTemplateField(i+1),
+						new ActualTemplateField(j),	
+						new FormalTemplateField(String.class),
+						new FormalTemplateField(String.class)
+				);
+				
+				tup = get(t,Self.SELF); 
+				
+				put(new Tuple(i+1,j,"D","D"), Self.SELF);
+				
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	
