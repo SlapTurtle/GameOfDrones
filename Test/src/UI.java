@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 public class UI extends Application {
     //Class containing grid (see below)
     private GridDisplay gridDisplay;
-
+ 
     //Class responsible for displaying the grid containing the Rectangles
     public class GridDisplay {
 
