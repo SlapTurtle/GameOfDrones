@@ -29,7 +29,7 @@ public class explorationAI {
 	private int getDir(int i, int j){
 		int dir=0;
 		
-		switch()
+		//switch()
 		
 		return dir;
 	}

@@ -27,14 +27,14 @@ public class Map {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	
-	UUID ID;
-	Node map;
+	public UUID ID;
+	public Node map;
 	VirtualPort port = new VirtualPort(8080);
 	String seed;
 	public Random random;
 	Generator generator;
 	World world;
-	Base base;
+	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
 	
@@ -46,7 +46,7 @@ public class Map {
 		//map.addAgent(agent);
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
-		
+		map.start();
 	}
 	
 	public Map(World world, String seed) {
@@ -74,7 +74,7 @@ public class Map {
 		Init(null);
 		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
 		this.world.map = this;
-		Generate(world);	
+		Generate(world);
 	}
 	
 	public void Generate(World world) {
@@ -95,7 +95,6 @@ public class Map {
 		
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
-		map.start();
 	}
 	
 	public void expandWorld(int direction) {
