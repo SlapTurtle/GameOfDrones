@@ -26,12 +26,29 @@ public class explorationAI {
 
 	
 	
-	private int getDir(int i, int j){
-		int dir=0;
+	private Position[] getFieldsToCheck(int dir, Position p){
+		Position[] arr = new Position[2];
+		switch(dir){
+			case 0 : arr[0]= new Position(p.getX()-1, p.getY());
+					 arr[1]= new Position(p.getX(), p.getY()+1);
+					 break;
+			
+			case 1 : arr[0]= new Position(p.getX()-1, p.getY());
+			 		 arr[1]= new Position(p.getX(), p.getY()-1);
+					 break;
+			case 2 : arr[0]= new Position(p.getX()-1, p.getY());
+			 		 arr[1]= new Position(p.getX(), p.getY()+1);
+					 break;
+			
+			case 3 : arr[0]= new Position(p.getX()-1, p.getY());
+			 		 arr[1]= new Position(p.getX(), p.getY()+1);
+					 break;
+	
+			default :
+					break;
+		}
 		
-		switch()
-		
-		return dir;
+		return arr;
 	}
 	
 	// TODO intital move process. Move drone to this destination. Use move in a specific direction.
