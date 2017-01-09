@@ -27,7 +27,7 @@ public class UI extends Application {
     public class GridDisplay {
 
         public static final double ELEMENT_SIZE = 800;
-        public static final int GRID = 23;
+        public static final int GRID = 100;
         public static final double GAP = ELEMENT_SIZE / GRID;
 
         private TilePane tilePane = new TilePane();
