@@ -118,10 +118,7 @@ public class Map {
 		Generate(newWorld);
 	}
 	
-	public int[][] Retrieve() {
-		
-		int[][] N = new int[world.X() + 4][world.Y() + 4];
-		
+	public LinkedList<Tuple> RetrieveTuples() {
 		Retriever retriever = new Retriever(this);
 		map.addAgent(retriever);
 		
@@ -133,10 +130,18 @@ public class Map {
 			}
 		}
 		
+		return retriever.Tuples;
+		
+	}
+	
+	public int[][] Retrieve() {
+		
+		int[][] N = new int[world.X() + 4][world.Y() + 4];
+		
 		System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
 		System.out.println("Retrieving Tuples for display");
 		
-		for (Tuple t : retriever.Tuples) {
+		for (Tuple t : RetrieveTuples()) {
 			//System.out.println("retrieving: " + (getTupleX(t)) + ", " + (getTupleY(t)));
 			if (t.getElementAt(String.class, 0) == "GOLD") {
 				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
