@@ -11,6 +11,12 @@ import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
+
+import resources.Base;
+import resources.Gold;
+import resources.Resource;
+import resources.Water;
+
 import java.awt.Point;
 import java.util.Random;
 import java.util.UUID;
@@ -87,7 +93,7 @@ public class Generator extends Agent {
 		//System.out.println(p.getX() + ", " + p.getY());
 		return p;
 	}
-	
+
 	public Point translatePoint(int x, int y) {
 		Point p = new Point(-(world.X()/2)+x + world.center.x,-(world.Y()/2)+y + world.center.y);
 //		System.out.println("translating p=" + x + "," + y + "to " + p.x + "," + p.y);

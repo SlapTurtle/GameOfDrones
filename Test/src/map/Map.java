@@ -12,6 +12,8 @@ import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
+import resources.Base;
+
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Random;
@@ -23,7 +25,6 @@ public class Map {
 	
 	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
-	
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	
 	UUID ID;
