@@ -1,6 +1,9 @@
-package map;
+package resources;
 
 import org.cmg.resp.knowledge.Tuple;
+
+import map.Map;
+
 import java.util.UUID;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,10 +14,10 @@ public class Resource {
 	Map map;
 	UUID cluster;
 	public Point center;
-	String type;
+	public String type;
 	private static final String TYPE = "default";
-	static boolean harvestable = false;
-	static boolean pathable = true;
+	public static boolean harvestable = false;
+	protected static boolean pathable = true;
 	int shape;
 	int size;
 	
@@ -89,67 +92,3 @@ public class Resource {
 	}
 	
 }
-
-class Gold extends Resource {
-
-	public Gold(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = "GOLD";
-		harvestable = true;
-		pathable = true;
-	}
-
-}
-
-class Tree extends Resource {
-
-	public Tree(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = "TREE";
-		harvestable = true;
-		pathable = false;
-	}
-
-}
-
-class Water extends Resource {
-
-	public Water(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = "WATER";
-		harvestable = false;
-		pathable = false;
-	}
-
-}
-
-class Base extends Resource {
-
-	public Base(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = "BASE";
-		harvestable = false;
-		pathable = false;
-	}
-
-}
-
-class ExplorationDrone extends Resource {
-	
-	public ExplorationDrone(Map map, Point center, String shape, int size){
-		super(map, center, shape, size);
-		type = "EXPDRONE";
-		harvestable = false;
-		pathable = false;
-	}
-}	
-class HarvestingDrone extends Resource {
-	
-	public HarvestingDrone(Map map, Point center, String shape, int size){
-			super(map, center, shape, size);
-			type = "HARDRONE";
-			harvestable = false;
-			pathable = false;
-		}	
-	}
-

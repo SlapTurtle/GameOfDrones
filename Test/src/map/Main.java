@@ -37,7 +37,7 @@ public class Main {
 		
 		Thread.sleep(200);
 		
-		map.expandWorld(1);
+		map.expandWorld(2);
 		
 		Thread.sleep(300);
 		N = map.Retrieve();
@@ -63,7 +63,7 @@ public class Main {
 			System.out.println();
 		}
 		
-		map.expandWorld(2);
+		map.expandWorld(1);
 		
 		Thread.sleep(300);
 		N = map.Retrieve();
