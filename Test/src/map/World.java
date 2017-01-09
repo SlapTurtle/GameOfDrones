@@ -12,10 +12,12 @@ import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 import java.awt.Point;
+import java.util.UUID;
 
 public class World {
 	
-	public static final int DEFAULT = 30;
+	UUID ID = UUID.randomUUID();
+	public static final int DEFAULT = 20;
 	Map map;
 	private int x, y;
 	Point center;
@@ -23,20 +25,53 @@ public class World {
 	public World() {
 		this.x = DEFAULT;
 		this.y = DEFAULT;
-		center = new Point(x/2, y/2);
+		Init(new Point(0,0));
 	}
 	
-	public World(int n) {
+	public World(Point center) {
+		this.x = DEFAULT;
+		this.y = DEFAULT;
+		Init(center);
+	}
+	
+	public World(Point center, int n) {
 		this.x = set(n);
 		this.y = set(n);
-		center = new Point(x/2, y/2);
+		Init(center);
 	}
 
-	public World(int x, int y) {
+	public World(Point center, int x, int y) {
 		
 		this.x = set(x);
 		this.y = set(y);
-		center = new Point(x/2, y/2);
+		Init(center);
+	}
+	
+	public void Init(Point center) {
+		this.center = center;
+		System.out.println("Center is " + center.x + ", " + center.y);
+		
+//		if (!center.equals(new Point(0,0))) {
+//			System.out.println("Center is " + center.x + ", " + center.y);
+//			System.out.println("New world not part of initial map");
+//			adjustBounds();
+//		}
+	}
+	
+	public void adjustBounds() {
+		if (center.getX() < map.center.getX()) {
+			map.bounds[0] -= x;
+			map.world.x += x;
+		} else if (center.getX() > map.center.getX()) {
+			map.bounds[1] += x;
+			map.world.x += x;
+		} else if (center.getY() < map.center.getY()) {
+			map.bounds[2] -= y;
+			map.world.y += y;
+		} else {
+			map.bounds[3] += x;
+			map.world.y += y;
+		}
 	}
 	
 	public int set(int z) {
@@ -52,11 +87,11 @@ public class World {
 	}
 	
 	public boolean pointInWorld(Point p) {
-		return (p.getX() >= 0 && p.getX() < x && p.getY() >= 0 && p.getY() < y );
+		return (p.getX() >= map.bounds[0] && p.getX() <= map.bounds[1] && p.getY() >= map.bounds[2] && p.getY() <= map.bounds[3] );
 	}
 	
 	public boolean pointNearCenter(Point p) {
-		return map.center != null ? p.distance(map.center.center) <= 3 : false; 
+		return map.center != null ? p.distance(map.center) <= 3 : false; 
 	}
 
 	
