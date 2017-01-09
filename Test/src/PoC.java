@@ -213,23 +213,32 @@ public class PoC {
 			printDevineBoard(ts);
 			scanner.nextLine();
 			
-			move();
+			moveMultipleDirecitons(0);
 			explore();
 			printDevineBoard(ts);
 			scanner.nextLine();
-			move();
+			moveMultipleDirecitons(0);
 			explore();
 			printDevineBoard(ts);
 			scanner.nextLine();
-			move2();
+			moveMultipleDirecitons(3);
 			explore();
 			printDevineBoard(ts);
 			scanner.nextLine();
-			move2();
+			moveMultipleDirecitons(3);
 			explore();
 			printDevineBoard(ts);
 			scanner.nextLine();
-			move2();
+			moveMultipleDirecitons(1);
+			explore();
+			printDevineBoard(ts);
+			moveMultipleDirecitons(1);
+			explore();
+			printDevineBoard(ts);
+			moveMultipleDirecitons(2);
+			explore();
+			printDevineBoard(ts);
+			moveMultipleDirecitons(2);
 			explore();
 			printDevineBoard(ts);
 		}
@@ -452,6 +461,7 @@ public class PoC {
 			
 			
 			try{
+				//Template for Drone position. 
 				Template t=new Template(
 						new FormalTemplateField(Integer.class),
 						new FormalTemplateField(Integer.class),	
@@ -467,19 +477,56 @@ public class PoC {
 				i=(int) tup.getElementAt(0);
 				j= (int) tup.getElementAt(1);
 				
-				//put "A" in drones former spot
-				put(new Tuple(i,j,".","."), Self.SELF);
 				
+				
+				//put "." in drones former spot
+				put(new Tuple(i,j,".","."), Self.SELF);
+				if(dir==0){ //move up
 				t=new Template(
 						new ActualTemplateField(i+1),
 						new ActualTemplateField(j),	
 						new FormalTemplateField(String.class),
 						new FormalTemplateField(String.class)
 				);
+				}
+				if(dir==1){ //move down
+					t=new Template(
+							new ActualTemplateField(i-1),
+							new ActualTemplateField(j),	
+							new FormalTemplateField(String.class),
+							new FormalTemplateField(String.class)
+					);
+				}
+				if(dir==2){ //move right
+					t=new Template(
+							new ActualTemplateField(i),
+							new ActualTemplateField(j+1),	
+							new FormalTemplateField(String.class),
+							new FormalTemplateField(String.class)
+					);
+				}
+				if(dir==3){ //move left
+					t=new Template(
+							new ActualTemplateField(i),
+							new ActualTemplateField(j-1),	
+							new FormalTemplateField(String.class),
+							new FormalTemplateField(String.class)
+					);
+				}
 				
 				tup = get(t,Self.SELF); 
-				
-				put(new Tuple(i+1,j,"D","D"), Self.SELF);
+				switch(dir){
+					case 0: put(new Tuple(i+1,j,"D","D"), Self.SELF); //move up
+							break;				
+					case 1: put(new Tuple(i-1,j,"D","D"), Self.SELF); //move down
+							break;
+					case 2: put(new Tuple(i,j+1,"D","D"), Self.SELF); //move right
+							break;
+					case 3: put(new Tuple(i,j-1,"D","D"), Self.SELF); //move left
+							break;
+					default : put(new Tuple(i,j,"D","D"), Self.SELF); //do nothing
+							break;
+				}
 				
 			}catch(Exception e){
 				e.printStackTrace();
