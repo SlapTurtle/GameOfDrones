@@ -12,6 +12,7 @@ import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
+import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
@@ -20,6 +21,11 @@ import javax.swing.plaf.synth.SynthComboBoxUI;
 
 public class Map {
 	
+	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
+	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
+	
+	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
+	
 	UUID ID;
 	Node map;
 	VirtualPort port = new VirtualPort(8080);
@@ -27,7 +33,9 @@ public class Map {
 	public Random random;
 	Generator generator;
 	World world;
-	Base center;
+	Base base;
+	Point center = new Point(0,0);
+	int[] bounds;
 	
 	Object syncRetrieval = new Object();
 	
@@ -56,29 +64,63 @@ public class Map {
 	
 	public Map(String seed) {
 		Init(seed);
-		this.world = new World(random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
 		this.world.map = this;
 		Generate(world);
 	}
 	
 	public Map() {
 		Init(null);
-		this.world = new World(random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
 		this.world.map = this;
 		Generate(world);	
 	}
 	
 	public void Generate(World world) {
-		System.out.println("Initial field of size x=" + world.X() + ", y=" + world.Y() + " initialized");
+		System.out.println("New field size x=" + world.X() + ", y=" + world.Y() + " initialized");
 		System.out.println("Seed: " + seed);
+		
+		// LEFT 0, RIGHT 1, UP 2, DOWN 3
+		if (bounds == null) {
+			center = new Point(0,0);
+			bounds = new int[4];
+			bounds[0] = -world.X() / 2;
+			bounds[1] = world.X() / 2;
+			bounds[2] = -world.Y() / 2;
+			bounds[3] = world.Y() / 2;
+			
+//			System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
+		}
+		
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
 		map.start();
 	}
 	
+	public void expandWorld(int direction) {
+		
+//		Bulldozer a = new Bulldozer(this, "GOLD");
+//		map.addAgent(a);
+		
+		
+		int newOffset = World.DEFAULT;
+		int offsetX = 0, offsetY = 0;
+		
+		switch (direction) {
+		case 0: offsetX = bounds[0] - newOffset; break;
+		case 1: offsetX = bounds[1] + newOffset; break;
+		case 2: offsetY = bounds[2] - newOffset; break;
+		case 3: offsetY = bounds[3] + newOffset; break;
+		}
+		World newWorld = new World(new Point(offsetX/2, offsetY/2), newOffset);
+		newWorld.map = this;
+		newWorld.adjustBounds();
+		Generate(newWorld);
+	}
+	
 	public int[][] Retrieve() {
 		
-		int[][] N = new int[world.X()][world.Y()];
+		int[][] N = new int[world.X() + 4][world.Y() + 4];
 		
 		Retriever retriever = new Retriever(this);
 		map.addAgent(retriever);
@@ -91,22 +133,35 @@ public class Map {
 			}
 		}
 		
+		System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
 		System.out.println("Retrieving Tuples for display");
 		
 		for (Tuple t : retriever.Tuples) {
-//			System.out.println("retrieving: " + t.getElementAt(Integer.class, 1) + ", " + t.getElementAt(Integer.class, 2));
+			//System.out.println("retrieving: " + (getTupleX(t)) + ", " + (getTupleY(t)));
 			if (t.getElementAt(String.class, 0) == "GOLD") {
-				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 1;
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
 			} else if (t.getElementAt(String.class, 0) == "TREE") {
-				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 2;
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
 			} else if (t.getElementAt(String.class, 0) == "BASE") {
-				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 3;
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
 			} else if (t.getElementAt(String.class, 0) == "WATER") {
-				N[t.getElementAt(Integer.class, 1)][t.getElementAt(Integer.class, 2)] = 4;
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
+			} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
+			} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
+				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
 			}
 		}
 		
 		return N;
+	}
+	
+	public int getTupleX(Tuple t) {
+		return t.getElementAt(Integer.class, 1);
+	}
+	
+	public int getTupleY(Tuple t) {
+		return t.getElementAt(Integer.class, 2);
 	}
 	
 	public UUID ID() {
@@ -134,8 +189,8 @@ class Retriever extends Agent {
 	}
 
 	protected void doRun() {	
-		Template T = (type == null) ? new Template(new FormalTemplateField(String.class), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class))
-									: new Template(new ActualTemplateField(type), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
+		Template T = (type == null) ? Map.TEMPLATE_ALL
+									: new Template(new ActualTemplateField(type), Map.AnyInteger, Map.AnyInteger);
 		Tuples = queryAll(T);
 		
 		synchronized (map.syncRetrieval) {
@@ -148,3 +203,33 @@ class Retriever extends Agent {
 	
 }
 
+class Bulldozer extends Agent {
+	
+	Map map;
+	String type;
+	LinkedList<Tuple> Tuples;
+
+	public Bulldozer(Map map, String type) {
+		super(UUID.randomUUID().toString());
+		this.map = map;
+		this.type = type;
+	}
+	
+	public Bulldozer(Map map) {
+		super(UUID.randomUUID().toString());
+		this.map = map;		
+	}
+
+	protected void doRun() {
+		Template T = (type == null) ? Map.TEMPLATE_ALL
+									: new Template(new ActualTemplateField(type), Map.AnyInteger, Map.AnyInteger);
+		
+		while(queryp(Map.TEMPLATE_ALL) != null) {
+			getAll(T);
+		}
+		
+	}
+	
+	
+	
+}

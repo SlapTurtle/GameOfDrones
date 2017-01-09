@@ -12,8 +12,9 @@ public class Resource {
 	UUID cluster;
 	public Point center;
 	String type;
-	boolean harvestable = false;
-	boolean pathable = true;
+	private static final String TYPE = "default";
+	static boolean harvestable = false;
+	static boolean pathable = true;
 	int shape;
 	int size;
 	
@@ -54,6 +55,13 @@ public class Resource {
 		int centerY = (int)center.getY();
 		int hsize = size;
 		
+		if (shape == 1) {
+			Point p = new Point(centerX,centerY);
+			if (p.distance(center) <= (double) hsize){
+				list.add(p);
+			}
+		}
+		
 		if (shape == 0 || shape == 2) {
 			//System.out.println("Creating circular cluster " + centerX + ", " + centerY + ", radius " + size);
 			for (int y = -hsize+centerX; y <= hsize+centerY; y++) {
@@ -83,12 +91,10 @@ public class Resource {
 }
 
 class Gold extends Resource {
-	
-	private static final String TYPE = "GOLD";
 
 	public Gold(Map map, Point center, String shape, int size) {
 		super(map, center, shape, size);
-		type = TYPE;
+		type = "GOLD";
 		harvestable = true;
 		pathable = true;
 	}
@@ -96,12 +102,10 @@ class Gold extends Resource {
 }
 
 class Tree extends Resource {
-	
-	private static final String TYPE = "TREE";
 
 	public Tree(Map map, Point center, String shape, int size) {
 		super(map, center, shape, size);
-		type = TYPE;
+		type = "TREE";
 		harvestable = true;
 		pathable = false;
 	}
@@ -109,12 +113,10 @@ class Tree extends Resource {
 }
 
 class Water extends Resource {
-	
-	private static final String TYPE = "WATER";
 
 	public Water(Map map, Point center, String shape, int size) {
 		super(map, center, shape, size);
-		type = TYPE;
+		type = "WATER";
 		harvestable = false;
 		pathable = false;
 	}
@@ -122,14 +124,32 @@ class Water extends Resource {
 }
 
 class Base extends Resource {
-	
-	private static final String TYPE = "BASE";
 
 	public Base(Map map, Point center, String shape, int size) {
 		super(map, center, shape, size);
-		type = TYPE;
+		type = "BASE";
 		harvestable = false;
 		pathable = false;
 	}
 
 }
+
+class ExplorationDrone extends Resource {
+	
+	public ExplorationDrone(Map map, Point center, String shape, int size){
+		super(map, center, shape, size);
+		type = "EXPDRONE";
+		harvestable = false;
+		pathable = false;
+	}
+}	
+class HarvestingDrone extends Resource {
+	
+	public HarvestingDrone(Map map, Point center, String shape, int size){
+			super(map, center, shape, size);
+			type = "HARDRONE";
+			harvestable = false;
+			pathable = false;
+		}	
+	}
+
