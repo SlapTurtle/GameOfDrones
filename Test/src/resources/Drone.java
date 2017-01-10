@@ -8,7 +8,6 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
-import UI.UI.GridDisplay;
 import map.*;
 
 public class Drone extends Agent {

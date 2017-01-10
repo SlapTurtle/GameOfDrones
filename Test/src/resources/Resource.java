@@ -30,7 +30,7 @@ public class Resource {
 		this.size = size;
 		//System.out.println("New cluster, ID=" + cluster.toString());
 	}
-	
+
 	public static String type() {
 		return type;
 	}
@@ -40,10 +40,11 @@ public class Resource {
 		case "circular":return 0;
 		case "square"  :return 1;
 		case "scatter" :return 2;
+		case "polygon" :return 3;
 		default		   :return 0;
 		}
 	}
-	
+
 	public List<Tuple> addTuples() {
 		
 		List<Tuple> list = new LinkedList<Tuple>();
@@ -55,37 +56,42 @@ public class Resource {
 	
 	/** Gets all points associated with this Resource. */
 	public List<Point> getPoints() {
-		
 		List<Point> list = new LinkedList<Point>();
-		
 		list.add(center);
-		
-		int centerX = (int)center.getX();
-		int centerY = (int)center.getY();
-		int hsize = size;
-		
-		if (shape == 1) {
-			Point p = new Point(centerX,centerY);
-			if (p.distance(center) <= (double) hsize){
-				list.add(p);
-			}
-		}
-		
+
+		// Circular
 		if (shape == 0 || shape == 2) {
-			//System.out.println("Creating circular cluster " + centerX + ", " + centerY + ", radius " + size);
-			for (int y = -hsize+centerX; y <= hsize+centerY; y++) {
-				for (int x = -hsize+centerX; x <= hsize+centerX; x++) {
+			for (int y = -size+center.y; y <= size+center.y; y++) {
+				for (int x = -size+center.x; x <= size+center.x; x++) {
 					Point p = new Point(x,y);
-					if (p.distance(center) <= (double)hsize) {
+					if (p.distance(center) <= size) {
 						list.add(p);
 					}
 				}
 			}
-				
+		}
+
+		// Polygon
+		if (shape == 3) {
+			Point[] reshaper = new Point[2];
+			for (int k = 0; k < 2; k++) {
+				reshaper[k] = new Point(map.random.nextInt(2*size+1)-size-1+center.x, map.random.nextInt(2*size+1)-size-1+center.y);
+			}
+			for (int y = (-2*size)+center.y; y <= (2*size)+center.y; y++) {
+				for (int x = (-2*size)+center.x; x <= (2*size)+center.x; x++) {
+					Point p = new Point(x,y);
+					if (p.distance(center) <= size || p.distance(reshaper[0]) <= size || p.distance(reshaper[1]) <= size) {
+						list.add(p);
+					}
+				}
+			}
 		}
 		
+		
+
+		// Scatter
 		if (shape == 2) {
-			for (int i = 0; i < map.random.nextInt(size) + 2; i++) {
+			for (int i = 0; i < map.random.nextInt(size) + size/2; i++) {
 				if (list.size() > 2) {
 					list.remove(map.random.nextInt(list.size()));
 				} else {

@@ -1,16 +1,5 @@
 package map;
 
-import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
-import org.cmg.resp.knowledge.Template;
-import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.PointToPoint;
-import org.cmg.resp.topology.Self;
-import org.cmg.resp.topology.VirtualPort;
-import org.cmg.resp.topology.VirtualPortAddress;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -19,7 +8,7 @@ import java.util.UUID;
 public class World {
 	
 	UUID ID = UUID.randomUUID();
-	public static final int DEFAULT = 20;
+	public static final int DEFAULT = 40;
 	Map map;
 	private int x, y;
 	Point center;
@@ -97,6 +86,12 @@ public class World {
 	
 	public boolean pointInWorld(Point p) {
 		return (p.getX() >= map.bounds[0] && p.getX() <= map.bounds[1] && p.getY() >= map.bounds[2] && p.getY() <= map.bounds[3] );
+	}
+	
+	public boolean pointInWorldDistance(Point p, int dist) {
+		int X = X()/2 - dist;
+		int Y = Y()/2 - dist;
+		return (p.x >= center.x - X && p.x <= center.x + X && p.y >= center.y - Y && p.y <= center.y + Y);
 	}
 	
 	public boolean pointNearCenter(Point p) {

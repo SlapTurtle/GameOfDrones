@@ -1,6 +1,5 @@
 package map;
 
-import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
@@ -102,7 +101,6 @@ public class Map {
 	}
 
 	public void addListeners(World world) {
-		
 		LinkedList<Point> dlist = new LinkedList<Point>();
 		for (droneListener d : listeners) {
 			dlist.add(d.center);
@@ -136,9 +134,6 @@ public class Map {
 		newWorld.map = this;
 		newWorld.adjustBounds();
 		Generate(newWorld, hasher.getExpansionHash(center));
-		
-		// TODO Add expansion in non-horizontal non-vertical directions
-		
 	}
 
 	/** Expands the current playable map in a given direction. World defaults to initial grid size.
@@ -147,19 +142,16 @@ public class Map {
 		int newOffset = Math.min(world.X(), world.Y());
 		int offsetX = 0, offsetY = 0;
 		switch (direction) {
-		case 0: offsetX = bounds[0] - newOffset; break;
-		case 1: offsetX = bounds[1] + newOffset; break;
-		case 2: offsetY = bounds[2] - newOffset; break;
-		case 3: offsetY = bounds[3] + newOffset; break;
+			case 0: offsetX = bounds[0] - newOffset; break;
+			case 1: offsetX = bounds[1] + newOffset; break;
+			case 2: offsetY = bounds[2] - newOffset; break;
+			case 3: offsetY = bounds[3] + newOffset; break;
 		}
 		Point center = new Point(offsetX/2, offsetY/2);
 		World newWorld = new World(center, newOffset);
 		newWorld.map = this;
 		newWorld.adjustBounds();
-		Generate(newWorld, hasher.getExpansionHash(center));
-		
-		// TODO Add expansion in non-horizontal non-vertical directions
-		
+		Generate(newWorld, hasher.getExpansionHash(center));	
 	}
 	
 	public void run() {
@@ -206,18 +198,21 @@ public class Map {
 	
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
+		System.out.println("\nRendering Map...\n");
 		int[][] N = new int[world.X()+1][world.Y()+1];
+		int TRIGGER = -1;
 		for (int x = 0; x < world.X()+1; x++) {
+			TRIGGER = 0; if (x == 0) { break; };
 			for (int y = 0; y < world.Y()+1; y++) {
 				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
 				if (t != null) {
-					N[x][y] = -1;
+					N[x][y] = TRIGGER;
 				}
 			}
 		}
 		LinkedList<Tuple> list = RetrieveTuples();
 		for (Tuple t : list) {
-			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == -1) {
+			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == TRIGGER) {
 				if (t.getElementAt(String.class, 0) == "GOLD") {
 					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
 				} else if (t.getElementAt(String.class, 0) == "TREE") {

@@ -8,6 +8,7 @@ public class Main {
 		display(map);
 
 		while(true) {
+			if (true) { break; }
 			synchronized (map.render) {
 				map.render.notifyAll();
 			}
