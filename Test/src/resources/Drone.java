@@ -12,7 +12,7 @@ import map.*;
 
 public class Drone extends Agent {
 	
-	Map map;
+	protected Map map;
 	protected String TYPE;
 	Point position = new Point();
 	
@@ -35,19 +35,19 @@ public class Drone extends Agent {
 		}
 	}
 	
-	private void explore() throws Exception {
+	protected void explore() throws Exception {
 		for (Point p : World.getNeighbors(position)) {
 			Template t = new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y));
 			boolean b = (queryp(t) == null) ? put(new Tuple(p.x, p.y), Self.SELF) : false;
 		}
 	}
 	
-	private void move(int dir) {
+	protected void move(int dir) {
 		int[] xy = getDirection(dir, position.x, position.y);
 		move(new Point(xy[0], xy[1]));
 	}
 	
-	private void move(Point p) {
+	protected void move(Point p) {
 		if (p.distance(position) > 1.21)
 			return;
 		try {
