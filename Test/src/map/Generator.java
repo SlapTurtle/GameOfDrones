@@ -1,23 +1,12 @@
 package map;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
-import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
-import org.cmg.resp.topology.VirtualPort;
-import org.cmg.resp.topology.VirtualPortAddress;
-
 import expAI.ExpDrone;
 import resources.Base;
 import resources.Gold;
 import resources.Resource;
-import resources.Water;
-
 import java.awt.Point;
 import java.util.Random;
 import java.util.UUID;
@@ -43,7 +32,7 @@ public class Generator extends Agent {
 		this.seed = seed;
 		random = new Random(seed.hashCode());
 	}
-	
+
 	protected void doRun() {
 		try {
 			populateMap();
@@ -51,17 +40,20 @@ public class Generator extends Agent {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
 	public void populateMap() throws Exception {
 		if (world.center.equals(map.center)) {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
-			Point p = new Point(map.base.center.x, map.base.center.y+1);
-			ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
-			ExpDrone expdrone = new ExpDrone(map, p);
-			map.map.addAgent(expdrone);
-			putResource(drone, p);
+			
+			for (int i = -1; i < 2; i+=2) {
+				Point p = new Point(map.base.center.x, map.base.center.y+i);
+				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
+				ExpDrone expdrone = new ExpDrone(map, p);
+				map.map.addAgent(expdrone);
+				putResource(drone, p);
+			}
 		}
 		
 		for (int i = 0; i < Math.min(world.X(), world.Y()) / 4; i++) {

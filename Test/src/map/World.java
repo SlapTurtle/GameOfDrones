@@ -12,6 +12,7 @@ import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.UUID;
 
 /** Class representing areas in the Map Tublesplace. */
@@ -102,6 +103,13 @@ public class World {
 		return map.center != null ? p.distance(map.center) <= 3 : false; 
 	}
 
-	
+	public static LinkedList<Point> getNeighbors(Point p) {
+		LinkedList<Point> list = new LinkedList<Point>();
+		for (int y = p.y-1; y <= p.y+1; y++)
+			for (int x = p.x-1; x <= p.x+1; x++) 
+				if (!(x == p.x && y == p.y))
+					list.add(new Point(x,y));
+		return list;
+	}
 	
 }
