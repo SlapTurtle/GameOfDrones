@@ -15,7 +15,7 @@ public class Drone extends Agent {
 	
 	protected Map map;
 	protected String TYPE;
-	Position position = new Position();
+	protected Position position;
 	
 	public Drone(Map map, Position position) {
 		super(UUID.randomUUID().toString());

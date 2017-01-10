@@ -7,10 +7,12 @@ import resources.*;
 import util.Position;
 
 public class ExpDrone extends Drone {
+	int radius;
 	
 	public ExpDrone(Map map, Position position) {
 		super(map, position);
 		this.TYPE = "EXPDRONE";
+		this.radius=7;
 	}
 
 	@Override
@@ -25,9 +27,11 @@ public class ExpDrone extends Drone {
 			}
 			
 			
-			move(0);			
+			move(moveDrone(position,this.radius));
+			move(0);
 		}
 	}
+	
 	
 	/**
 	 * Help function to test
@@ -35,6 +39,7 @@ public class ExpDrone extends Drone {
 	 * @param dir
 	 * @return
 	 */
+	/*
 	private Position moveFieldsToCheck(Position p, int dir){
 		if(dir<0){
 			p.setX(p.getX()-1);
@@ -43,48 +48,54 @@ public class ExpDrone extends Drone {
 			p.setY(p.getY()+1);
 		}		
 		return p; 
-	}
+	}*/
+	
 	/**
 	 * Help function to move drone
 	 * @param d
 	 * @param dir
 	 * @return
 	 */
-	private Position moveDrone(Position d, int dir){
+	private Point moveDrone(Position d, int radius){
 		int q = getQuadrant(d);
+		int dir=0;
+		Position[] posArr = getFieldsToCheck(d);
+		dir = getDirFromRadius(posArr[1],posArr[0], radius);
+		//new place for drone to be is called NP
+		Point nP = new Point(d.getX(), d.getY());
 		switch(q){
-			case 1 : if(dir<0) interQuadrantMoving(d,d.getX()-1,d.getY());
-					 else      interQuadrantMoving(d,d.getX(),d.getY()+1);
+			case 1 : if(dir<0) nP.move(nP.x-1,nP.y);
+					 else      nP.move(nP.x, nP.y+1);
 					 break;
 			
-			case 2 : if(dir<0) interQuadrantMoving(d,d.getX(),d.getY()-1);
-					 else      interQuadrantMoving(d,d.getX()-1,d.getY());
+			case 2 : if(dir<0) nP.move(nP.x, nP.y-1); 
+					 else      nP.move(nP.x-1, nP.y);
 					 break;
-			case 3 : if(dir<0) interQuadrantMoving(d,d.getX()+1,d.getY());
-					 else      interQuadrantMoving(d,d.getX(),d.getY()-1);
+			case 3 : if(dir<0) nP.move(nP.x+1, nP.y); 
+					 else      nP.move(nP.x, nP.y-1); 
 					 break;
-			case 4 : if(dir<0) interQuadrantMoving(d,d.getX(),d.getY()+1);
-					 else      interQuadrantMoving(d,d.getX()+1,d.getY());
+			case 4 : if(dir<0) nP.move(nP.x, nP.y+1);
+					 else      nP.move(nP.x+1, nP.y); 
 			         break;
-			default: interQuadrantMoving(d,d.getX(),d.getY());
+			default: nP.move(nP.x, nP.y);
 					 break;
 		}		
-		return d; 
+		return nP; 
 	}
 
 	/**
-	 * help function for moveDrone
+	 * UNUSED help function for moveDrone
 	 * @param p
 	 * @param x
 	 * @param y
 	 * @return Position
 	 */
-	private Position interQuadrantMoving(Position p, int x, int y){
-		p.setX(x);
-		p.setY(y);
-		return p;
-	}
-	
+//	private Position interQuadrantMoving(Position p, int x, int y){
+//		p.setX(x);
+//		p.setY(y);
+//		return p;
+//	}
+//	
 	/**
 	 * Gets the direction using {@link #pythagoras(Position)}method
 	 * @param p1
@@ -122,11 +133,11 @@ public class ExpDrone extends Drone {
 	}
 	
 	
-	
-	private int[] getPointInUnknown(){
-		int[] a = new int[2];
-		return a;
-	}
+//	
+//	private int[] getPointInUnknown(){
+//		int[] a = new int[2];
+//		return a;
+//	}
 	
 	/**
 	 * 

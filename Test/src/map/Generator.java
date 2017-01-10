@@ -7,6 +7,8 @@ import expAI.ExpDrone;
 import resources.Base;
 import resources.Gold;
 import resources.Resource;
+import util.Position;
+
 import java.awt.Point;
 import java.util.Random;
 import java.util.UUID;
@@ -50,7 +52,7 @@ public class Generator extends Agent {
 			for (int i = -1; i < 2; i+=2) {
 				Point p = new Point(map.base.center.x, map.base.center.y+i);
 				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
-				ExpDrone expdrone = new ExpDrone(map, p);
+				ExpDrone expdrone = new ExpDrone(map, new Position(p.x,p.y));
 				map.map.addAgent(expdrone);
 				putResource(drone, p);
 			}

@@ -16,6 +16,7 @@ public class Position {
 		this.x=0;
 		this.y=0;
 	}
+	
 	/*
 	 * GETTERS AND SETTERS
 	 */
@@ -40,9 +41,6 @@ public class Position {
 		this.y=y;
 	}
 	
-	public String toString(){
-		return "["+this.x + "," + this.y + "]";
-	}
 	
 	/*
 	 * DOT EQUALS 
@@ -55,8 +53,14 @@ public class Position {
 		return (this.y==newY);
 	}
 
-	
+	/*
+	 * Translators
+	 */
 
+	public String toString(){
+		return "["+this.x + "," + this.y + "]";
+	}
+	
 	public Point toPoint(){
 		return new Point(this.x,this.y);
 	}
