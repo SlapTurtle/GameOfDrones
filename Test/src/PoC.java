@@ -212,6 +212,7 @@ public class PoC {
 		protected void doRun() {
 			Scanner scanner=new Scanner(System.in);
 			
+			
 			explore();
 			printDevineBoard(ts);
 			
