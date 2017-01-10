@@ -51,9 +51,10 @@ public class Map {
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
 		hash = hasher.expansionHashes(EXP_HASHLENGTH);
+		System.out.println("\nSeed: " + this.seed);
 		map.start();
 	}
-	
+
 	public Map(World world, String seed) {
 		Init(seed);
 		this.world = world;
@@ -85,7 +86,7 @@ public class Map {
 	/** Generates a given World using the provided seed as a String.
 	 * @param*/
 	public void Generate(World world, String seed) {
-		System.out.println("\nSeed: " + seed);
+		//System.out.println("\nSeed: " + seed);
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
 			center = new Point(0,0);
@@ -111,7 +112,6 @@ public class Map {
 				droneListener a = new droneListener(this, p);
 				map.addAgent(a);
 				listeners.add(a);
-				System.out.println("Added listener at " + p.x + ", " + p.y);
 			} else if (!p.equals(new Point(0,0))) {
 				boolean exists = false;
 				for (Point dp : dlist) {
@@ -122,7 +122,6 @@ public class Map {
 					droneListener a = new droneListener(this, p);
 					map.addAgent(a);
 					listeners.add(a);
-					System.out.println("Added listener at " + p.x + ", " + p.y);
 				}
 			}
 		}
@@ -170,7 +169,7 @@ public class Map {
 				render.notifyAll();
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -184,7 +183,7 @@ public class Map {
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
-				syncRetrieval.wait();
+				syncRetrieval.wait(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -197,7 +196,7 @@ public class Map {
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
-				syncRetrieval.wait();
+				syncRetrieval.wait(100);
 			} catch (InterruptedException e) {
 				
 			}
@@ -208,7 +207,6 @@ public class Map {
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
 		int[][] N = new int[world.X()+1][world.Y()+1];
-		
 		for (int x = 0; x < world.X()+1; x++) {
 			for (int y = 0; y < world.Y()+1; y++) {
 				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
@@ -217,8 +215,8 @@ public class Map {
 				}
 			}
 		}
-
-		for (Tuple t : RetrieveTuples()) {
+		LinkedList<Tuple> list = RetrieveTuples();
+		for (Tuple t : list) {
 			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == -1) {
 				if (t.getElementAt(String.class, 0) == "GOLD") {
 					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;

@@ -24,6 +24,7 @@ public class Drone extends Agent {
 	}
 	
 	protected void doRun() {
+		Random r = new Random();
 		try {
 			explore();
 		} catch (Exception e1) {
@@ -39,12 +40,16 @@ public class Drone extends Agent {
 					
 				}
 			}
-			if (b) {
-				move(1);
+			if (r.nextInt(5) <= 1) {
+				if (b) {
+					move(1);
+				} else {
+					move(2);
+				}
+				b = !b;
 			} else {
-				move(2);
+				move(r.nextInt(4));
 			}
-			b = !b;
 		}
 	}
 	
