@@ -30,28 +30,28 @@ public class explorationAI {
 		
 	}
 
-	private int checkDirection(int hyp, int radius2) {
-		// TODO Auto-generated method stub
-		int dir = -1;
-		return dir;
-	}
 
-	private int[] getPointInUnknown(){
-		int[] a = new int[2];
-		return a;
-	}
-
-	private int getHypotenuse(Position p){
+	private int getDirection(Position p, int radius){
 		int r;
 		
-		int a=p.getX();
-		int b=p.getY();
 		
-		r= (int) Math.sqrt(Math.pow(a,2)+Math.pow(b, 2));
 		
 		return r;
 	}
 	
+	private int pythagoras(Position p){
+		int a=p.getX();
+		int b=p.getY();
+		
+		r= (int) Math.sqrt(Math.pow(a,2)+Math.pow(b, 2));
+	}
+	
+	
+	
+	private int[] getPointInUnknown(){
+		int[] a = new int[2];
+		return a;
+	}
 	/*private Position[] getFieldsToCheck(int dir, Position p){
 		Position[] arr = new Position[2];
 		switch(dir){

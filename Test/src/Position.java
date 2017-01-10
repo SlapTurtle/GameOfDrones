@@ -3,11 +3,15 @@ public class Position {
 	private int x;
 	private int y;
 	
+	//Constructor
 	public Position(int x, int y){
 		this.setX(x);
 		this.setY(y);
 	}
-
+	
+	/*
+	 * GETTERS AND SETTERS
+	 */
 	public int getY() {
 		return y;
 	}
@@ -24,6 +28,9 @@ public class Position {
 		this.x = x;
 	}
 	
+	/*
+	 * DOT EQUALS 
+	 */
 	public boolean equalsX(int newX){
 		return (this.x==newX);
 	}
@@ -31,4 +38,8 @@ public class Position {
 	public boolean equalsY(int newY){
 		return (this.y==newY);
 	}
+
+	
+
+
 }
