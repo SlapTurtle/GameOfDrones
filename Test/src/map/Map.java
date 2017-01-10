@@ -43,6 +43,7 @@ public class Map {
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
 	
+	public Object render = new Object();
 	Object syncRetrieval = new Object();
 	
 	/** Initialization of the Map object. Must be called upon construction.
@@ -148,6 +149,21 @@ public class Map {
 		return retriever.Tuples;
 	}
 	
+	public LinkedList<Tuple> RetrieveTuples(String TYPE) {
+		Retriever retriever = new Retriever(this, TYPE);
+		map.addAgent(retriever);
+		
+		synchronized (syncRetrieval) {
+			try {
+				syncRetrieval.wait();
+			} catch (InterruptedException e) {
+				
+			}
+		}
+		
+		return retriever.Tuples;
+	}
+	
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
 		
@@ -175,11 +191,11 @@ public class Map {
 		return N;
 	}
 	
-	public int getTupleX(Tuple t) {
+	public static int getTupleX(Tuple t) {
 		return t.getElementAt(Integer.class, 1);
 	}
 	
-	public int getTupleY(Tuple t) {
+	public static int getTupleY(Tuple t) {
 		return t.getElementAt(Integer.class, 2);
 	}
 	

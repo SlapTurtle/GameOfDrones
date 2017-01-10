@@ -12,6 +12,7 @@ import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
+import expAI.ExpDrone;
 import resources.Base;
 import resources.Gold;
 import resources.Resource;
@@ -56,8 +57,11 @@ public class Generator extends Agent {
 		if (world.center.equals(map.center)) {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
-			ExplorationDrone drone = new ExplorationDrone(map, world.center, "circular", 1);
-			putResource(drone, new Point(map.base.center.x, map.base.center.y+1));
+			Point p = new Point(map.base.center.x, map.base.center.y+1);
+			ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
+			ExpDrone expdrone = new ExpDrone(map, p);
+			map.map.addAgent(expdrone);
+			putResource(drone, p);
 		}
 		
 		for (int i = 0; i < Math.min(world.X(), world.Y()) / 4; i++) {

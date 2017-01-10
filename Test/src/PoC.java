@@ -217,35 +217,6 @@ public class PoC {
 			
 			explore();
 			printDevineBoard(ts);
-			
-			scanner.nextLine();
-			
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			
-			System.exit(0);
 
 			int dir = scanner.nextInt();
 			while(true){
