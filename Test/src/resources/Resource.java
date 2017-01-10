@@ -1,19 +1,24 @@
-package map;
+package resources;
 
 import org.cmg.resp.knowledge.Tuple;
+
+import map.Map;
+
 import java.util.UUID;
 import java.util.LinkedList;
 import java.util.List;
 import java.awt.Point;
 
-public class Resource {
 
+/** Base class representing all resources and their properties. */
+public class Resource {
 	Map map;
 	UUID cluster;
 	public Point center;
-	String type;
-	boolean harvestable = false;
-	boolean pathable = true;
+	public String type;
+	private static final String TYPE = "default";
+	public static boolean harvestable = false;
+	protected static boolean pathable = true;
 	int shape;
 	int size;
 	
@@ -44,6 +49,7 @@ public class Resource {
 		return list;
 	}
 	
+	/** Gets all points associated with this Resource. */
 	public List<Point> getPoints() {
 		
 		List<Point> list = new LinkedList<Point>();
@@ -53,6 +59,13 @@ public class Resource {
 		int centerX = (int)center.getX();
 		int centerY = (int)center.getY();
 		int hsize = size;
+		
+		if (shape == 1) {
+			Point p = new Point(centerX,centerY);
+			if (p.distance(center) <= (double) hsize){
+				list.add(p);
+			}
+		}
 		
 		if (shape == 0 || shape == 2) {
 			//System.out.println("Creating circular cluster " + centerX + ", " + centerY + ", radius " + size);
@@ -80,56 +93,4 @@ public class Resource {
 		return list;
 	}
 	
-}
-
-class Gold extends Resource {
-	
-	private static final String TYPE = "GOLD";
-
-	public Gold(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = TYPE;
-		harvestable = true;
-		pathable = true;
-	}
-
-}
-
-class Tree extends Resource {
-	
-	private static final String TYPE = "TREE";
-
-	public Tree(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = TYPE;
-		harvestable = true;
-		pathable = false;
-	}
-
-}
-
-class Water extends Resource {
-	
-	private static final String TYPE = "WATER";
-
-	public Water(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = TYPE;
-		harvestable = false;
-		pathable = false;
-	}
-
-}
-
-class Base extends Resource {
-	
-	private static final String TYPE = "BASE";
-
-	public Base(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
-		type = TYPE;
-		harvestable = false;
-		pathable = false;
-	}
-
 }
