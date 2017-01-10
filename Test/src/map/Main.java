@@ -1,35 +1,29 @@
 package map;
 
+import java.awt.Point;
 import java.util.LinkedList;
 
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		Map map = new Map(new World(20));
-//		Map map = new Map(new World(), "ac0a6337-edc0-4077-ba5d-6d85730492df");
+		Map map = new Map(new World(40), "hej");
 		Thread.sleep(100);
 		display(map);
 
 		int i = 0;
-		
 		while(i < 100) {
 			synchronized (map.render) {
 				map.render.notifyAll();
 			}
-			Thread.sleep(2000);
+			Thread.sleep(500);
 			display(map);
 			i++;
 		}
-
-//		int i = 0;
-//		while(i < 1000) {
-//			map.expandWorld(i % 4);
-//			Thread.sleep(100);
-//			//display(map, map.Retrieve());
-//			i++;
-//		}
 	}
 	
 	/** Displays a given map's current state to the console.
@@ -46,12 +40,13 @@ public class Main {
 				char c;
 				boolean d = false;
 				for (Tuple t : drones) {
-					if (map.getTupleX(t) == x && map.getTupleY(t) == y) {
+					if (Map.getTupleX(t) == x && Map.getTupleY(t) == y) {
 						d = true;
 						System.out.print('D'  + " ");
 					}
 				}
-				if (!d) {
+
+				if (!d && map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2))) != null) {
 					switch (N[x][y]) {
 					case 1: c = 'G'; break;
 					case 2: c = 'T'; break;
@@ -59,13 +54,15 @@ public class Main {
 					case 4: c = 'W'; break;
 					case 5: c = 'D'; break;
 					default: c = '.'; break;
+					}
+				} else {
+					c = 'X';
 				}
 				System.out.print(c + " ");
-				}	
 			}
 			System.out.println();
 		}
 	}
-	
+
 
 }
