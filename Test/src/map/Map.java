@@ -213,7 +213,6 @@ public class Map {
 			for (int y = 0; y < world.Y()+1; y++) {
 				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
 				if (t != null) {
-					System.out.println("Found match");
 					N[x][y] = -1;
 				}
 			}

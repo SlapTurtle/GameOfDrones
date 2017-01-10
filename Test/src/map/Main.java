@@ -33,26 +33,14 @@ public class Main {
 		for (int y = 0; y < map.bounds[3]-map.bounds[2]; y++) {
 			for (int x = 0; x < map.bounds[1]-map.bounds[0]; x++) {
 				char c;
-				boolean d = false;
-//				for (Tuple t : drones) {
-//					if (Map.getTupleX(t) == x && Map.getTupleY(t) == y) {
-//						d = true;
-//						System.out.print('D'  + " ");
-//					}
-//				}
-				//Tuple t = map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2)));
-				if (!d /*&& t != null*/) {
-					switch (N[x][y]) {
-					case -1: c = '.'; break;
-					case 1: c = 'G'; break;
-					case 2: c = 'T'; break;
-					case 3: c = 'B'; break;
-					case 4: c = 'W'; break;
-					case 5: c = 'D'; break;
-					default: c = 'X'; break;
-					}
-				} else {
-					c = 'X';
+				switch (N[x][y]) {
+				case -1: c = '.'; break;
+				case 1: c = 'G'; break;
+				case 2: c = 'T'; break;
+				case 3: c = 'B'; break;
+				case 4: c = 'W'; break;
+				case 5: c = 'D'; break;
+				default: c = 'X'; break;
 				}
 				System.out.print(c + " ");
 			}
