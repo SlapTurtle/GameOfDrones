@@ -36,7 +36,7 @@ public class UI extends Application {
     public class GridDisplay {
 
         public static final double WINDOW_SIZE = 1000;
-        public static final int INIT_GRID_SIZE = 49;
+        public static final int INIT_GRID_SIZE = 60;
 
         public final double initSize;
         
@@ -44,7 +44,6 @@ public class UI extends Application {
         public double tileSize;
         public double scale;
         public Base base;
-        
         public Pane pane = new Pane();
         public Group display = new Group(pane);
 
@@ -83,8 +82,17 @@ public class UI extends Application {
         pane.setPrefWidth(GridDisplay.WINDOW_SIZE);
         Scene scene = new Scene(display, GridDisplay.WINDOW_SIZE-12, GridDisplay.WINDOW_SIZE-12);
         
-        World world = new World(new Point(0,0), GridDisplay.INIT_GRID_SIZE);
+        World world = new World(GridDisplay.INIT_GRID_SIZE);
 		Map map = new Map(world);
+		
+		// Sleeping
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		LinkedList<Tuple> items = map.RetrieveTuples();
 				
 		pane.getChildren().clear();
@@ -118,20 +126,20 @@ public class UI extends Application {
         primaryStage.show(); 
         
         
-        try {
-        	Thread.sleep(2000);
-        	Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, -1, 0)));
-			Thread.sleep(2000);
-			Platform.runLater(() -> gridDisplay.resizeGrid(69));
-			Thread.sleep(2000);
-			Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, 1, 0)));
-			Thread.sleep(2000);
-			Platform.runLater(() -> gridDisplay.resizeGrid(89));
-			Thread.sleep(2000);
-			Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, 0, 1)));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//        try {
+//        	Thread.sleep(2000);
+//        	Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, -1, 0)));
+//			Thread.sleep(2000);
+//			Platform.runLater(() -> gridDisplay.resizeGrid(69));
+//			Thread.sleep(2000);
+//			Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, 1, 0)));
+//			Thread.sleep(2000);
+//			Platform.runLater(() -> gridDisplay.resizeGrid(89));
+//			Thread.sleep(2000);
+//			Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, 0, 1)));
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
         
     }
 

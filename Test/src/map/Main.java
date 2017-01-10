@@ -1,95 +1,47 @@
 package map;
 
-import java.awt.Point;
-
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		
-//		World world = new World();
-		//Map map = new Map(world, "f40562ff-e6a4-469c-aaf2-4baa15c2f701");
-		Map map = new Map(new World());
-		//Map map = new Map(world, "5fbd53c6-d677-4ee0-a054-6e96a093fc2e");
-		//Map map = new Map(world, "969af951-255d-491a-94e2-1262ff90c17f");
-		//Map map = new Map(world, "ac0a6337-edc0-4077-ba5d-6d85730492df");
+		Map map = new Map(new World(20));
+//		Map map = new Map(new World(), "ac0a6337-edc0-4077-ba5d-6d85730492df");
 		Thread.sleep(100);
-		int[][] N = map.Retrieve();
-		
-		System.out.println("\nRendering Map...\n");
-		Thread.sleep(50);
-		
-		for (int y = 0; y < map.world.Y(); y++) {
-			for (int x = 0; x < map.world.X(); x++) {
-				char c;
-				
-				switch (N[x][y]) {
-				case 1: c = 'G'; break;
-				case 2: c = 'T'; break;
-				case 3: c = 'B'; break;
-				case 4: c = 'W'; break;
-				default: c = '.'; break;
-				}
-				
-				System.out.print(c + " ");
-			}
-			System.out.println();
-		}
-		
-		Thread.sleep(200);
-		
-		map.expandWorld(2);
-		
-		Thread.sleep(300);
-		N = map.Retrieve();
-		
-		System.out.println("\nRendering Map...\n");
-		Thread.sleep(50);
-		
-		
-		for (int y = 0; y < map.world.Y(); y++) {
-			for (int x = 0; x < map.world.X(); x++) {
-				char c;
-				
-				switch (N[x][y]) {
-				case 1: c = 'G'; break;
-				case 2: c = 'T'; break;
-				case 3: c = 'B'; break;
-				case 4: c = 'W'; break;
-				default: c = '.'; break;
-				}
-				
-				System.out.print(c + " ");
-			}
-			System.out.println();
-		}
-		
-		map.expandWorld(1);
-		
-		Thread.sleep(300);
-		N = map.Retrieve();
-		
-		System.out.println("\nRendering Map...\n");
-		Thread.sleep(50);
-		
-		
-		for (int y = 0; y < map.world.Y(); y++) {
-			for (int x = 0; x < map.world.X(); x++) {
-				char c;
-				
-				switch (N[x][y]) {
-				case 1: c = 'G'; break;
-				case 2: c = 'T'; break;
-				case 3: c = 'B'; break;
-				case 4: c = 'W'; break;
-				default: c = '.'; break;
-				}
-				
-				System.out.print(c + " ");
-			}
-			System.out.println();
-		}
-		
+		display(map);
 
+		
+		
+		
+//		int i = 0;
+//		while(i < 1000) {
+//			map.expandWorld(i % 4);
+//			Thread.sleep(100);
+//			//display(map, map.Retrieve());
+//			i++;
+//		}
 	}
+	
+	/** Displays a given map's current state to the console.
+	 * Do not invoke while other instances of the same method are running.
+	 * @param*/
+	static void display(Map map) {
+		int[][] N = map.Retrieve();
+		System.out.println("\nRendering Map...\n");
+		for (int y = 0; y < map.bounds[3]-map.bounds[2]; y++) {
+			for (int x = 0; x < map.bounds[1]-map.bounds[0]; x++) {
+				char c;
+				switch (N[x][y]) {
+					case 1: c = 'G'; break;
+					case 2: c = 'T'; break;
+					case 3: c = 'B'; break;
+					case 4: c = 'W'; break;
+					case 5: c = 'D'; break;
+					default: c = '.'; break;
+				}
+				System.out.print(c + " ");
+			}
+			System.out.println();
+		}
+	}
+	
 
 }

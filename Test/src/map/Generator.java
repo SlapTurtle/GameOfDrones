@@ -22,12 +22,14 @@ import java.util.Random;
 import java.util.UUID;
 import resources.*;
 
+/** Agent used for the generation of content in a given world. */
 public class Generator extends Agent {
 	
 	Map map;
 	String mapID;
 	World world;
 	UUID worldID;
+	Random random;
 	String seed;
 	boolean b = false;
 	
@@ -38,6 +40,7 @@ public class Generator extends Agent {
 		this.world = world;
 		this.world.ID = worldID;
 		this.seed = seed;
+		random = new Random(seed.hashCode());
 	}
 	
 	protected void doRun() {
@@ -48,12 +51,13 @@ public class Generator extends Agent {
 		}
 	}
 	
+	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
 	public void populateMap() throws Exception {
-		Random r = map.random;
-		
 		if (world.center.equals(map.center)) {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
+			ExplorationDrone drone = new ExplorationDrone(map, world.center, "circular", 1);
+			putResource(drone, new Point(map.base.center.x, map.base.center.y+1));
 		}
 		
 		for (int i = 0; i < Math.min(world.X(), world.Y()) / 4; i++) {
@@ -66,7 +70,7 @@ public class Generator extends Agent {
 			
 			for (int j = 0; j < 4; j++) {
 				center = getRandomPoint();
-				Resource tree = new Tree(map, center, "square", r.nextInt(1) + 1);
+				Resource tree = new Tree(map, center, "square", random.nextInt(1) + 1);
 				addResource(tree);
 			}			
 			
@@ -80,18 +84,19 @@ public class Generator extends Agent {
 //		addResource(water);
 		
 	}
-	
+
+	/** Returns a random point inside the World associated with the Generator Agent.
+	 * The point is represented using its generalized map coordinates. */
 	public Point getRandomPoint() {
-		Random r = map.random;
-		int x, y;
-		x = (r.nextInt(world.X()) - world.X()/2) + (world.center.x - map.center.x);
-		y = (r.nextInt(world.Y()) - world.Y()/2) + (world.center.y - map.center.y);
-		Point p = new Point(x,y);
-		return p;
+		return translatePoint(random.nextInt(world.X()), random.nextInt(world.Y()));
 	}
 
+	/** Tanslates a point from its internal world coordinates to its generalized map coordinates.
+	 * @param */
 	public Point translatePoint(int x, int y) {
-		Point p = new Point(-(world.X()/2)+x + world.center.x,-(world.Y()/2)+y + world.center.y);
+		Point p = new Point(
+				(x - world.X()/2) + (world.center.x - map.center.x),
+				(y - world.Y()/2) + (world.center.y - map.center.y));
 		return p;
 	}
 	
@@ -100,6 +105,8 @@ public class Generator extends Agent {
 		put(t, Self.SELF);
 	}
 	
+	/** Adds a resource cluster's tubles to the Map Tublespace.
+	 * @param */
 	public void addResource(Resource resource) throws Exception {
 		for (Point p : resource.getPoints()) {
 			if (world.pointInWorld(p) && !world.pointNearCenter(p)) {
