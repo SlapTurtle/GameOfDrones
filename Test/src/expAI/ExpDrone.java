@@ -8,7 +8,7 @@ import util.Position;
 
 public class ExpDrone extends Drone {
 	
-	public ExpDrone(Map map, Point position) {
+	public ExpDrone(Map map, Position position) {
 		super(map, position);
 		this.TYPE = "EXPDRONE";
 	}
@@ -28,31 +28,6 @@ public class ExpDrone extends Drone {
 			move(0);			
 		}
 	}
-	
-	public static void main(String [] args){
-		int radius=6;
-		Position d = new Position(6,0);
-		Position[] posArr = getFieldsToCheck(d);
-		Position p1 = new Position(5,1); 
-		Position p2 = new Position(4,0);
-		int dir = 0;
-		
-		System.out.println("d" + d);
-		System.out.println("up" + p1);
-		System.out.println("left" + p2);
-		
-		for(int i = 0; i<48; i++){
-			posArr = getFieldsToCheck(d);
-			dir = getDirFromRadius(posArr[1],posArr[0], radius);
-			System.out.println(dir);
-			moveDrone(d,dir);
-			System.out.println("d" + d);
-			System.out.println("up" + posArr[1]);
-			System.out.println("left" + posArr[0]);
-		}
-		
-	}
-	
 	
 	/**
 	 * Help function to test
