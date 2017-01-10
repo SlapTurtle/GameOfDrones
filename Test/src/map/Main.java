@@ -1,17 +1,14 @@
 package map;
 
-import java.awt.Point;
 import java.util.LinkedList;
-
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		Map map = new Map(new World(40), "hej");
+		Map map = new Map(new World(20), "hej");
 		Thread.sleep(100);
 		display(map);
 
@@ -25,14 +22,12 @@ public class Main {
 			i++;
 		}
 	}
-	
+
 	/** Displays a given map's current state to the console.
 	 * Do not invoke while other instances of the same method are running.
 	 * @param*/
-	static void display(Map map) {
-		
+	static void display(Map map) {		
 		LinkedList<Tuple> drones = map.RetrieveTuples("EXPDRONE");
-		
 		int[][] N = map.Retrieve();
 		System.out.println("\nRendering Map...\n");
 		for (int y = 0; y < map.bounds[3]-map.bounds[2]; y++) {
@@ -45,7 +40,6 @@ public class Main {
 						System.out.print('D'  + " ");
 					}
 				}
-
 				if (!d && map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2))) != null) {
 					switch (N[x][y]) {
 					case 1: c = 'G'; break;
@@ -63,6 +57,5 @@ public class Main {
 			System.out.println();
 		}
 	}
-
 
 }

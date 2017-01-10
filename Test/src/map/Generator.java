@@ -1,23 +1,12 @@
 package map;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
-import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
-import org.cmg.resp.topology.VirtualPort;
-import org.cmg.resp.topology.VirtualPortAddress;
-
 import expAI.ExpDrone;
 import resources.Base;
 import resources.Gold;
 import resources.Resource;
-import resources.Water;
-
 import java.awt.Point;
 import java.util.Random;
 import java.util.UUID;
@@ -43,7 +32,7 @@ public class Generator extends Agent {
 		this.seed = seed;
 		random = new Random(seed.hashCode());
 	}
-	
+
 	protected void doRun() {
 		try {
 			populateMap();

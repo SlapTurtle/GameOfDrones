@@ -1,31 +1,21 @@
 package map;
 
-import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
-import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
-import org.cmg.resp.topology.PointToPoint;
-import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
-import org.cmg.resp.topology.VirtualPortAddress;
-
 import resources.Base;
-
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 
-import javax.swing.plaf.synth.SynthComboBoxUI;
-
 public class Map {
 	
 	public static final int EXP_HASHES = 10;
 	public static final int EXP_HASHLENGTH = 16;
-	
 	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
@@ -90,9 +80,7 @@ public class Map {
 	/** Generates a given World using the provided seed as a String.
 	 * @param*/
 	public void Generate(World world, String seed) {
-		//System.out.println("New field size x=" + world.X() + ", y=" + world.Y() + " initialized");
 		System.out.println("\nSeed: " + seed);
-		
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
 			center = new Point(0,0);
@@ -102,7 +90,6 @@ public class Map {
 			bounds[2] = -world.Y() / 2;
 			bounds[3] = world.Y() / 2;
 		}
-		
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
 	}
@@ -110,13 +97,8 @@ public class Map {
 	/** Expands the current playable map in a given direction. World defaults to initial grid size.
 	 * @param*/
 	public void expandWorld(int direction) {
-		
-//		Bulldozer a = new Bulldozer(this, "GOLD");
-//		map.addAgent(a);
-		
 		int newOffset = Math.min(world.X(), world.Y());
 		int offsetX = 0, offsetY = 0;
-		
 		switch (direction) {
 		case 0: offsetX = bounds[0] - newOffset; break;
 		case 1: offsetX = bounds[1] + newOffset; break;
@@ -132,27 +114,24 @@ public class Map {
 		// TODO Add expansion in non-horizontal non-vertical directions
 		
 	}
-	
+
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a linked list. */
 	public LinkedList<Tuple> RetrieveTuples() {
 		Retriever retriever = new Retriever(this);
 		map.addAgent(retriever);
-		
 		synchronized (syncRetrieval) {
 			try {
 				syncRetrieval.wait();
 			} catch (InterruptedException e) {
-				
+				e.printStackTrace();
 			}
 		}
-		
 		return retriever.Tuples;
 	}
-	
+
 	public LinkedList<Tuple> RetrieveTuples(String TYPE) {
 		Retriever retriever = new Retriever(this, TYPE);
 		map.addAgent(retriever);
-		
 		synchronized (syncRetrieval) {
 			try {
 				syncRetrieval.wait();
@@ -160,18 +139,12 @@ public class Map {
 				
 			}
 		}
-		
 		return retriever.Tuples;
 	}
 	
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
-		
 		int[][] N = new int[world.X() + 2][world.Y() + 2];
-		
-		//System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
-		//System.out.println("Retrieving Tuples for display");
-		
 		for (Tuple t : RetrieveTuples()) {
 			if (t.getElementAt(String.class, 0) == "GOLD") {
 				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
@@ -187,7 +160,6 @@ public class Map {
 				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
 			}
 		}
-		
 		return N;
 	}
 	
@@ -202,71 +174,6 @@ public class Map {
 	public UUID ID() {
 		return ID;
 	}
-	
-	
-}
-
-/** Agent for retrieving Tuples from the Map Tublespace. */
-class Retriever extends Agent {
-	
-	Map map;
-	String type;
-	LinkedList<Tuple> Tuples;
-
-	public Retriever(Map map, String type) {
-		super(UUID.randomUUID().toString());
-		this.map = map;
-		this.type = type;
-	}
-	
-	public Retriever(Map map) {
-		super(UUID.randomUUID().toString());
-		this.map = map;		
-	}
-
-	protected void doRun() {	
-		Template T = (type == null) ? Map.TEMPLATE_ALL
-									: new Template(new ActualTemplateField(type), Map.AnyInteger, Map.AnyInteger);
-		Tuples = queryAll(T);
-		
-		synchronized (map.syncRetrieval) {
-			map.syncRetrieval.notifyAll();
-		}
-		
-	}
-	
-	
-	
-}
-
-/** Legacy Agent used for deletion of Tuples in the Map Tublespace. */
-class Bulldozer extends Agent {
-	
-	Map map;
-	String type;
-	LinkedList<Tuple> Tuples;
-
-	public Bulldozer(Map map, String type) {
-		super(UUID.randomUUID().toString());
-		this.map = map;
-		this.type = type;
-	}
-	
-	public Bulldozer(Map map) {
-		super(UUID.randomUUID().toString());
-		this.map = map;		
-	}
-
-	protected void doRun() {
-		Template T = (type == null) ? Map.TEMPLATE_ALL
-									: new Template(new ActualTemplateField(type), Map.AnyInteger, Map.AnyInteger);
-		
-		while(queryp(Map.TEMPLATE_ALL) != null) {
-			getAll(T);
-		}
-		
-	}
-	
 	
 	
 }

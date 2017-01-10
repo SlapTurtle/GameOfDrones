@@ -1,19 +1,14 @@
 package resources;
 
 import java.awt.Point;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.UUID;
-
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 import map.*;
-import resources.*;
 
 public class Drone extends Agent {
 	
