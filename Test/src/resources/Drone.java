@@ -24,13 +24,14 @@ public class Drone extends Agent {
 	
 	protected void doRun() {
 		Random r = new Random();
+		Dice dice = new Dice(r);
+		int dir = r.nextInt(4);
 		try {
 			explore();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		boolean b = false;
 		while(true) {
 			synchronized (map.render) {
 				try {
@@ -39,13 +40,8 @@ public class Drone extends Agent {
 					
 				}
 			}
-			if (r.nextInt(5) <= 1) {
-				if (b) {
-					move(1);
-				} else {
-					move(2);
-				}
-				b = !b;
+			if (dice.roll(0.4)) {
+				move(dir);
 			} else {
 				move(r.nextInt(4));
 			}

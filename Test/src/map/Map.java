@@ -202,7 +202,7 @@ public class Map {
 		int[][] N = new int[world.X()+1][world.Y()+1];
 		int TRIGGER = -1;
 		for (int x = 0; x < world.X()+1; x++) {
-			TRIGGER = 0; if (x == 0) { break; };
+//			TRIGGER = 0; if (x == 0) { break; };
 			for (int y = 0; y < world.Y()+1; y++) {
 				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
 				if (t != null) {

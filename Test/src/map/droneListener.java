@@ -31,7 +31,7 @@ public class droneListener extends Agent {
 				for (Tuple t : drones) {
 					Point p = new Point(Map.getTupleX(t), Map.getTupleY(t));
 					if (b && p.distance(center) <= (World.DEFAULT-2)) {
-						System.out.println("DRONE " + p.x + "," + p.y + " IN RANGE OF " + center.x + "," + center.y + " [" + p.distance(center) + "]");
+						//System.out.println("DRONE " + p.x + "," + p.y + " IN RANGE OF " + center.x + "," + center.y + " [" + p.distance(center) + "]");
 						map.expandWorld(center);
 						b = false;
 					}

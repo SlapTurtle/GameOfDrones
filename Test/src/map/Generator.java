@@ -57,6 +57,12 @@ public class Generator extends Agent {
 				ExpDrone expdrone = new ExpDrone(map, p);
 				map.map.addAgent(expdrone);
 				putResource(drone, p);
+				
+//				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
+//				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
+//				ExpDrone expdrone2 = new ExpDrone(map, p2);
+//				map.map.addAgent(expdrone2);
+//				putResource(drone2, p2);
 			}
 		}
 		
