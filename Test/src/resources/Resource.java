@@ -15,7 +15,7 @@ public class Resource {
 	Map map;
 	UUID cluster;
 	public Point center;
-	public String type;
+	public static String type;
 	private static final String TYPE = "default";
 	public static boolean harvestable = false;
 	protected static boolean pathable = true;
@@ -29,6 +29,10 @@ public class Resource {
 		this.shape = evaluateShape(shape);
 		this.size = size;
 		//System.out.println("New cluster, ID=" + cluster.toString());
+	}
+	
+	public static String type() {
+		return type;
 	}
 	
 	public int evaluateShape(String shape) {

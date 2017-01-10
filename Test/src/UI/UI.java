@@ -1,3 +1,4 @@
+package UI;
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import map.*;
 public class UI extends Application {
     //Class containing grid (see below)
     private static GridDisplay gridDisplay;
+    protected Map map;
 
     //Class responsible for displaying the grid containing the Rectangles
     public class GridDisplay {
@@ -47,6 +49,7 @@ public class UI extends Application {
         public Base base;
         
         public Pane pane = new Pane();
+        public LinkedList<Drone> drones = new LinkedList<Drone>();
         public Group display = new Group(pane);
         
         public GridDisplay() {
@@ -78,7 +81,20 @@ public class UI extends Application {
         	Empty empty = new Empty(gridDisplay, x, y);
         	this.pane.getChildren().add(empty);
         }
+        public void moveDrone(int ID, int dir){
+        	for (int i = 0; i<gridDisplay.drones.size();i++){
+        		if (gridDisplay.drones.get(i).ID == ID){
+        			switch(dir){
+        			case 1: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x+1); break;
+        			case 2: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x-1); break;
+        			case 3: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y+1); break;
+        			case 4: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y-1); break;
+        			}
+        		}
+        	}
+        }
     }
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -94,15 +110,23 @@ public class UI extends Application {
         
         World world = new World(new Point(0,0), GridDisplay.INIT_GRID_SIZE);
 		Map map = new Map(world);
+		this.map = map;
+		map.UI = this.gridDisplay;
+		try {
+			Thread.currentThread().sleep(200);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		LinkedList<Tuple> items = map.RetrieveTuples();
 				
 		pane.getChildren().clear();
 		Base b = new Base(gridDisplay, 0, 0);
-        gridDisplay.base = b;
+		gridDisplay.base = b;
         pane.getChildren().add(b);
         pane.getChildren().add(canvas);
         pane.setStyle("-fx-background-color: black;");
-        gridDisplay.insetBlank(gridDisplay, 20, 20);
+        Drone d = new Drone(gridDisplay, 20, 20, 3);
+        pane.getChildren().add(d);
         for(Tuple t : items){
         	String str = t.getElementAt(String.class, 0);
         	//System.out.println(str);
@@ -113,9 +137,9 @@ public class UI extends Application {
 			case "GOLD": c = new Gold(gridDisplay, x, y); break;
 			case "TREE": c = new Tree(gridDisplay, x, y); break;
 			case "BASE": break;//base = nothing
-			case "WATER": c = new Drone(gridDisplay, x, y); break;
-			case "EXPDRONE" : c = new Drone(gridDisplay, x, y); break;
-			case "HARDRONE" : c = new Drone(gridDisplay, x, y); break;
+			case "WATER": c = new Drone(gridDisplay, x, y, 3); break;
+			case "EXPDRONE" : c = new Drone(gridDisplay, x, y, 1); break;
+			case "HARDRONE" : c = new Drone(gridDisplay, x, y, 2); break;
 			}
             if(c != null) {
             	//System.out.println(c.getClass().toString());
@@ -128,23 +152,24 @@ public class UI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show(); 
         
-        
         try {
-        	Thread.sleep(1000);
-        	Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, -1, 0)));
-			Thread.sleep(1000);
-			Platform.runLater(() -> gridDisplay.resizeGrid(69));
+        	//Thread.sleep(200);
+        	//Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, -1, 0)));
+			//Thread.sleep(1000);
+			//Platform.runLater(() -> gridDisplay.resizeGrid(69));
 			//Thread.sleep(2000);
 			//Platform.runLater(() -> gridDisplay.pane.getChildren().add(new Tree(gridDisplay, 1, 0)));
 			//Thread.sleep(2000);
 			//Platform.runLater(() -> gridDisplay.resizeGrid(89));
-			Thread.sleep(1000);
-			Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
-			Thread.sleep(1000);
-			Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
+			//Thread.sleep(500);
+			//Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
+			Thread.sleep(200);
+			//Platform.runLater(() -> gridDisplay.moveDrone(3, 2));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+        
+        map.run();
         
     }
 
@@ -180,11 +205,10 @@ public class UI extends Application {
     
     static abstract class CoordinateShape extends Circle {
     	public GridDisplay gridDisplay;
-    	public Point point;
     	
     	public CoordinateShape(GridDisplay gridDisplay, int x, int y, Paint c){
     		super(x,y,gridDisplay.tileSize/2,c);
-    		System.out.println(gridDisplay.tileSize/2);
+    		//System.out.println(gridDisplay.tileSize/2);
     		this.gridDisplay = gridDisplay;
 			setX(x);
     		setY(y);
@@ -209,6 +233,7 @@ public class UI extends Application {
     		//System.out.println("y:"+y+" - os:"+offset+" - z:"+zero+" - ny:"+newY);
     		setTranslateY(newY);
     	}
+    	
     }
     
     static class Base extends CoordinateShape {
@@ -220,8 +245,14 @@ public class UI extends Application {
 	
 	static class Drone extends CoordinateShape {
 		static final Paint c = Color.BLUE;		
-		public Drone(GridDisplay gridDisplay, int x, int y){
+		int ID;
+		Point point = new Point(0,0);
+		public Drone(GridDisplay gridDisplay, int x, int y, int ID){
 			super(gridDisplay, x, y, c);
+			point.x = x;
+			point.y = y;
+			this.ID = ID;
+			gridDisplay.drones.add(this);
 		}
 	}
 	

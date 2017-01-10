@@ -8,12 +8,12 @@ import org.cmg.resp.knowledge.Tuple;
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		Map map = new Map(new World(20), "hej");
+		Map map = new Map("hej");
 		Thread.sleep(100);
 		display(map);
 
 		int i = 0;
-		while(i < 100) {
+		while(i < 30) {
 			synchronized (map.render) {
 				map.render.notifyAll();
 			}
@@ -34,13 +34,14 @@ public class Main {
 			for (int x = 0; x < map.bounds[1]-map.bounds[0]; x++) {
 				char c;
 				boolean d = false;
-				for (Tuple t : drones) {
-					if (Map.getTupleX(t) == x && Map.getTupleY(t) == y) {
-						d = true;
-						System.out.print('D'  + " ");
-					}
-				}
-				if (!d && map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2))) != null) {
+//				for (Tuple t : drones) {
+//					if (Map.getTupleX(t) == x && Map.getTupleY(t) == y) {
+//						d = true;
+//						System.out.print('D'  + " ");
+//					}
+//				}
+				Tuple t = map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2)));
+				if (!d /*&& t != null*/) {
 					switch (N[x][y]) {
 					case 1: c = 'G'; break;
 					case 2: c = 'T'; break;

@@ -1,17 +1,18 @@
 package resources;
 
 import java.awt.Point;
+import java.util.Random;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
-
+import UI.UI.GridDisplay;
 import map.*;
 
 public class Drone extends Agent {
-	
+
 	Map map;
 	protected String TYPE;
 	Point position = new Point();
@@ -23,6 +24,7 @@ public class Drone extends Agent {
 	}
 	
 	protected void doRun() {
+		boolean b = false;
 		while(true) {
 			synchronized (map.render) {
 				try {
@@ -31,7 +33,12 @@ public class Drone extends Agent {
 					
 				}
 			}
-			move(0);			
+			if (b) {
+				move(1);
+			} else {
+				move(2);
+			}
+			b = !b;
 		}
 	}
 	
@@ -59,6 +66,9 @@ public class Drone extends Agent {
 			position.move(xy[0], xy[1]);
 			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
 			put(t2, Self.SELF);
+			
+			//map.UI.moveDrone(map.random.nextInt(10), 0);
+			
 			explore();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,11 +1,13 @@
 package map;
 
+import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
+import UI.UI.GridDisplay;
 import resources.Base;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -20,6 +22,7 @@ public class Map {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	
+	public GridDisplay UI;
 	public UUID ID;
 	public Node map;
 	VirtualPort port = new VirtualPort(8080);
@@ -30,6 +33,7 @@ public class Map {
 	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
+	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
 	
@@ -65,14 +69,14 @@ public class Map {
 	
 	public Map(String seed) {
 		Init(seed);
-		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0));
 		this.world.map = this;
 		Generate(world, seed);
 	}
 	
 	public Map() {
 		Init(null);
-		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0));
 		this.world.map = this;
 		Generate(world, seed);
 	}
@@ -92,8 +96,42 @@ public class Map {
 		}
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
+		if (world.center.equals(new Point(0,0))) {
+			addListeners(world);
+		}
+	}
+
+	public void addListeners(World world) {
+		
+		LinkedList<Point> dlist = new LinkedList<Point>();
+		for (droneListener d : listeners) {
+			dlist.add(d.center);
+		}
+		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
+			//System.out.println("p=" + p.x + ", " + p.y + "  listening on: " + world.center.x + ", " + world.center.y);
+			if (!p.equals(dlist)) {
+				droneListener a = new droneListener(this, p);
+				map.addAgent(a);
+				listeners.add(a);
+				System.out.println("Added listener at " + p.x + ", " + p.y);
+			}
+		}
 	}
 	
+	/** Expands the current playable map around a given point. World defaults to initial grid size.
+	 * @param*/
+	public void expandWorld(Point p) {
+		int newOffset = Math.min(world.X(), world.Y());
+		Point center = p;
+		World newWorld = new World(center, newOffset);
+		newWorld.map = this;
+		newWorld.adjustBounds();
+		Generate(newWorld, hasher.getExpansionHash(center));
+		
+		// TODO Add expansion in non-horizontal non-vertical directions
+		
+	}
+
 	/** Expands the current playable map in a given direction. World defaults to initial grid size.
 	 * @param*/
 	public void expandWorld(int direction) {
@@ -113,6 +151,21 @@ public class Map {
 		
 		// TODO Add expansion in non-horizontal non-vertical directions
 		
+	}
+	
+	public void run() {
+		int i = 0;
+		while(i < 100) {
+			synchronized (render) {
+				render.notifyAll();
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			i++;
+		}
 	}
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a linked list. */
@@ -144,7 +197,7 @@ public class Map {
 	
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
-		int[][] N = new int[world.X() + 2][world.Y() + 2];
+		int[][] N = new int[world.X()+1][world.Y()+1];
 		for (Tuple t : RetrieveTuples()) {
 			if (t.getElementAt(String.class, 0) == "GOLD") {
 				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;

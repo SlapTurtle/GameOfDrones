@@ -112,4 +112,13 @@ public class World {
 		return list;
 	}
 	
+	public static LinkedList<Point> getNeighbors(Point p, int dist) {
+		LinkedList<Point> list = new LinkedList<Point>();
+		for (int y = p.y-dist; y <= p.y+dist; y+=dist)
+			for (int x = p.x-dist; x <= p.x+dist; x+=dist) 
+				if (!(x == p.x && y == p.y))
+					list.add(new Point(x,y));
+		return list;
+	}
+	
 }
