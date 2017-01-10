@@ -24,6 +24,12 @@ public class Drone extends Agent {
 	}
 	
 	protected void doRun() {
+		try {
+			explore();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		boolean b = false;
 		while(true) {
 			synchronized (map.render) {

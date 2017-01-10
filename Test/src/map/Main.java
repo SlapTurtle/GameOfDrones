@@ -8,7 +8,7 @@ import org.cmg.resp.knowledge.Tuple;
 public class Main {
 
 	public static void main(String[] args) throws InterruptedException {
-		Map map = new Map("hej");
+		Map map = new Map();
 		Thread.sleep(100);
 		display(map);
 
@@ -40,15 +40,16 @@ public class Main {
 //						System.out.print('D'  + " ");
 //					}
 //				}
-				Tuple t = map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2)));
+				//Tuple t = map.map.queryp(new Template(new ActualTemplateField(x-map.world.X()/2), new ActualTemplateField(y-map.world.Y()/2)));
 				if (!d /*&& t != null*/) {
 					switch (N[x][y]) {
+					case -1: c = '.'; break;
 					case 1: c = 'G'; break;
 					case 2: c = 'T'; break;
 					case 3: c = 'B'; break;
 					case 4: c = 'W'; break;
 					case 5: c = 'D'; break;
-					default: c = '.'; break;
+					default: c = 'X'; break;
 					}
 				} else {
 					c = 'X';

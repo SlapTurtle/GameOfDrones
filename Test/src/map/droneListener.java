@@ -32,7 +32,6 @@ public class droneListener extends Agent {
 			if (drones != null) {
 				for (Tuple t : drones) {
 					Point p = new Point(Map.getTupleX(t), Map.getTupleY(t));
-					//System.out.println("??DRONE " + p.x + "," + p.y + " IN RANGE OF " + center.x + "," + center.y + "[" + p.distance(center) + "]");
 					if (b && p.distance(center) <= (World.DEFAULT-2)) {
 						System.out.println("DRONE " + p.x + "," + p.y + " IN RANGE OF " + center.x + "," + center.y + " [" + p.distance(center) + "]");
 						map.expandWorld(center);
@@ -40,21 +39,6 @@ public class droneListener extends Agent {
 					}
 				}
 			}
-		
-//			Thread.currentThread().sleep(100);
-//			LinkedList<Tuple> drones = map.RetrieveTuples(ExplorationDrone.type());
-//			Thread.currentThread().sleep(300);
-//			if (!drones.isEmpty()) {
-//				for (Tuple t : drones) {
-//					Point p = new Point(Map.getTupleX(t), Map.getTupleY(t));
-//					if (b && p.distance(center) <= World.DEFAULT) {
-//						map.expandWorld(0);
-//						b = false;
-//					}
-//					
-//					
-//				}
-//			}
 			
 		}
 		

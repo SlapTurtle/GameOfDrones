@@ -2,6 +2,7 @@ package map;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
@@ -207,19 +208,32 @@ public class Map {
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
 		int[][] N = new int[world.X()+1][world.Y()+1];
+		
+		for (int x = 0; x < world.X()+1; x++) {
+			for (int y = 0; y < world.Y()+1; y++) {
+				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
+				if (t != null) {
+					System.out.println("Found match");
+					N[x][y] = -1;
+				}
+			}
+		}
+
 		for (Tuple t : RetrieveTuples()) {
-			if (t.getElementAt(String.class, 0) == "GOLD") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
-			} else if (t.getElementAt(String.class, 0) == "TREE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
-			} else if (t.getElementAt(String.class, 0) == "BASE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
-			} else if (t.getElementAt(String.class, 0) == "WATER") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
-			} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
-			} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
+			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == -1) {
+				if (t.getElementAt(String.class, 0) == "GOLD") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
+				} else if (t.getElementAt(String.class, 0) == "TREE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
+				} else if (t.getElementAt(String.class, 0) == "BASE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
+				} else if (t.getElementAt(String.class, 0) == "WATER") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
+				} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
+				} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
+				}
 			}
 		}
 		return N;
