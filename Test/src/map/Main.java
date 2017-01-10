@@ -13,7 +13,7 @@ public class Main {
 		display(map);
 
 		int i = 0;
-		while(i < 30) {
+		while(i < 200) {
 			synchronized (map.render) {
 				map.render.notifyAll();
 			}

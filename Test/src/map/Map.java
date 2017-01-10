@@ -96,9 +96,7 @@ public class Map {
 		}
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
-		if (world.center.equals(new Point(0,0))) {
-			addListeners(world);
-		}
+		addListeners(world);
 	}
 
 	public void addListeners(World world) {
@@ -108,12 +106,23 @@ public class Map {
 			dlist.add(d.center);
 		}
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
-			//System.out.println("p=" + p.x + ", " + p.y + "  listening on: " + world.center.x + ", " + world.center.y);
-			if (!p.equals(dlist)) {
+			if (world.center.equals(new Point(0,0))) {
 				droneListener a = new droneListener(this, p);
 				map.addAgent(a);
 				listeners.add(a);
 				System.out.println("Added listener at " + p.x + ", " + p.y);
+			} else if (!p.equals(new Point(0,0))) {
+				boolean exists = false;
+				for (Point dp : dlist) {
+					if (p.x == dp.x && p.y == dp.y)
+						exists = true;
+				}
+				if (!exists) {
+					droneListener a = new droneListener(this, p);
+					map.addAgent(a);
+					listeners.add(a);
+					System.out.println("Added listener at " + p.x + ", " + p.y);
+				}
 			}
 		}
 	}
