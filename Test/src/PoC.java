@@ -29,20 +29,23 @@ public class PoC {
 	// The main method will create some nodes, tuple spaces and agents
 	public static void main(String[] argv) {
 		// We create here a single node
-		Node node = new Node("goD",ts);
+		//Node node = new Node("goD",ts);
 		
 		//We initialize the board and print it 
 		//init
-		init(ts);
+		//init(ts);
+		
+		Map map = new Map();
+	
 		
 		//We create a single drone
 		Agent drone = new Drone("drone");
 		
 		// We add agent to the node
-		node.addAgent(drone);
+		map.map.addAgent(drone);
 		
 		// We start the node
-		node.start();
+		//Node.start();
 	}
 	
 	private static void init2 (TupleSpace ts){
@@ -212,40 +215,9 @@ public class PoC {
 		protected void doRun() {
 			Scanner scanner=new Scanner(System.in);
 			
-			
 			explore();
 			printDevineBoard(ts);
-			
-<<<<<<< HEAD
-			scanner.nextLine();
-			
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			scanner.nextLine();
-			move2();
-			explore();
-			printDevineBoard(ts);
-			
-			System.exit(0);
-=======
+
 			int dir = scanner.nextInt();
 			while(true){
 				moveMultipleDirecitons(dir);
@@ -253,7 +225,7 @@ public class PoC {
 				printDevineBoard(ts);
 				dir = scanner.nextInt();
 			}
->>>>>>> refs/remotes/origin/joepadde
+
 		}
 		
 		private void explore () {

@@ -14,6 +14,7 @@ import org.cmg.resp.topology.VirtualPortAddress;
 import java.awt.Point;
 import java.util.UUID;
 
+/** Class representing areas in the Map Tublesplace. */
 public class World {
 	
 	UUID ID = UUID.randomUUID();
@@ -34,6 +35,12 @@ public class World {
 		Init(center);
 	}
 	
+	public World(int n) {
+		this.x = n;
+		this.y = n;
+		Init(new Point(0,0));
+	}
+	
 	public World(Point center, int n) {
 		this.x = set(n);
 		this.y = set(n);
@@ -49,7 +56,7 @@ public class World {
 	
 	public void Init(Point center) {
 		this.center = center;
-		System.out.println("Center is " + center.x + ", " + center.y);
+		//System.out.println("Center is " + center.x + ", " + center.y);
 		
 //		if (!center.equals(new Point(0,0))) {
 //			System.out.println("Center is " + center.x + ", " + center.y);
@@ -58,6 +65,7 @@ public class World {
 //		}
 	}
 	
+	/** Adjusts the bounds of the Map to contain the World. */
 	public void adjustBounds() {
 		if (center.getX() < map.center.getX()) {
 			map.bounds[0] -= x;

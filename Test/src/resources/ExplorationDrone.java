@@ -13,3 +13,4 @@ public class ExplorationDrone extends Resource {
 		pathable = false;
 	}
 }
+

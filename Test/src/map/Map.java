@@ -23,6 +23,9 @@ import javax.swing.plaf.synth.SynthComboBoxUI;
 
 public class Map {
 	
+	public static final int EXP_HASHES = 10;
+	public static final int EXP_HASHLENGTH = 16;
+	
 	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
@@ -37,15 +40,22 @@ public class Map {
 	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
+	protected Hasher hasher;
+	protected String[] hash = new String[EXP_HASHES];
 	
+	public Object render = new Object();
 	Object syncRetrieval = new Object();
 	
+	/** Initialization of the Map object. Must be called upon construction.
+	 * @param*/
 	public void Init(String seed) {
 		ID = UUID.randomUUID();
 		map = new Node(ID.toString(), new TupleSpace());
 		//map.addAgent(agent);
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
+		hasher = new Hasher(this, random, this.seed);
+		hash = hasher.expansionHashes(EXP_HASHLENGTH);
 		map.start();
 	}
 	
@@ -53,33 +63,35 @@ public class Map {
 		Init(seed);
 		this.world = world;
 		this.world.map = this;
-		Generate(world);
+		Generate(world, seed);
 	}
 	
 	public Map(World world) {
 		Init(null);
 		this.world = world;
 		this.world.map = this;
-		Generate(world);
+		Generate(world, seed);
 	}
 	
 	public Map(String seed) {
 		Init(seed);
 		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
 		this.world.map = this;
-		Generate(world);
+		Generate(world, seed);
 	}
 	
 	public Map() {
 		Init(null);
 		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
 		this.world.map = this;
-		Generate(world);
+		Generate(world, seed);
 	}
 	
-	public void Generate(World world) {
-		System.out.println("New field size x=" + world.X() + ", y=" + world.Y() + " initialized");
-		System.out.println("Seed: " + seed);
+	/** Generates a given World using the provided seed as a String.
+	 * @param*/
+	public void Generate(World world, String seed) {
+		//System.out.println("New field size x=" + world.X() + ", y=" + world.Y() + " initialized");
+		System.out.println("\nSeed: " + seed);
 		
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
@@ -89,21 +101,20 @@ public class Map {
 			bounds[1] = world.X() / 2;
 			bounds[2] = -world.Y() / 2;
 			bounds[3] = world.Y() / 2;
-			
-//			System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
 		}
 		
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
 	}
 	
+	/** Expands the current playable map in a given direction. World defaults to initial grid size.
+	 * @param*/
 	public void expandWorld(int direction) {
 		
 //		Bulldozer a = new Bulldozer(this, "GOLD");
 //		map.addAgent(a);
 		
-		
-		int newOffset = World.DEFAULT;
+		int newOffset = Math.min(world.X(), world.Y());
 		int offsetX = 0, offsetY = 0;
 		
 		switch (direction) {
@@ -112,12 +123,17 @@ public class Map {
 		case 2: offsetY = bounds[2] - newOffset; break;
 		case 3: offsetY = bounds[3] + newOffset; break;
 		}
-		World newWorld = new World(new Point(offsetX/2, offsetY/2), newOffset);
+		Point center = new Point(offsetX/2, offsetY/2);
+		World newWorld = new World(center, newOffset);
 		newWorld.map = this;
 		newWorld.adjustBounds();
-		Generate(newWorld);
+		Generate(newWorld, hasher.getExpansionHash(center));
+		
+		// TODO Add expansion in non-horizontal non-vertical directions
+		
 	}
 	
+	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a linked list. */
 	public LinkedList<Tuple> RetrieveTuples() {
 		Retriever retriever = new Retriever(this);
 		map.addAgent(retriever);
@@ -131,18 +147,32 @@ public class Map {
 		}
 		
 		return retriever.Tuples;
-		
 	}
 	
+	public LinkedList<Tuple> RetrieveTuples(String TYPE) {
+		Retriever retriever = new Retriever(this, TYPE);
+		map.addAgent(retriever);
+		
+		synchronized (syncRetrieval) {
+			try {
+				syncRetrieval.wait();
+			} catch (InterruptedException e) {
+				
+			}
+		}
+		
+		return retriever.Tuples;
+	}
+	
+	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
 		
-		int[][] N = new int[world.X() + 4][world.Y() + 4];
+		int[][] N = new int[world.X() + 2][world.Y() + 2];
 		
-		System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
-		System.out.println("Retrieving Tuples for display");
+		//System.out.println("Bounds: " + bounds[0] + ", " + bounds[1] + ", " + bounds[2] + ", " + bounds[3]);
+		//System.out.println("Retrieving Tuples for display");
 		
 		for (Tuple t : RetrieveTuples()) {
-			//System.out.println("retrieving: " + (getTupleX(t)) + ", " + (getTupleY(t)));
 			if (t.getElementAt(String.class, 0) == "GOLD") {
 				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
 			} else if (t.getElementAt(String.class, 0) == "TREE") {
@@ -161,11 +191,11 @@ public class Map {
 		return N;
 	}
 	
-	public int getTupleX(Tuple t) {
+	public static int getTupleX(Tuple t) {
 		return t.getElementAt(Integer.class, 1);
 	}
 	
-	public int getTupleY(Tuple t) {
+	public static int getTupleY(Tuple t) {
 		return t.getElementAt(Integer.class, 2);
 	}
 	
@@ -176,6 +206,7 @@ public class Map {
 	
 }
 
+/** Agent for retrieving Tuples from the Map Tublespace. */
 class Retriever extends Agent {
 	
 	Map map;
@@ -208,6 +239,7 @@ class Retriever extends Agent {
 	
 }
 
+/** Legacy Agent used for deletion of Tuples in the Map Tublespace. */
 class Bulldozer extends Agent {
 	
 	Map map;

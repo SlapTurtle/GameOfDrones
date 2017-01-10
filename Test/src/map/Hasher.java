@@ -3,6 +3,7 @@ package map;
 import java.awt.Point;
 import java.util.Random;
 
+/** Class responsible for hash functions associated with world expansion. */
 public class Hasher {
 
 	Map map;
@@ -30,8 +31,11 @@ public class Hasher {
 	
 	public String getExpansionHash(Point center) {
 		int index = Math.abs(h(seed.hashCode(), center.x, 11, center.y, 7, map.hash.length));
+//		System.out.println("i=" + index);
 		int newHash = -1*h(Math.abs(map.hash[index].hashCode()), center.y-center.x, index+3, 2*center.y-1, seed.hashCode(), 0);
+//		System.out.println("h(" + index + ") = " + newHash);
 		Random r = new Random(newHash);
+//		System.out.println("R(h(" + index + ")) = " + generateHash(r, Map.EXP_HASHLENGTH));
 		return generateHash(r, Map.EXP_HASHLENGTH);
 	}
 	

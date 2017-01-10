@@ -9,8 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.awt.Point;
 
-public class Resource {
 
+/** Base class representing all resources and their properties. */
+public class Resource {
 	Map map;
 	UUID cluster;
 	public Point center;
@@ -48,6 +49,7 @@ public class Resource {
 		return list;
 	}
 	
+	/** Gets all points associated with this Resource. */
 	public List<Point> getPoints() {
 		
 		List<Point> list = new LinkedList<Point>();
