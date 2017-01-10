@@ -24,6 +24,11 @@ public class Position {
 		this.x = x;
 	}
 	
+	public boolean equalsX(int newX){
+		return (this.x==newX);
+	}
 	
-	
+	public boolean equalsY(int newY){
+		return (this.y==newY);
+	}
 }
