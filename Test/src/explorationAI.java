@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /*
  *  @Author: Benjamin Lam, s153486
  */
@@ -14,13 +14,13 @@ public class explorationAI {
 		int i=arr[0];
 		int j=arr[1];
 		
-		radius=5;
+		radius=6;
 	}
 	
 	public static void main(String [] args){
-		int radius=5;
-		Position d = new Position(5,0);
-		Position[] posArr = new Position[] {new Position(5,1),new Position(4,0)};
+		int radius=6;
+		Position d = new Position(6,0);
+		Position[] posArr = getFieldsToCheck(d);
 		Position p1 = new Position(5,1); 
 		Position p2 = new Position(4,0);
 		int dir = 0;
@@ -29,14 +29,14 @@ public class explorationAI {
 		System.out.println("up" + p1);
 		System.out.println("left" + p2);
 		
-		for(int i = 0; i<20; i++){
+		for(int i = 0; i<48; i++){
 			posArr = getFieldsToCheck(d);
-			dir = getDirFromRadius(posArr[0],posArr[1], radius);
+			dir = getDirFromRadius(posArr[1],posArr[0], radius);
 			System.out.println(dir);
 			moveDrone(d,dir);
 			System.out.println("d" + d);
-			System.out.println("up" + posArr[0]);
-			System.out.println("left" + posArr[1]);
+			System.out.println("up" + posArr[1]);
+			System.out.println("left" + posArr[0]);
 		}
 		
 	}
@@ -64,15 +64,39 @@ public class explorationAI {
 	 * @return
 	 */
 	private static Position moveDrone(Position d, int dir){
-		if(dir<0){
-			d.setX(d.getX()-1);
-		}
-		else{
-			d.setY(d.getY()+1);
+		int q = getQuadrant(d);
+		switch(q){
+			case 1 : if(dir<0) interQuadrantMoving(d,d.getX()-1,d.getY());
+					 else      interQuadrantMoving(d,d.getX(),d.getY()+1);
+					 break;
+			
+			case 2 : if(dir<0) interQuadrantMoving(d,d.getX(),d.getY()-1);
+					 else      interQuadrantMoving(d,d.getX()-1,d.getY());
+					 break;
+			case 3 : if(dir<0) interQuadrantMoving(d,d.getX()+1,d.getY());
+					 else      interQuadrantMoving(d,d.getX(),d.getY()-1);
+					 break;
+			case 4 : if(dir<0) interQuadrantMoving(d,d.getX(),d.getY()+1);
+					 else      interQuadrantMoving(d,d.getX()+1,d.getY());
+			         break;
+			default: interQuadrantMoving(d,d.getX(),d.getY());
+					 break;
 		}		
 		return d; 
 	}
 
+	/**
+	 * help function for moveDrone
+	 * @param p
+	 * @param x
+	 * @param y
+	 * @return Position
+	 */
+	private static Position interQuadrantMoving(Position p, int x, int y){
+		p.setX(x);
+		p.setY(y);
+		return p;
+	}
 	
 	/**
 	 * Gets the direction using {@link #pythagoras(Position)}method
@@ -132,15 +156,15 @@ public class explorationAI {
 					 arr[1]= new Position(p.getX(), p.getY()+1);
 					 break;
 			
-			case 2 : arr[0]= new Position(p.getX()-1, p.getY());
+			case 2 : arr[0]= new Position(p.getX(), p.getY()-1);
+			 		 arr[1]= new Position(p.getX()-1, p.getY());
+					 break;
+			case 3 : arr[0]= new Position(p.getX()+1, p.getY());
 			 		 arr[1]= new Position(p.getX(), p.getY()-1);
 					 break;
-			case 3 : arr[0]= new Position(p.getX()-1, p.getY());
-			 		 arr[1]= new Position(p.getX(), p.getY()+1);
-					 break;
 			
-			case 4 : arr[0]= new Position(p.getX()-1, p.getY());
-			 		 arr[1]= new Position(p.getX(), p.getY()+1);
+			case 4 : arr[0]= new Position(p.getX(), p.getY()+1);
+			 		 arr[1]= new Position(p.getX()+1, p.getY());
 					 break;
 	
 			default :
@@ -153,27 +177,10 @@ public class explorationAI {
 	private static int getQuadrant(Position p) {
 		int q=0;
 		
-		if(p.getX()>0){
-			// x>0 and y>0 --> 1.st q
-			if(p.getY()>0){
-				q=1;
-			}
-			// x>0 and y<0 --> 4.th q
-			if(p.getY()<0){
-				q=4;
-			}
-		}
-		//x<0
-		else{
-			// x<0 and y>0 --> 2.sn q
-			if(p.getY()>0){
-				q=2;
-			}
-			// x<0 and y<0 --> 3.rd q
-			if(p.getY()<0){
-				q=3;
-			}
-		}
+		if(p.getX()>0 && p.getY()>=0) q=1;
+		else if(p.getX()<=0 && p.getY()>0) q=2;
+		else if(p.getX()<0 && p.getY()<=0) q=3;
+		else if(p.getX()>=0 && p.getY()<0) q=4;
 		
 		return q;
 	}
@@ -182,103 +189,3 @@ public class explorationAI {
 	
 	
 }
-=======
-///*
-// *  @Author: Benjamin Lam, s153486
-// */
-//public class explorationAI {
-//	
-//	int radius;
-//
-//	public explorationAI(int r){
-//		this.radius=r;
-//		
-//		//gets closest unknown point.
-//		int[] arr= getPointInUnknown();
-//		int i=arr[0];
-//		int j=arr[1];
-//		
-//		Position p = new Position(5,5); 
-//		
-//		findNextPoint(p);
-//		
-//	}
-//	
-//	private void findNextPoint(Position p) {
-//		// init of hypotenuse
-//		int hyp;
-//		//find hypotenus by using Pythagoras
-//		hyp = getHypotenuse(p);
-//		
-//		//check if go up or go left
-//		checkDirection(hyp, this.radius);
-//		
-//	}
-//
-//
-//	private int getDirection(Position p, int radius){
-//		int r;
-//		
-//		
-//		
-//		return r;
-//	}
-//	
-//	private int pythagoras(Position p){
-//		int a=p.getX();
-//		int b=p.getY();
-//		
-//		r= (int) Math.sqrt(Math.pow(a,2)+Math.pow(b, 2));
-//	}
-//	
-//	
-//	
-//	private int[] getPointInUnknown(){
-//		int[] a = new int[2];
-//		return a;
-//	}
-//	/*private Position[] getFieldsToCheck(int dir, Position p){
-//		Position[] arr = new Position[2];
-//		switch(dir){
-//			case 0 : arr[0]= new Position(p.getX()-1, p.getY());
-//					 arr[1]= new Position(p.getX(), p.getY()+1);
-//					 break;
-//			
-//			case 1 : arr[0]= new Position(p.getX()-1, p.getY());
-//			 		 arr[1]= new Position(p.getX(), p.getY()-1);
-//					 break;
-//			case 2 : arr[0]= new Position(p.getX()-1, p.getY());
-//			 		 arr[1]= new Position(p.getX(), p.getY()+1);
-//					 break;
-//			
-//			case 3 : arr[0]= new Position(p.getX()-1, p.getY());
-//			 		 arr[1]= new Position(p.getX(), p.getY()+1);
-//					 break;
-//	
-//			default :
-//					break;
-//		}
-//		
-//		return arr;
-//	}
-//	*/
-//
-//	
-//	
-//
-//	private int getDir(int i, int j){
-//		int dir=0;
-//		
-//		//switch()
-//		
-//		return dir;
-//	}
-//	
-//	// TODO intital move process. Move drone to this destination. Use move in a specific direction.
-//	private void initMove(int i, int j) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//}
->>>>>>> refs/remotes/origin/joepadde
