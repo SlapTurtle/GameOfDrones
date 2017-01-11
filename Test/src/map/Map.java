@@ -200,6 +200,21 @@ public class Map {
 		return retriever.Tuples;
 	}
 
+	public LinkedList<Point> RetrievePathableNeighbors(Point p) {
+		NeighborRetriever retriever = new NeighborRetriever(this, p);
+		map.addAgent(retriever);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LinkedList<Point> list = retriever.neighbors;
+		System.out.println("FOUND " + list.size() + " PATHABLE NEIGHBORS");
+		return list;
+	}
+	
+
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public String[][] Retrieve(int size) {
 		//System.out.println("\nRendering Map...\n");

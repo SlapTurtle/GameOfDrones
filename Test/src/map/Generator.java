@@ -87,7 +87,6 @@ public class Generator extends Agent {
 				populate(Water.class, "polygon", j);
 		}
 
-		
 		/* ROCK */
 		
 		for (int j = 2; j >= 0; j--) {

@@ -42,6 +42,9 @@ public class Drone extends Agent {
 					
 				}
 			}
+			
+			map.RetrievePathableNeighbors(position);
+			
 			if (dice.roll(0.4)) {
 				move(dir);
 			} else {
