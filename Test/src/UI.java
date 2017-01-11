@@ -1,4 +1,4 @@
-import java.awt.Point;1
+import java.awt.Point;
 import java.util.LinkedList;
 import java.util.UUID;
 
