@@ -19,7 +19,7 @@ class Retriever extends Agent {
 		this.map = map;
 		this.type = type;
 	}
-	
+
 	public Retriever(Map map) {
 		super(UUID.randomUUID().toString());
 		this.map = map;		
@@ -31,7 +31,7 @@ class Retriever extends Agent {
 		Tuples = queryAll(T);
 		synchronized (map.syncRetrieval) {
 			map.syncRetrieval.notifyAll();
-		}	
+		}
 	}
 }
 

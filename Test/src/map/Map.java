@@ -1,11 +1,13 @@
 package map;
 
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
+import UI.UI.GridDisplay;
 import resources.Base;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -20,6 +22,7 @@ public class Map {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	
+	public GridDisplay UI;
 	public UUID ID;
 	public Node map;
 	VirtualPort port = new VirtualPort(8080);
@@ -30,6 +33,7 @@ public class Map {
 	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
+	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
 	
@@ -46,9 +50,10 @@ public class Map {
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
 		hash = hasher.expansionHashes(EXP_HASHLENGTH);
+		System.out.println("\nSeed: " + this.seed);
 		map.start();
 	}
-	
+
 	public Map(World world, String seed) {
 		Init(seed);
 		this.world = world;
@@ -65,14 +70,14 @@ public class Map {
 	
 	public Map(String seed) {
 		Init(seed);
-		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0));
 		this.world.map = this;
 		Generate(world, seed);
 	}
 	
 	public Map() {
 		Init(null);
-		this.world = new World(new Point(0,0), random.nextInt(70) + 30);
+		this.world = new World(new Point(0,0));
 		this.world.map = this;
 		Generate(world, seed);
 	}
@@ -80,7 +85,7 @@ public class Map {
 	/** Generates a given World using the provided seed as a String.
 	 * @param*/
 	public void Generate(World world, String seed) {
-		System.out.println("\nSeed: " + seed);
+		//System.out.println("\nSeed: " + seed);
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
 			center = new Point(0,0);
@@ -92,27 +97,76 @@ public class Map {
 		}
 		generator = new Generator(this, ID, world, seed);
 		map.addAgent(generator);
+		addListeners(world);
+	}
+
+	public void addListeners(World world) {
+		LinkedList<Point> dlist = new LinkedList<Point>();
+		for (droneListener d : listeners) {
+			dlist.add(d.center);
+		}
+		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
+			if (world.center.equals(new Point(0,0))) {
+				droneListener a = new droneListener(this, p);
+				map.addAgent(a);
+				listeners.add(a);
+			} else if (!p.equals(new Point(0,0))) {
+				boolean exists = false;
+				for (Point dp : dlist) {
+					if (p.x == dp.x && p.y == dp.y)
+						exists = true;
+				}
+				if (!exists) {
+					droneListener a = new droneListener(this, p);
+					map.addAgent(a);
+					listeners.add(a);
+				}
+			}
+		}
 	}
 	
+	/** Expands the current playable map around a given point. World defaults to initial grid size.
+	 * @param*/
+	public void expandWorld(Point p) {
+		int newOffset = Math.min(world.X(), world.Y());
+		Point center = p;
+		World newWorld = new World(center, newOffset);
+		newWorld.map = this;
+		newWorld.adjustBounds();
+		Generate(newWorld, hasher.getExpansionHash(center));
+	}
+
 	/** Expands the current playable map in a given direction. World defaults to initial grid size.
 	 * @param*/
 	public void expandWorld(int direction) {
 		int newOffset = Math.min(world.X(), world.Y());
 		int offsetX = 0, offsetY = 0;
 		switch (direction) {
-		case 0: offsetX = bounds[0] - newOffset; break;
-		case 1: offsetX = bounds[1] + newOffset; break;
-		case 2: offsetY = bounds[2] - newOffset; break;
-		case 3: offsetY = bounds[3] + newOffset; break;
+			case 0: offsetX = bounds[0] - newOffset; break;
+			case 1: offsetX = bounds[1] + newOffset; break;
+			case 2: offsetY = bounds[2] - newOffset; break;
+			case 3: offsetY = bounds[3] + newOffset; break;
 		}
 		Point center = new Point(offsetX/2, offsetY/2);
 		World newWorld = new World(center, newOffset);
 		newWorld.map = this;
 		newWorld.adjustBounds();
-		Generate(newWorld, hasher.getExpansionHash(center));
-		
-		// TODO Add expansion in non-horizontal non-vertical directions
-		
+		Generate(newWorld, hasher.getExpansionHash(center));	
+	}
+	
+	public void run() {
+		int i = 0;
+		while(i < 100) {
+			synchronized (render) {
+				render.notifyAll();
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			i++;
+		}
 	}
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a linked list. */
@@ -121,7 +175,7 @@ public class Map {
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
-				syncRetrieval.wait();
+				syncRetrieval.wait(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -134,7 +188,7 @@ public class Map {
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
-				syncRetrieval.wait();
+				syncRetrieval.wait(100);
 			} catch (InterruptedException e) {
 				
 			}
@@ -144,20 +198,34 @@ public class Map {
 	
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
-		int[][] N = new int[world.X() + 2][world.Y() + 2];
-		for (Tuple t : RetrieveTuples()) {
-			if (t.getElementAt(String.class, 0) == "GOLD") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
-			} else if (t.getElementAt(String.class, 0) == "TREE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
-			} else if (t.getElementAt(String.class, 0) == "BASE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
-			} else if (t.getElementAt(String.class, 0) == "WATER") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
-			} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
-			} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
-				N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
+		System.out.println("\nRendering Map...\n");
+		int[][] N = new int[world.X()+1][world.Y()+1];
+		int TRIGGER = -1;
+		for (int x = 0; x < world.X()+1; x++) {
+//			TRIGGER = 0; if (x == 0) { break; };
+			for (int y = 0; y < world.Y()+1; y++) {
+				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
+				if (t != null) {
+					N[x][y] = TRIGGER;
+				}
+			}
+		}
+		LinkedList<Tuple> list = RetrieveTuples();
+		for (Tuple t : list) {
+			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == TRIGGER) {
+				if (t.getElementAt(String.class, 0) == "GOLD") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
+				} else if (t.getElementAt(String.class, 0) == "TREE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
+				} else if (t.getElementAt(String.class, 0) == "BASE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
+				} else if (t.getElementAt(String.class, 0) == "WATER") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
+				} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
+				} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
+					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
+				}
 			}
 		}
 		return N;

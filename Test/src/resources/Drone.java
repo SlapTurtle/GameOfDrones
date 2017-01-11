@@ -1,18 +1,17 @@
 package resources;
 
 import java.awt.Point;
+import java.util.Random;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
-
 import map.*;
 import util.Position;
 
 public class Drone extends Agent {
-	
 	protected Map map;
 	protected String TYPE;
 	protected Position position;
@@ -22,8 +21,17 @@ public class Drone extends Agent {
 		this.map = map;
 		this.position = position;
 	}
-	
+
 	protected void doRun() {
+		Random r = new Random();
+		Dice dice = new Dice(r);
+		int dir = r.nextInt(4);
+		try {
+			explore();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while(true) {
 			synchronized (map.render) {
 				try {
@@ -32,7 +40,11 @@ public class Drone extends Agent {
 					
 				}
 			}
-			move(0);			
+			if (dice.roll(0.4)) {
+				move(dir);
+			} else {
+				move(r.nextInt(4));
+			}
 		}
 	}
 	
@@ -60,6 +72,9 @@ public class Drone extends Agent {
 			position.move(xy[0], xy[1]);
 			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
 			put(t2, Self.SELF);
+			
+			//map.UI.moveDrone(map.random.nextInt(10), 0);
+			
 			explore();
 		} catch (Exception e) {
 			e.printStackTrace();

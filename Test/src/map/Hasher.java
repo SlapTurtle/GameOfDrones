@@ -15,20 +15,20 @@ public class Hasher {
 		this.random = random;
 		this.seed = seed;
 	}
-	
+
 	public String[] expansionHashes(int length) {
-		System.out.println("Generating hashes:");
+		//System.out.println("Generating hashes:");
 		String[] hash = new String[length];
 		for (int i = 0; i < length; i++) {
 			hash[i] = generateHash(random, length);
-			System.out.print("h" + hash[i] + ", ");
+			//System.out.print("h" + hash[i] + ", ");
 			if (i % 3 == 2) {
-				System.out.println();
+				//System.out.println();
 			}
 		}
 		return hash;
 	}
-	
+
 	public String getExpansionHash(Point center) {
 		int index = Math.abs(h(seed.hashCode(), center.x, 11, center.y, 7, map.hash.length));
 //		System.out.println("i=" + index);
