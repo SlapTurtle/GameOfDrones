@@ -13,13 +13,16 @@ import map.*;
 public class Drone extends Agent {
 
 	Map map;
-	protected String TYPE;
+	public String TYPE;
+	public UUID ID;
 	Point position = new Point();
 	
 	public Drone(Map map, Point position) {
 		super(UUID.randomUUID().toString());
+		this.ID = UUID.fromString(this.name);
 		this.map = map;
 		this.position = position;
+		this.map.drones.add(this);
 	}
 
 	protected void doRun() {
@@ -28,9 +31,8 @@ public class Drone extends Agent {
 		int dir = r.nextInt(4);
 		try {
 			explore();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		while(true) {
 			synchronized (map.render) {
@@ -59,7 +61,7 @@ public class Drone extends Agent {
 		int[] xy = getDirection(dir, position.x, position.y);
 		move(new Point(xy[0], xy[1]));
 	}
-	
+
 	private void move(Point p) {
 		if (p.distance(position) > 1.21)
 			return;
@@ -74,6 +76,8 @@ public class Drone extends Agent {
 			put(t2, Self.SELF);
 			
 			//map.UI.moveDrone(map.random.nextInt(10), 0);
+			
+			map.UI.move();
 			
 			explore();
 		} catch (Exception e) {

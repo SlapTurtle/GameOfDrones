@@ -9,13 +9,13 @@ public class Main {
 		Thread.sleep(100);
 		display(map);
 
-		while(true) {
-			synchronized (map.render) {
-				map.render.notifyAll();
-			}
-			Thread.sleep(DELAY);
-			display(map);
-		}
+//		while(true) {
+//			synchronized (map.render) {
+//				map.render.notifyAll();
+//			}
+//			Thread.sleep(DELAY);
+//			display(map);
+//		}
 	}
 
 	/** Displays a given map's current state to the console.
@@ -34,6 +34,7 @@ public class Main {
 				case 3:  c = 'B'; break;
 				case 4:  c = 'W'; break;
 				case 5:  c = 'D'; break;
+				case 6:  c = 'R'; break;
 				default: c = ' '; break;
 				}
 				System.out.print(c + " ");

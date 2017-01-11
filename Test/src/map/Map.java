@@ -8,7 +8,10 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
 import UI.UI.GridDisplay;
+import UI.UIcontrol;
 import resources.Base;
+import resources.Drone;
+
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Random;
@@ -22,7 +25,7 @@ public class Map {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	
-	public GridDisplay UI;
+	public UIcontrol UI;
 	public UUID ID;
 	public Node map;
 	VirtualPort port = new VirtualPort(8080);
@@ -33,6 +36,7 @@ public class Map {
 	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
+	public LinkedList<Drone> drones = new LinkedList<Drone>();
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
@@ -199,10 +203,10 @@ public class Map {
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public int[][] Retrieve() {
 		System.out.println("\nRendering Map...\n");
-		int[][] N = new int[world.X()+1][world.Y()+1];
+		int[][] N = new int[bounds[1]-bounds[0]+1][bounds[3]-bounds[2]+1];
 		int TRIGGER = -1;
 		for (int x = 0; x < world.X()+1; x++) {
-//			TRIGGER = 0; if (x == 0) { break; };
+			TRIGGER = 0; if (x == 0) { break; };
 			for (int y = 0; y < world.Y()+1; y++) {
 				Tuple t = map.queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
 				if (t != null) {

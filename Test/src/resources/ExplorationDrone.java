@@ -6,8 +6,6 @@ import map.Map;
 
 public class ExplorationDrone extends Resource {
 	
-	protected UUID ID = UUID.randomUUID();
-	
 	public ExplorationDrone(Map map, Point center, String shape, int size){
 		super(map, center, shape, size);
 		type = "EXPDRONE";
@@ -15,4 +13,3 @@ public class ExplorationDrone extends Resource {
 		pathable = false;
 	}
 }
-
