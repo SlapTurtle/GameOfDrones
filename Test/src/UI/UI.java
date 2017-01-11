@@ -90,6 +90,8 @@ public class UI extends Application {
         	}
         }
         public void moveDrone(UUID ID, int dir){
+        	if (ID == null)
+        		return;
         	for (int i = 0; i<gridDisplay.drones.size();i++){
         		if (gridDisplay.drones.get(i).ID.equals(ID)){
         			switch(dir){
@@ -171,7 +173,7 @@ public class UI extends Application {
 			//Platform.runLater(() -> gridDisplay.resizeGrid(89));
 			//Thread.sleep(500);
 			//Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
-			Thread.sleep(200);
+			Thread.sleep(1);
 			//Platform.runLater(() -> gridDisplay.moveDrone(3, 2));
 		} catch (InterruptedException e) {
 			e.printStackTrace();

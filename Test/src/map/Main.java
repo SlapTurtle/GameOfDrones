@@ -3,7 +3,7 @@ package map;
 public class Main {
 
 	public static final int DELAY = 500;
-	
+
 	public static void main(String[] args) throws InterruptedException {
 		Map map = new Map();
 		Thread.sleep(100);

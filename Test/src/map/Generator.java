@@ -51,12 +51,12 @@ public class Generator extends Agent {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
 
-			for (int i = -1; i < 2; i+=2) {
-//				Point p = new Point(map.base.center.x, map.base.center.y+i);
-//				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
-//				ExpDrone expdrone = new ExpDrone(map, p);
-//				map.map.addAgent(expdrone);
-//				putResource(drone, p);
+			for (int i = -1; i < 1; i+=2) {
+				Point p = new Point(map.base.center.x, map.base.center.y+i);
+				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
+				ExpDrone expdrone = new ExpDrone(map, p);
+				map.map.addAgent(expdrone);
+				putResource(drone, p);
 				
 //				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
 //				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
