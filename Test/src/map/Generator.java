@@ -81,7 +81,6 @@ public class Generator extends Agent {
 				break;
 			}
 		}
-
 		
 		for (int j = 1; j < 3; j++) {
 			if (dice.roll(0.4))
@@ -92,14 +91,17 @@ public class Generator extends Agent {
 		/* ROCK */
 		
 		for (int j = 2; j >= 0; j--) {
-			double probability = (double)j * 0.4;
-			if (dice.roll(1-probability)) {
+			if (dice.roll(0.15)) {
 				populate(Rock.class, "polygon", j);
 				break;
 			}
 		}
-		
-		
+
+		for (int j = 0; j < 3; j++) {
+			if (dice.roll(0.5))
+				populate(Rock.class, "polygon", random.nextInt(1));
+		}
+
 		
 		/* TREE */
 		
