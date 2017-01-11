@@ -199,8 +199,37 @@ public class Map {
 		}
 		return retriever.Tuples;
 	}
-	
+
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
+	public String[][] Retrieve(int size) {
+		//System.out.println("\nRendering Map...\n");
+		String[][] N = new String[size][size];
+		String TRIGGER = "X";
+		
+		Point p = drones.getFirst().position;
+		
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				N[x][y] = TRIGGER;
+//				Tuple t = map.queryp(new Template(new ActualTemplateField(p.x+x-size/2), new ActualTemplateField(p.y+y-size/2)));
+//				if (t != null) {
+//					N[x][y] = TRIGGER;
+//				} else {
+//					N[x][y] = "-";
+//				}
+			}
+		}
+		LinkedList<Tuple> list = RetrieveTuples();
+		for (Tuple t : list) {
+			if (getTupleX(t)-p.x < size/2 && getTupleX(t)-p.x > -size/2 && getTupleY(t)-p.y < size/2 && getTupleY(t)-p.y > -size/2) {
+				if (N[getTupleX(t)-p.x+size/2][getTupleY(t)-p.y+size/2] == TRIGGER) {
+					N[getTupleX(t)-p.x+size/2][getTupleY(t)-p.y+size/2] = t.getElementAt(String.class, 0);
+				}
+			}
+		}
+		return N;
+	}
+	
 	public int[][] Retrieve() {
 		System.out.println("\nRendering Map...\n");
 		int[][] N = new int[bounds[1]-bounds[0]+1][bounds[3]-bounds[2]+1];

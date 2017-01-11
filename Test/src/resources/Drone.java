@@ -60,7 +60,7 @@ public class Drone extends Agent {
 	private void move(int dir) {
 		int[] xy = getDirection(dir, position.x, position.y);
 		move(new Point(xy[0], xy[1]));
-		map.UI.move(ID, dir);
+		//map.UI.move(ID, dir);
 	}
 
 	private void move(Point p) {
