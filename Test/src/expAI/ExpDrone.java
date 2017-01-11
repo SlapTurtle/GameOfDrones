@@ -12,7 +12,7 @@ public class ExpDrone extends Drone {
 	public ExpDrone(Map map, Position position) {
 		super(map, position);
 		this.TYPE = "EXPDRONE";
-		this.radius=7;
+		this.radius=3;
 	}
 
 	@Override
@@ -31,23 +31,6 @@ public class ExpDrone extends Drone {
 		}
 	}
 	
-	
-	/**
-	 * Help function to test
-	 * @param p
-	 * @param dir
-	 * @return
-	 */
-	/*
-	private Position moveFieldsToCheck(Position p, int dir){
-		if(dir<0){
-			p.setX(p.getX()-1);
-		}
-		else{
-			p.setY(p.getY()+1);
-		}		
-		return p; 
-	}*/
 	
 	/**
 	 * Help function to move drone
@@ -82,19 +65,6 @@ public class ExpDrone extends Drone {
 		return nP; 
 	}
 
-	/**
-	 * UNUSED help function for moveDrone
-	 * @param p
-	 * @param x
-	 * @param y
-	 * @return Position
-	 */
-//	private Position interQuadrantMoving(Position p, int x, int y){
-//		p.setX(x);
-//		p.setY(y);
-//		return p;
-//	}
-//	
 	/**
 	 * Gets the direction using {@link #pythagoras(Position)}method
 	 * @param p1
@@ -132,11 +102,6 @@ public class ExpDrone extends Drone {
 	}
 	
 	
-//	
-//	private int[] getPointInUnknown(){
-//		int[] a = new int[2];
-//		return a;
-//	}
 	
 	/**
 	 * 
@@ -182,6 +147,9 @@ public class ExpDrone extends Drone {
 		return q;
 	}
 	
+	public void setRadius(int newRadius){
+		this.radius=newRadius;
+	}
 
 	
 }
