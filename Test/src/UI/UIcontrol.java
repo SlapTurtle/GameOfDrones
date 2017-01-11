@@ -22,6 +22,7 @@ public final class UIcontrol {
 		gridDisplay.moveDrone(id, p);
 	}
 	public void move(UUID id, int dir){
+		System.out.println("moving " + id.toString() + " in dir " + dir);
 		gridDisplay.moveDrone(id, dir);
 	}
 	

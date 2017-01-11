@@ -82,23 +82,26 @@ public class UI extends Application {
         	this.pane.getChildren().add(empty);
         }
         public void moveDrone(UUID id, Point p){
-        	for (int i = 0; i<gridDisplay.drones.size(); i++){
-        		if (gridDisplay.drones.get(i).ID.equals(id)){
-        			gridDisplay.drones.get(i).point.x = p.x;
-        			gridDisplay.drones.get(i).point.y = p.y;
+        	for (Drone d : gridDisplay.drones){
+        		if (d.getId().equals(id)){
+        			d.point.x = p.x;
+        			d.point.y = p.y;
         		}
         	}
         }
         public void moveDrone(UUID ID, int dir){
         	if (ID == null)
         		return;
-        	for (int i = 0; i<gridDisplay.drones.size();i++){
-        		if (gridDisplay.drones.get(i).ID.equals(ID)){
+        	System.out.println(gridDisplay.drones.size());
+        	for (Drone d : gridDisplay.drones){
+        		System.out.println(d.point.toString());
+        		System.out.println(d.uuid);
+        		if (d.uuid.equals(ID)){
         			switch(dir){
-        			case 1: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x+1); break;
-        			case 2: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x-1); break;
-        			case 3: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y+1); break;
-        			case 4: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y-1); break;
+        			case 0: d.setX(d.point.x-1); break;
+        			case 1: d.setX(d.point.x+1); break;
+        			case 2: d.setY(d.point.y-1); break;
+        			case 3: d.setX(d.point.y+1); break;
         			}
         		}
         	}
@@ -137,6 +140,8 @@ public class UI extends Application {
         pane.getChildren().add(b);
         pane.getChildren().add(canvas);
         pane.setStyle("-fx-background-color: black;");
+        //Drone d = new Drone(gridDisplay, 20, 20, uic);
+        //pane.getChildren().add(d);
         for(Tuple t : items){
         	String str = t.getElementAt(String.class, 0);
         	//System.out.println(str);
@@ -147,7 +152,7 @@ public class UI extends Application {
 			case "GOLD": c = new Gold(gridDisplay, x, y); break;
 			case "TREE": c = new Tree(gridDisplay, x, y); break;
 			case "BASE": break;//base = nothing
-			case "WATER": c = new Drone(gridDisplay, x, y, uic); break;
+			case "WATER": c = new Water(gridDisplay, x, y); break;
 			case "EXPDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
 			case "HARDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
 			}
@@ -173,7 +178,7 @@ public class UI extends Application {
 			//Platform.runLater(() -> gridDisplay.resizeGrid(89));
 			//Thread.sleep(500);
 			//Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
-			Thread.sleep(1);
+			Thread.sleep(200);
 			//Platform.runLater(() -> gridDisplay.moveDrone(3, 2));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -254,14 +259,16 @@ public class UI extends Application {
 	}
 	
 	static class Drone extends CoordinateShape {
-		static final Paint c = Color.BLUE;		
-		UUID ID;
+		static final Paint c = Color.INDIGO;		
+		public UUID uuid;
 		Point point = new Point(0,0);
 		public Drone(GridDisplay gridDisplay, int x, int y, UIcontrol uic){
 			super(gridDisplay, x, y, c);
 			point.x = x;
 			point.y = y;
-			this.ID = uic.getID(point);
+			this.uuid = uic.getID(point);
+			System.out.println("point " + point.toString());
+			System.out.println("setting id=" + uic.getID(point));
 			gridDisplay.drones.add(this);
 		}
 	}
@@ -276,6 +283,13 @@ public class UI extends Application {
 	static class Gold extends CoordinateShape {
 		static final Paint c = Color.GOLD;
 		public Gold(GridDisplay gridDisplay, int x, int y){
+			super(gridDisplay, x, y, c);
+		}
+	}
+	
+	static class Water extends CoordinateShape {
+		static final Paint c = Color.BLUE;
+		public Water(GridDisplay gridDisplay, int x, int y){
 			super(gridDisplay, x, y, c);
 		}
 	}
