@@ -1,4 +1,4 @@
-import java.awt.Point;
+import java.awt.Point;1
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -165,7 +165,7 @@ public class UI extends Application {
 			Thread.sleep(500);
 			Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
 			Thread.sleep(500);
-			Platform.runLater(() -> gridDisplay.removeDrone(3, 2));
+			Platform.runLater(() -> gridDisplay.moveDrone(3, 2));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -222,7 +222,7 @@ public class UI extends Application {
     	
     	public CoordinateShape(GridDisplay gridDisplay, int x, int y, Paint c){
     		super(x,y,gridDisplay.tileSize/2,c);
-    		System.out.println(gridDisplay.tileSize/2);
+    		//System.out.println(gridDisplay.tileSize/2);
     		this.gridDisplay = gridDisplay;
 			setX(x);
     		setY(y);
