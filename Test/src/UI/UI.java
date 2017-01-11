@@ -135,6 +135,8 @@ public class UI extends Application {
         pane.getChildren().add(b);
         pane.getChildren().add(canvas);
         pane.setStyle("-fx-background-color: black;");
+        Drone d = new Drone(gridDisplay, 20, 20, uic);
+        pane.getChildren().add(d);
         for(Tuple t : items){
         	String str = t.getElementAt(String.class, 0);
         	//System.out.println(str);
@@ -172,7 +174,6 @@ public class UI extends Application {
 			//Thread.sleep(500);
 			//Platform.runLater(() -> gridDisplay.insetBlank(gridDisplay, 10, 10));
 			Thread.sleep(200);
-			//Platform.runLater(() -> gridDisplay.moveDrone(3, 2));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
