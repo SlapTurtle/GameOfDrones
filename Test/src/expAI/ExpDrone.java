@@ -30,8 +30,7 @@ public class ExpDrone extends Drone {
 			//move(0);
 		}
 	}
-	
-	
+
 	/**
 	 * Help function to move drone
 	 * @param d
@@ -146,6 +145,8 @@ public class ExpDrone extends Drone {
 		
 		return q;
 	}
+	
+	
 	
 	public void setRadius(int newRadius){
 		this.radius=newRadius;
