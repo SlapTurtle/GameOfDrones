@@ -50,13 +50,13 @@ public class Generator extends Agent {
 		if (world.center.equals(map.center)) {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
-			
+
 			for (int i = -1; i < 2; i+=2) {
-				Point p = new Point(map.base.center.x, map.base.center.y+i);
-				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
-				ExpDrone expdrone = new ExpDrone(map, p);
-				map.map.addAgent(expdrone);
-				putResource(drone, p);
+//				Point p = new Point(map.base.center.x, map.base.center.y+i);
+//				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
+//				ExpDrone expdrone = new ExpDrone(map, p);
+//				map.map.addAgent(expdrone);
+//				putResource(drone, p);
 				
 //				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
 //				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
@@ -70,7 +70,9 @@ public class Generator extends Agent {
 		 * Generate area *
 		 * 				 */
 
+
 		/* WATER */
+		
 		int sea = (world.center.equals(new Point(0,0))) ? 2 : 8;
 		for (int j = sea; j > 0; j--) {
 			double probability = (double)j * 0.12;
@@ -88,6 +90,7 @@ public class Generator extends Agent {
 
 		
 		/* TREE */
+		
 		for (int j = 2; j >= 0; j--) {
 			double probability = (double)j * 0.4;
 			if (dice.roll(1-probability)) {
@@ -120,6 +123,8 @@ public class Generator extends Agent {
 		
 	}
 
+	/** Populates the current World with a given type, shape and size of a resource.
+	 * @params */
 	public void populate(Class classname, String shape, int size) {
 		try {
 			Constructor<?> constructor = classname.getConstructor(Map.class, Point.class, String.class, int.class);

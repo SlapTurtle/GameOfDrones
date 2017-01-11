@@ -1,7 +1,7 @@
 package resources;
 
 import java.awt.Point;
-
+import java.util.UUID;
 import map.Map;
 
 public class ExplorationDrone extends Resource {
@@ -13,4 +13,3 @@ public class ExplorationDrone extends Resource {
 		pathable = false;
 	}
 }
-
