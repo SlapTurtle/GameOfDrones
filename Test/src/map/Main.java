@@ -1,9 +1,11 @@
 package map;
 
+import java.io.IOException;
+
 public class Main {
 
-	public static final int DELAY = 500;
-	
+	public static final int DELAY = 200;
+
 	public static void main(String[] args) throws InterruptedException {
 		Map map = new Map();
 		Thread.sleep(100);
@@ -14,32 +16,55 @@ public class Main {
 				map.render.notifyAll();
 			}
 			Thread.sleep(DELAY);
-			display(map);
+			display(map, 30);
 		}
 	}
 
 	/** Displays a given map's current state to the console.
-	 * Do not invoke while other instances of the same method are running.
+	 * Avoid invoking while other instances of the method are running.
 	 * @param*/
-	static void display(Map map) {
-		int[][] N = map.Retrieve();
-		System.out.println("\n");
-		for (int y = 0; y < map.bounds[3]-map.bounds[2]; y++) {
-			for (int x = 0; x < map.bounds[1]-map.bounds[0]; x++) {
-				char c;
-				switch (N[x][y]) {
-				case -1: c = '.'; break;
-				case 1:  c = 'G'; break;
-				case 2:  c = 'T'; break;
-				case 3:  c = 'B'; break;
-				case 4:  c = 'W'; break;
-				case 5:  c = 'D'; break;
-				default: c = ' '; break;
+	static void display(Map map, int size) {
+		System.out.flush();
+		String[][] N = map.Retrieve(size);
+		System.out.println("\n\n\n\n\n");
+		for (int y = 0; y < N.length; y++) {
+			for (int x = 0; x < N.length; x++) {
+				char c = ' ';
+				if (N[x][y] != "-") {
+					switch (N[x][y]) {
+					case "BASE": c = 'B'; break;
+					case "GOLD": c = 'G'; break;
+					case "EXPDRONE": c = 'E'; break;
+					case "TREE": c = 'T'; break;
+					case "WATER": c = 'W'; break;
+					default: 	 c = ' '; break;
+					}
 				}
 				System.out.print(c + " ");
 			}
 			System.out.println();
 		}
 	}
+	
+	static void display(Map map) {
+		String[][] N = map.Retrieve(40);
+		System.out.println("\n");
+		for (int y = 0; y < N.length; y++) {
+			for (int x = 0; x < N.length; x++) {
+				char c;
+				switch (N[x][y]) {
+				case "BASE": c = 'B'; break;
+				case "GOLD": c = 'G'; break;
+				case "EXPDRONE": c = 'E'; break;
+				case "TREE": c = 'T'; break;
+				default: 	 c = ' '; break;
+				}
+				
+				System.out.print(c + " ");
+			}
+			System.out.println();
+		}
+	}
+	 
 
 }

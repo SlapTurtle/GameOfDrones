@@ -9,17 +9,20 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 import map.*;
-import util.Position;
 
 public class Drone extends Agent {
-	protected Map map;
-	protected String TYPE;
-	protected Position position;
+
+	Map map;
+	public String TYPE;
+	public UUID ID;
+	public Point position = new Point();
 	
-	public Drone(Map map, Position position) {
+	public Drone(Map map, Point position) {
 		super(UUID.randomUUID().toString());
+		this.ID = UUID.fromString(this.name);
 		this.map = map;
 		this.position = position;
+		this.map.drones.add(this);
 	}
 
 	protected void doRun() {
@@ -28,9 +31,8 @@ public class Drone extends Agent {
 		int dir = r.nextInt(4);
 		try {
 			explore();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		while(true) {
 			synchronized (map.render) {
@@ -48,20 +50,21 @@ public class Drone extends Agent {
 		}
 	}
 	
-	protected void explore() throws Exception {
-		for (Point p : World.getNeighbors(position.toPoint())) {
+	private void explore() throws Exception {
+		for (Point p : World.getNeighbors(position)) {
 			Template t = new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y));
 			boolean b = (queryp(t) == null) ? put(new Tuple(p.x, p.y), Self.SELF) : false;
 		}
 	}
 	
-	protected void move(int dir) {
+	private void move(int dir) {
 		int[] xy = getDirection(dir, position.x, position.y);
 		move(new Point(xy[0], xy[1]));
+		//map.UI.move(ID, dir);
 	}
-	
-	protected void move(Point p) {
-		if (p.distance(position.toPoint()) > 1.21)
+
+	private void move(Point p) {
+		if (p.distance(position) > 1.21)
 			return;
 		try {
 			Template template = new Template(new ActualTemplateField(TYPE),
