@@ -9,19 +9,20 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 import map.*;
+import util.Position;
 
 public class Drone extends Agent {
 
-	Map map;
+	protected Map map;
 	public String TYPE;
 	public UUID ID;
-	public Point position = new Point();
+	public Position position = new Position();
 	
 	public Drone(Map map, Point position) {
 		super(UUID.randomUUID().toString());
 		this.ID = UUID.fromString(this.name);
 		this.map = map;
-		this.position = position;
+		this.position = new Position(position.x, position.y);
 		this.map.drones.add(this);
 	}
 
@@ -51,7 +52,7 @@ public class Drone extends Agent {
 	}
 	
 	private void explore() throws Exception {
-		for (Point p : World.getNeighbors(position)) {
+		for (Point p : World.getNeighbors(position.toPoint())) {
 			Template t = new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y));
 			boolean b = (queryp(t) == null) ? put(new Tuple(p.x, p.y), Self.SELF) : false;
 		}
@@ -63,8 +64,8 @@ public class Drone extends Agent {
 		//map.UI.move(ID, dir);
 	}
 
-	private void move(Point p) {
-		if (p.distance(position) > 1.21)
+	protected void move(Point p) {
+		if (p.distance(position.toPoint()) > 1.21)
 			return;
 		try {
 			Template template = new Template(new ActualTemplateField(TYPE),

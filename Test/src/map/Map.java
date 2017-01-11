@@ -206,7 +206,7 @@ public class Map {
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
-		Point p = drones.getFirst().position;
+		Point p = drones.getFirst().position.toPoint();
 		
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
