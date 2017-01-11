@@ -2,20 +2,16 @@ package resources;
 
 import java.awt.Point;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.UUID;
-
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
-
 import map.*;
-import resources.*;
 
 public class Drone extends Agent {
-	
+
 	Map map;
 	protected String TYPE;
 	Point position = new Point();
@@ -27,6 +23,15 @@ public class Drone extends Agent {
 	}
 	
 	protected void doRun() {
+		Random r = new Random();
+		Dice dice = new Dice(r);
+		int dir = r.nextInt(4);
+		try {
+			explore();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		while(true) {
 			synchronized (map.render) {
 				try {
@@ -35,30 +40,45 @@ public class Drone extends Agent {
 					
 				}
 			}
-			move(0);			
+			if (dice.roll(0.4)) {
+				move(dir);
+			} else {
+				move(r.nextInt(4));
+			}
+		}
+	}
+	
+	private void explore() throws Exception {
+		for (Point p : World.getNeighbors(position)) {
+			Template t = new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y));
+			boolean b = (queryp(t) == null) ? put(new Tuple(p.x, p.y), Self.SELF) : false;
 		}
 	}
 	
 	private void move(int dir) {
+		int[] xy = getDirection(dir, position.x, position.y);
+		move(new Point(xy[0], xy[1]));
+	}
+	
+	private void move(Point p) {
+		if (p.distance(position) > 1.21)
+			return;
 		try {
 			Template template = new Template(new ActualTemplateField(TYPE),
 					new ActualTemplateField(position.x),
 					new ActualTemplateField(position.y));
-			Tuple t = get(template, Self.SELF);
-			int[] xy = getDirection(dir, position.x, position.y);
-			Template template2 = getDirectionTemplate(xy);
+			get(template, Self.SELF);
+			int[] xy = new int[]{p.x,p.y};
 			position.move(xy[0], xy[1]);
 			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
 			put(t2, Self.SELF);
+			
+			//map.UI.moveDrone(map.random.nextInt(10), 0);
+			
+			explore();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private static Template getDirectionTemplate(int[] arr){
-		return new Template( Map.AnyString,
-								 new ActualTemplateField(arr[0]),
-								 new ActualTemplateField(arr[1]) );
 	}
 	
 	private static int[] getDirection(int dir, int x, int y){
