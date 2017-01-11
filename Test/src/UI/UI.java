@@ -32,7 +32,7 @@ import map.*;
 
 public class UI extends Application {
     //Class containing grid (see below)
-    private static GridDisplay gridDisplay;
+    private GridDisplay gridDisplay;
     protected Map map;
 
     //Class responsible for displaying the grid containing the Rectangles
@@ -120,8 +120,8 @@ public class UI extends Application {
         World world = new World(new Point(0,0), GridDisplay.INIT_GRID_SIZE);
 		Map map = new Map(world);
 		this.map = map;
-		map.UI = this.gridDisplay;
-		UIcontrol uic = new UIcontrol(this.gridDisplay);
+		UIcontrol uic = new UIcontrol(map, this.gridDisplay);
+		map.UI = uic;
 		try {
 			Thread.currentThread().sleep(200);
 		} catch (InterruptedException e1) {
@@ -145,9 +145,9 @@ public class UI extends Application {
 			case "GOLD": c = new Gold(gridDisplay, x, y); break;
 			case "TREE": c = new Tree(gridDisplay, x, y); break;
 			case "BASE": break;//base = nothing
-			case "WATER": c = new Drone(gridDisplay, x, y, UUID.randomUUID()); break;
-			case "EXPDRONE" : c = new Drone(gridDisplay, x, y, UUID.randomUUID()); break;
-			case "HARDRONE" : c = new Drone(gridDisplay, x, y, UUID.randomUUID()); break;
+			case "WATER": c = new Drone(gridDisplay, x, y, uic); break;
+			case "EXPDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
+			case "HARDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
 			}
             if(c != null) {
             	//System.out.println(c.getClass().toString());
@@ -255,11 +255,11 @@ public class UI extends Application {
 		static final Paint c = Color.BLUE;		
 		UUID ID;
 		Point point = new Point(0,0);
-		public Drone(GridDisplay gridDisplay, int x, int y, UUID ID){
+		public Drone(GridDisplay gridDisplay, int x, int y, UIcontrol uic){
 			super(gridDisplay, x, y, c);
 			point.x = x;
 			point.y = y;
-			this.ID = ID;
+			this.ID = uic.getID(point);
 			gridDisplay.drones.add(this);
 		}
 	}

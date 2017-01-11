@@ -5,12 +5,16 @@ import java.util.UUID;
 
 
 import UI.UI.GridDisplay;
+import map.Map;
+import resources.Drone;
 
 
-public final class UIcontrol { 
+public final class UIcontrol {
+	protected Map map;
 	protected GridDisplay gridDisplay;
 	
-	public UIcontrol(GridDisplay ui) {
+	public UIcontrol(Map map, GridDisplay ui) {
+		this.map = map;
 		this.gridDisplay = ui;
 	}
 	
@@ -27,6 +31,15 @@ public final class UIcontrol {
 	
 	public static void addVision(){
 		
+	}
+	
+	public UUID getID(Point p){
+		for (Drone d : map.drones) {
+			if (d.position.equals(p)) {
+				return d.ID;
+			}
+		}
+		return null;
 	}
 	
 	
