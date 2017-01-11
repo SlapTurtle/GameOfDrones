@@ -1,27 +1,27 @@
 package UI;
 
+import java.awt.Point;
 import java.util.UUID;
 
-import com.sun.javafx.scene.paint.GradientUtils.Point;
 
 import UI.UI.GridDisplay;
 
 
 public final class UIcontrol { 
-	GridDisplay gridDisplay;
+	protected GridDisplay gridDisplay;
 	
 	public UIcontrol(GridDisplay ui) {
 		this.gridDisplay = ui;
 	}
 	
 	public void move(UUID id, Point p) {
-		
+		gridDisplay.moveDrone(id, p);
 	}
-	public static void move(UUID id, int dir){
-		
+	public void move(UUID id, int dir){
+		gridDisplay.moveDrone(id, dir);
 	}
 	
-	public static void delete(){
+	public void delete(){
 		
 	}
 	
