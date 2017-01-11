@@ -21,7 +21,7 @@ public class Drone extends Agent {
 		this.map = map;
 		this.position = position;
 	}
-	
+
 	protected void doRun() {
 		Random r = new Random();
 		Dice dice = new Dice(r);
