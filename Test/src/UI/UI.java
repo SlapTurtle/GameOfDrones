@@ -82,21 +82,21 @@ public class UI extends Application {
         	this.pane.getChildren().add(empty);
         }
         public void moveDrone(UUID id, Point p){
-        	for (int i = 0; i<gridDisplay.drones.size(); i++){
-        		if (gridDisplay.drones.get(i).ID.equals(id)){
-        			gridDisplay.drones.get(i).point.x = p.x;
-        			gridDisplay.drones.get(i).point.y = p.y;
+        	for (Drone d : gridDisplay.drones){
+        		if (d.getId().equals(id)){
+        			d.point.x = p.x;
+        			d.point.y = p.y;
         		}
         	}
         }
         public void moveDrone(UUID ID, int dir){
-        	for (int i = 0; i<gridDisplay.drones.size();i++){
-        		if (gridDisplay.drones.get(i).ID.equals(ID)){
+        	for (Drone d : gridDisplay.drones){
+        		if (d.getId().equals(ID)){
         			switch(dir){
-        			case 1: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x+1); break;
-        			case 2: gridDisplay.drones.get(i).setX(gridDisplay.drones.get(i).point.x-1); break;
-        			case 3: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y+1); break;
-        			case 4: gridDisplay.drones.get(i).setY(gridDisplay.drones.get(i).point.y-1); break;
+        			case 1: d.setX(d.point.x+1); break;
+        			case 2: d.setX(d.point.x-1); break;
+        			case 3: d.setY(d.point.y+1); break;
+        			case 4: d.setX(d.point.y-1); break;
         			}
         		}
         	}
@@ -145,7 +145,7 @@ public class UI extends Application {
 			case "GOLD": c = new Gold(gridDisplay, x, y); break;
 			case "TREE": c = new Tree(gridDisplay, x, y); break;
 			case "BASE": break;//base = nothing
-			case "WATER": c = new Drone(gridDisplay, x, y, uic); break;
+			case "WATER": c = new Water(gridDisplay, x, y); break;
 			case "EXPDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
 			case "HARDRONE" : c = new Drone(gridDisplay, x, y, uic); break;
 			}
@@ -252,7 +252,7 @@ public class UI extends Application {
 	}
 	
 	static class Drone extends CoordinateShape {
-		static final Paint c = Color.BLUE;		
+		static final Paint c = Color.INDIGO;		
 		UUID ID;
 		Point point = new Point(0,0);
 		public Drone(GridDisplay gridDisplay, int x, int y, UIcontrol uic){
@@ -274,6 +274,13 @@ public class UI extends Application {
 	static class Gold extends CoordinateShape {
 		static final Paint c = Color.GOLD;
 		public Gold(GridDisplay gridDisplay, int x, int y){
+			super(gridDisplay, x, y, c);
+		}
+	}
+	
+	static class Water extends CoordinateShape {
+		static final Paint c = Color.BLUE;
+		public Water(GridDisplay gridDisplay, int x, int y){
 			super(gridDisplay, x, y, c);
 		}
 	}
