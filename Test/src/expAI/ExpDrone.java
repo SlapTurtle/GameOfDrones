@@ -8,11 +8,15 @@ import util.Position;
 
 public class ExpDrone extends Drone {
 	int radius;
+	protected Position radiusPoint;
+	protected boolean returnToBase = false;
+	private boolean beenHereBefore = false;
 	
 	public ExpDrone(Map map, Position position) {
 		super(map, position);
 		this.TYPE = "EXPDRONE";
-		this.radius=3;
+		this.radius=1;
+		this.radiusPoint = new Position(this.radius, 0);
 	}
 
 	@Override
@@ -38,12 +42,19 @@ public class ExpDrone extends Drone {
 	 * @return
 	 */
 	private Point moveDrone(Position d, int radius){
+		Point nP = new Point(d.getX(), d.getY());
+		if(returnToBase) return returnToBase(nP);
+		if(d.equals(radiusPoint) && beenHereBefore){
+			returnToBase=true;
+		}
+		if(d.equals(radiusPoint) && !beenHereBefore){
+			this.beenHereBefore=true;
+		}
 		int q = getQuadrant(d);
 		int dir=0;
 		Position[] posArr = getFieldsToCheck(d);
 		dir = getDirFromRadius(posArr[1],posArr[0], radius);
 		//new place for drone to be is called NP
-		Point nP = new Point(d.getX(), d.getY());
 		switch(q){
 			case 1 : if(dir<0) nP.move(nP.x-1,nP.y);
 					 else      nP.move(nP.x, nP.y+1);
@@ -62,6 +73,19 @@ public class ExpDrone extends Drone {
 					 break;
 		}		
 		return nP; 
+	}
+
+	private Point returnToBase(Point nP) {
+		if(nP.x>=1){
+			nP.move(nP.x-1, nP.y);
+		}
+		else{ 
+			returnToBase=false; 
+			beenHereBefore=false;
+			radius+=2;
+			radiusPoint.move(radius, radiusPoint.getY());
+		}
+		return nP;
 	}
 
 	/**

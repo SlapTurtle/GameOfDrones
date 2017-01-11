@@ -45,6 +45,10 @@ public class Position {
 	/*
 	 * DOT EQUALS 
 	 */
+	public boolean equals(Position p){
+		return (this.x==p.x && this.y==p.y);
+	}
+	
 	public boolean equalsX(int newX){
 		return (this.x==newX);
 	}
