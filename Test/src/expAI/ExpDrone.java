@@ -30,7 +30,7 @@ public class ExpDrone extends Drone {
 					
 				}
 			}
-			move(moveDrone(position,this.radius));
+			move(moveDrone(new Position(position.x,position.y),this.radius));
 			//move(0);
 		}
 	}
