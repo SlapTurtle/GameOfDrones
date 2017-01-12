@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class Main {
 
-	public static final int DELAY = 2000;
+	public static final int DELAY = 200;
 
 	public static void main(String[] args) throws InterruptedException {
 		Map map = new Map();
