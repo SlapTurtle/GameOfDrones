@@ -6,6 +6,10 @@ import map.Map;
 
 public class Gold extends Resource {
 
+	public static final String TYPE = "GOLD";
+	public static boolean harvestable = false;
+	public static boolean pathable = false;
+
 	public Gold(Map map, Point center, String shape, int size) {
 		super(map, center, shape, size);
 		type = "GOLD";
