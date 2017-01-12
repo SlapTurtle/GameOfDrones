@@ -55,7 +55,6 @@ class NeighborRetriever extends Retriever {
 				Tuple t = queryp(templateFromPoint(p));
 				if (t != null) {
 					if (Resource.isPathable(t.getElementAt(String.class, 0))) {
-						System.out.println(t.getElementAt(0) + " is " + "PATHABLE");
 						this.neighbors.add(new Point(map.getTupleX(t), map.getTupleY(t)));
 					}
 				} else {

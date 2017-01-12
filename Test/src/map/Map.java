@@ -49,7 +49,6 @@ public class Map {
 	public void Init(String seed) {
 		ID = UUID.randomUUID();
 		map = new Node(ID.toString(), new TupleSpace());
-		//map.addAgent(agent);
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
@@ -85,11 +84,10 @@ public class Map {
 		this.world.map = this;
 		Generate(world, seed);
 	}
-	
+
 	/** Generates a given World using the provided seed as a String.
 	 * @param*/
 	public void Generate(World world, String seed) {
-		//System.out.println("\nSeed: " + seed);
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
 			center = new Point(0,0);
@@ -165,7 +163,7 @@ public class Map {
 				render.notifyAll();
 			}
 			try {
-				Thread.sleep(100);
+				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -204,20 +202,17 @@ public class Map {
 		NeighborRetriever retriever = new NeighborRetriever(this, p);
 		map.addAgent(retriever);
 		try {
-			Thread.sleep(100);
+			Thread.sleep(150);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		LinkedList<Point> list = retriever.neighbors;
-		System.out.println("FOUND " + list.size() + " PATHABLE NEIGHBORS");
 		return list;
 	}
 	
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public String[][] Retrieve(int size) {
-		//System.out.println("\nRendering Map...\n");
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
@@ -226,12 +221,6 @@ public class Map {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				N[x][y] = TRIGGER;
-//				Tuple t = map.queryp(new Template(new ActualTemplateField(p.x+x-size/2), new ActualTemplateField(p.y+y-size/2)));
-//				if (t != null) {
-//					N[x][y] = TRIGGER;
-//				} else {
-//					N[x][y] = "-";
-//				}
 			}
 		}
 		LinkedList<Tuple> list = RetrieveTuples();

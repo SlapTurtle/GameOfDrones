@@ -13,7 +13,7 @@ import map.*;
 
 public class Drone extends Agent {
 
-	Map map;
+	protected Map map;
 	public String TYPE;
 	public UUID ID;
 	public Point position = new Point();
@@ -72,8 +72,6 @@ public class Drone extends Agent {
 			position.move(xy[0], xy[1]);
 			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
 			put(t2, Self.SELF);
-			
-			//map.UI.moveDrone(map.random.nextInt(10), 0);
 			
 			explore();
 		} catch (Exception e) {

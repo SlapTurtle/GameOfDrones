@@ -81,7 +81,7 @@ public class Generator extends Agent {
 				break;
 			}
 		}
-		
+
 		for (int j = 1; j < 3; j++) {
 			if (dice.roll(0.4))
 				populate(Water.class, "polygon", j);
