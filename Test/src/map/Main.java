@@ -4,19 +4,19 @@ import java.io.IOException;
 
 public class Main {
 
-	public static final int DELAY = 400;
+	public static final int DELAY = 2000;
 
 	public static void main(String[] args) throws InterruptedException {
 		Map map = new Map();
 		Thread.sleep(100);
-		display(map);
+		display(map, 40);
 
 		while(true) {
 			synchronized (map.render) {
 				map.render.notifyAll();
 			}
 			Thread.sleep(DELAY);
-			display(map, 30);
+			display(map, 40);
 		}
 	}
 
@@ -34,6 +34,7 @@ public class Main {
 					switch (N[x][y]) {
 					case "BASE": c = 'B'; break;
 					case "GOLD": c = 'G'; break;
+					case "ROCK": c = 'R'; break;
 					case "EXPDRONE": c = 'E'; break;
 					case "TREE": c = 'T'; break;
 					case "WATER": c = 'W'; break;
@@ -51,15 +52,18 @@ public class Main {
 		System.out.println("\n");
 		for (int y = 0; y < N.length; y++) {
 			for (int x = 0; x < N.length; x++) {
-				char c;
-				switch (N[x][y]) {
-				case "BASE": c = 'B'; break;
-				case "GOLD": c = 'G'; break;
-				case "EXPDRONE": c = 'E'; break;
-				case "TREE": c = 'T'; break;
-				default: 	 c = ' '; break;
+				char c = ' ';
+				if (N[x][y] != "-") {
+					switch (N[x][y]) {
+					case "BASE": c = 'B'; break;
+					case "GOLD": c = 'G'; break;
+					case "ROCK": c = 'R'; break;
+					case "EXPDRONE": c = 'E'; break;
+					case "TREE": c = 'T'; break;
+					case "WATER": c = 'W'; break;
+					default: 	 c = ' '; break;
+					}
 				}
-				
 				System.out.print(c + " ");
 			}
 			System.out.println();
