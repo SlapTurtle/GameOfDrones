@@ -82,8 +82,8 @@ public class Generator extends Agent {
 			}
 		}
 
-		for (int j = 1; j < 3; j++) {
-			if (dice.roll(0.4))
+		for (int j = 1; j < 2; j++) {
+			if (dice.roll(0.3))
 				populate(Water.class, "polygon", j);
 		}
 
@@ -123,7 +123,7 @@ public class Generator extends Agent {
 
 		int gold = random.nextInt((int)(World.DEFAULT/10) +1);
 		if (dice.roll(0.9 - gold * 0.22) && !world.center.equals(new Point(0,0)))
-			populate(Gold.class, "polygon", random.nextInt(1) + 2);
+			populate(Gold.class, "polygon", random.nextInt(1) + 1);
 		
 		for (int j = 0; j < gold + 3; j++) {
 			populate(Gold.class, "polygon", random.nextInt(1) + 1);

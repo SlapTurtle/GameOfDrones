@@ -28,6 +28,7 @@ public class Map {
 	public UIcontrol UI;
 	public UUID ID;
 	public Node map;
+	public Node changes;
 	VirtualPort port = new VirtualPort(8080);
 	String seed;
 	public Random random;
@@ -49,6 +50,7 @@ public class Map {
 	public void Init(String seed) {
 		ID = UUID.randomUUID();
 		map = new Node(ID.toString(), new TupleSpace());
+		changes = new Node(ID.toString(), new TupleSpace());
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
@@ -209,7 +211,6 @@ public class Map {
 		LinkedList<Point> list = retriever.neighbors;
 		return list;
 	}
-	
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
 	public String[][] Retrieve(int size) {
