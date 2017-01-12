@@ -8,7 +8,7 @@ import java.util.UUID;
 public class World {
 	
 	UUID ID = UUID.randomUUID();
-	public static final int DEFAULT = 40;
+	public static final int DEFAULT = 20;
 	Map map;
 	private int x, y;
 	Point center;

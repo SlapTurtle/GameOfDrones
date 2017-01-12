@@ -60,7 +60,7 @@ public class Drone extends Agent {
 		//map.UI.move(ID, dir);
 	}
 
-	private void move(Point p) {
+	protected void move(Point p) {
 		if (p.distance(position) > 1.21)
 			return;
 		try {
