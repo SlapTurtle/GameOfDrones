@@ -2,7 +2,6 @@ package expAI;
 
 import java.awt.Point;
 
-import gatheringAI.AStar;
 import map.Map;
 import resources.*;
 import util.Position;
@@ -31,8 +30,7 @@ public class ExpDrone extends Drone {
 					
 				}
 			}
-			AStar a= new AStar(new Point(0,0),new Point(9,8), 0, map);
-			//move(moveDrone(position,this.radius));
+			move(moveDrone(position,this.radius));
 			//move(0);
 		}
 	}
