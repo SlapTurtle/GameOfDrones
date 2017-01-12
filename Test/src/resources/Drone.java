@@ -1,6 +1,7 @@
 package resources;
 
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
@@ -27,8 +28,6 @@ public class Drone extends Agent {
 
 	protected void doRun() {
 		Random r = new Random();
-		Dice dice = new Dice(r);
-		int dir = r.nextInt(4);
 		try {
 			explore();
 		} catch (Exception e) {
@@ -43,13 +42,8 @@ public class Drone extends Agent {
 				}
 			}
 			
-			map.RetrievePathableNeighbors(position);
-			
-			if (dice.roll(0.4)) {
-				move(dir);
-			} else {
-				move(r.nextInt(4));
-			}
+			LinkedList<Point> list = map.RetrievePathableNeighbors(position);
+			move(list.get(r.nextInt(list.size())));
 		}
 	}
 	
