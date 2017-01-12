@@ -3,6 +3,7 @@ package gatheringAI;
 import java.awt.Point;
 import java.util.LinkedList;
 
+import map.Map;
 import map.World;
 
 
@@ -16,11 +17,17 @@ public class AStar {
 	private Point end; //goal,goal
 	private Point current;
 	
-	public AStar(Point start, Point end){
+	private int offset;
+	
+	private Map map; 
+	private boolean flying;
+	
+	public AStar(Point start, Point end,int offset, Map map){
 		this.start=start;
 		this.end=end;
 		openSet.add(start);
 		current=start;
+		this.offset=offset;
 		System.out.println(start());
 	}
 	
@@ -39,16 +46,10 @@ public class AStar {
 			openSet.remove(current);
 			closedSet.add(current);
 			
-			neighbors = World.getNeighbors(current);
-			LinkedList<Point> tempNeighbors = new LinkedList<Point>();
-			for(Point p1 : neighbors){
-				if(p1.x<0 || p1.y<0 ){
-					tempNeighbors.add(p1);
-				}
-			}
-			for(Point p1 : tempNeighbors){
-				neighbors.remove(p1);
-			}
+			neighbors = map.RetrievePathableNeighbors(current);
+			if(flying) neighbors=World.getNeighbors(current);
+			
+			
 			
 			for(Point p1 : neighbors){
 				if(closedSet.contains(p1))continue;
