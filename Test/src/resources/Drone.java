@@ -1,6 +1,7 @@
 package resources;
 
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
@@ -8,6 +9,8 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
+
+import gatheringAI.AStar;
 import map.*;
 import util.Position;
 
@@ -30,6 +33,7 @@ public class Drone extends Agent {
 		Random r = new Random();
 		Dice dice = new Dice(r);
 		int dir = r.nextInt(4);
+		LinkedList<Point> list = new LinkedList<Point>();
 		try {
 			explore();
 		} catch (Exception e) {
@@ -44,7 +48,9 @@ public class Drone extends Agent {
 				}
 			}
 			
-			map.RetrievePathableNeighbors(position);
+			//AStar a= new AStar(new Point(0,0),new Point(9,8), 0, map);
+			
+			map.RetrievePathableNeighbors(position.toPoint());
 			
 			if (dice.roll(0.4)) {
 				move(dir);

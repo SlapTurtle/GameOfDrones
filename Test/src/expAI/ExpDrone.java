@@ -2,6 +2,7 @@ package expAI;
 
 import java.awt.Point;
 
+import gatheringAI.AStar;
 import map.Map;
 import resources.*;
 import util.Position;
@@ -11,6 +12,7 @@ public class ExpDrone extends Drone {
 	protected Position radiusPoint;
 	protected boolean returnToBase = false;
 	private boolean beenHereBefore = false;
+	private boolean returnToCirculation = false;
 	
 	public ExpDrone(Map map, Point position) {
 		super(map, position);
@@ -29,8 +31,8 @@ public class ExpDrone extends Drone {
 					
 				}
 			}
-			
-			move(moveDrone(position,this.radius));
+			AStar a= new AStar(new Point(0,0),new Point(9,8), 0, map);
+			//move(moveDrone(position,this.radius));
 			//move(0);
 		}
 	}
@@ -44,6 +46,7 @@ public class ExpDrone extends Drone {
 	private Point moveDrone(Position d, int radius){
 		Point nP = new Point(d.getX(), d.getY());
 		if(returnToBase) return returnToBase(nP);
+		if(returnToCirculation ) return returnToCirculation(nP);
 		if(d.equals(radiusPoint) && beenHereBefore){
 			returnToBase=true;
 		}
@@ -75,6 +78,17 @@ public class ExpDrone extends Drone {
 		return nP; 
 	}
 
+	private Point returnToCirculation(Point nP) {
+		if(nP.x==radius){
+			returnToCirculation=false;
+			beenHereBefore=true;
+		}
+		else{
+			nP.move(nP.x+1,nP.y);
+		}
+		return nP;
+	}
+
 	private Point returnToBase(Point nP) {
 		if(nP.x>=1){
 			nP.move(nP.x-1, nP.y);
@@ -82,6 +96,7 @@ public class ExpDrone extends Drone {
 		else{ 
 			returnToBase=false; 
 			beenHereBefore=false;
+			returnToCirculation=true;
 			radius+=2;
 			radiusPoint.move(radius, radiusPoint.getY());
 		}
