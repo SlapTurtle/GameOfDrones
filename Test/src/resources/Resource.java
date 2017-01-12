@@ -49,7 +49,7 @@ public class Resource {
 			e.printStackTrace();
 		}
 		return c;
-	}
+	} 
 
 	public static boolean isPathable(String name) {
 		Object o = toClass(name);

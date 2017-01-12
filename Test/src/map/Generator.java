@@ -72,7 +72,7 @@ public class Generator extends Agent {
 
 
 		/* WATER */
-		
+
 		int sea = (world.center.equals(new Point(0,0))) ? 2 : 8;
 		for (int j = sea; j > 0; j--) {
 			double probability = (double)j * 0.12;
