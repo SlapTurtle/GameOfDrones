@@ -1,7 +1,7 @@
 package map;
 
-import UI.Console;
 import map.Map;
+import userInterface.Console;
 
 public class Main {
 

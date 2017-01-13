@@ -1,4 +1,4 @@
-package Main;
+package launch;
 
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.Tuple;
@@ -7,11 +7,11 @@ import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
-import NodeBase.*;
-import NodeDrone.*;
-import NodeMap.*;
-import UI.*;
+import baseNode.*;
+import droneNode.*;
 import map.*; //TEMP
+import mapNode.*;
+import userInterface.*;
 
 public class Main {
 

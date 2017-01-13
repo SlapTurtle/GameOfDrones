@@ -2,8 +2,6 @@ package resources;
 
 import java.awt.Point;
 
-import map.Map;
-
 public class Water extends Resource {
 
 	public static final String type = "WATER";
@@ -16,5 +14,4 @@ public class Water extends Resource {
 		super.harvestable = harvestable;
 		super.type = type;
 	}
-
 }

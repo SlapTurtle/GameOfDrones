@@ -1,6 +1,6 @@
-package NodeBase;
-import map.Map;
-import resources.Gold;
+package baseNode;
+
+import map.Map; //TEMP
 
 import java.awt.Point;
 import java.util.LinkedList;

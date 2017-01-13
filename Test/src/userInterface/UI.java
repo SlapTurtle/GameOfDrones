@@ -1,26 +1,13 @@
-package UI;
+package userInterface;
 import java.awt.Point;
 import java.util.LinkedList;
-import java.util.UUID;
 
-import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.knowledge.ts.TupleSpace;
-
-import javafx.animation.AnimationTimer;
 import javafx.application.*;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -127,9 +114,8 @@ public class UI extends Application {
 		Map map = new Map(world);
 		this.map = map;
 		UIcontrol uic = new UIcontrol(map, this.gridDisplay);
-		//map.UI = uic;
 		try {
-			Thread.currentThread().sleep(200);
+			Thread.sleep(200);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}

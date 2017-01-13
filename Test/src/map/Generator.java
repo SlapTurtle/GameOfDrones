@@ -5,7 +5,7 @@ import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
-import NodeDrone.ExpDrone;
+import droneNode.ExpDrone;
 import resources.*;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
@@ -56,7 +56,7 @@ public class Generator extends Agent {
 
 			for (int i = -1; i < 1; i+=2) {
 				Point p = new Point(world.center.x, world.center.y+i);
-				ExplorationDrone drone = new ExplorationDrone(p, "circular", 1);
+				Exp_drone drone = new Exp_drone(p, "circular", 1);
 				ExpDrone expdrone = new ExpDrone(map2, p);
 				map.addAgent(expdrone);
 				putResource(drone, p);

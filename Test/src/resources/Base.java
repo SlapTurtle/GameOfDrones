@@ -2,8 +2,6 @@ package resources;
 
 import java.awt.Point;
 
-import map.Map;
-
 public class Base extends Resource {
 
 	public static final String type = "BASE";

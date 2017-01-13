@@ -1,11 +1,10 @@
-package UI;
+package userInterface;
 
 import java.awt.Point;
-import java.util.UUID;
 
-import NodeDrone.DroneAI;
-import UI.UI.GridDisplay;
+import droneNode.DroneAI;
 import map.Map;
+import userInterface.UI.GridDisplay;
 
 
 public final class UIcontrol {

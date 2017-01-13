@@ -8,9 +8,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
 
-import NodeDrone.DroneAI;
-import UI.UIcontrol;
-import resources.Base;
+import droneNode.DroneAI;
 
 import java.awt.Point;
 import java.util.LinkedList;

@@ -1,6 +1,4 @@
-package NodeMap;
-
-import java.awt.Point;
+package mapNode;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -53,7 +51,7 @@ public class RetrieverNew extends Agent {
 		};
 		if(bool) ;//check for pathability
 		
-		return null;
+		return (res.length == 4) ? null : null;
 	}
 	
 	private Template templateXY(int x, int y) {

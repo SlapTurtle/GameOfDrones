@@ -2,8 +2,6 @@ package resources;
 
 import java.awt.Point;
 
-import map.Map;
-
 public class Rock extends Resource {
 
 	public static final String type = "ROCK";

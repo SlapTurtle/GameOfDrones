@@ -1,4 +1,4 @@
-package UI;
+package userInterface;
 
 import map.Map;
 

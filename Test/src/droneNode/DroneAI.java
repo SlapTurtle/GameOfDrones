@@ -1,4 +1,4 @@
-package NodeDrone;
+package droneNode;
 
 import java.awt.Point;
 import java.util.LinkedList;

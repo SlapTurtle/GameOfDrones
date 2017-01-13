@@ -1,4 +1,4 @@
-package NodeMap;
+package mapNode;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;

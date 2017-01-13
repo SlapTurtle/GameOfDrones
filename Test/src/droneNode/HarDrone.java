@@ -1,11 +1,11 @@
-package NodeDrone;
+package droneNode;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import NodeBase.BaseAgent;
+import baseNode.BaseAgent;
 import map.Map;
 import util.AStarPoint;
 import util.Position;
