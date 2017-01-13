@@ -11,7 +11,9 @@ import util.Position;
 public class HarDrone extends Drone {
 	private boolean hasHarvested = false;
 	BaseAgent base = new BaseAgent("Allan");
-	LinkedList<Point> route = new LinkedList<Point>();
+	LinkedList<Point> pathOut = new LinkedList<Point>();
+	LinkedList<Point> pathHome = new LinkedList<Point>();
+	
 	public HarDrone(Map map, Point position) {
 		super(map, position);
 	}
@@ -32,8 +34,11 @@ public class HarDrone extends Drone {
 		}
 	}
 	
-	public void getRoute(){
-		this.route = base.sendHarvester();
+	public void getPathOut(){
+		this.pathOut = base.sendHarvester();
 	}
 
+	public void getPathHome(){
+		this.pathHome = base.sendHarvester();
+	}
 }
