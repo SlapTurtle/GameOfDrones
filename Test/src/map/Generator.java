@@ -51,7 +51,7 @@ public class Generator extends Agent {
 			map.base = new Base(map, world.center, "circular", 1);
 			putResource(map.base, map.base.center);
 
-			for (int i = -1; i < 1; i+=2) {
+			for (int i = -1; i < 2; i+=2) {
 				Point p = new Point(map.base.center.x, map.base.center.y+i);
 				ExplorationDrone drone = new ExplorationDrone(map, p, "circular", 1);
 				ExpDrone expdrone = new ExpDrone(map, p);

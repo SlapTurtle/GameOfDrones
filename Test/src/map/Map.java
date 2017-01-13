@@ -44,6 +44,8 @@ public class Map {
 	public Object render = new Object();
 	Object syncRetrieval = new Object();
 	
+	public int radius=1;
+	
 	/** Initialization of the Map object. Must be called upon construction.
 	 * @param*/
 	public void Init(String seed) {
