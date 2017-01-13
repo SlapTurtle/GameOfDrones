@@ -189,6 +189,11 @@ public class ExpDrone extends Drone {
 		return arr;
 	}
 
+	/**
+	 * gets what quadrant the position is in, too use for switches
+	 * @param p
+	 * @return
+	 */
 	private int getQuadrant(Position p) {
 		int q=0;
 		
