@@ -12,9 +12,7 @@ public class ExpDrone extends Drone {
 	protected boolean returnToBase = false;
 	private boolean beenHereBefore = false;
 	private boolean returnToCirculation = false;
-	
-	private boolean yolo= false;
-	
+		
 	public ExpDrone(Map map, Point position) {
 		super(map, position);
 		this.TYPE = "EXPDRONE";
