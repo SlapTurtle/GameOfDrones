@@ -45,6 +45,8 @@ public class Map {
 	public Object render = new Object();
 	Object syncRetrieval = new Object();
 	
+	public int radius=1;
+	
 	/** Initialization of the Map object. Must be called upon construction.
 	 * @param*/
 	public void Init(String seed) {
@@ -217,7 +219,8 @@ public class Map {
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
-		Point p = drones.getFirst().position;
+		Point p = new Point(0,0);
+		//Point p = drones.getFirst().position;
 		
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
@@ -232,7 +235,7 @@ public class Map {
 				}
 			}
 		}
-		N[size/2][size/2] = "EXPDRONE";
+		N[size/2][size/2] = "BASE";
 		return N;
 	}
 	
