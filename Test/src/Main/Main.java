@@ -45,6 +45,8 @@ public class Main {
 		baseNode.addAgent(new mapMerger());
 		baseNode.addAgent(new BaseAgent());
 		baseNode.start();
+		baseNode.put(new Tuple("GoldCounter", 0));
+		baseNode.put(new Tuple("TreeCounter", 0));
 		
 		//Drones
 		PointToPoint p2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
@@ -52,15 +54,15 @@ public class Main {
 		int max = exploreDrones+harvestDrones;
 		Node[] allDrones = new Node[max];
 		for(int i = 0; i<max; i++){
-			Node drone = new Node(droneID+i, new TupleSpace());
-			drone.addPort(port);
-			drone.addAttribute(new Attribute("p2base", p2base));
-			drone.addAttribute(new Attribute("p2map", p2map));
+			Node droneNode = new Node(droneID+i, new TupleSpace());
+			droneNode.addPort(port);
+			droneNode.addAttribute(new Attribute("p2base", p2base));
+			droneNode.addAttribute(new Attribute("p2map", p2map));
 //			Agent AI = (i > exploreDrones) ? new HarDrone() : new ExpDrone();
 //			AI.setPostition(new Point(x?, y?));
 //			drone.addAgent(AI);
-			baseNode.put(new Tuple("ready", droneID+i));
-			drone.start();
+			droneNode.start();
+			droneNode.put(new Tuple("ready", droneID+i));
 		}
 		
 		//UI
