@@ -81,6 +81,12 @@ public class ExpDrone extends Drone {
 		return nP; 
 	}
 
+	/**
+	 * Moves drone to circulation, then sets beenHereBefore boolean true, to ensure that
+	 * the drone knows when to return to base
+	 * @param nextPoint
+	 * @return moved nextPoint
+	 */
 	private Point returnToCirculation(Point nP) {
 		if(nP.x==this.radius){
 			returnToCirculation=false;
@@ -92,6 +98,11 @@ public class ExpDrone extends Drone {
 		return nP;
 	}
 
+	/**
+	 * Moves the drone towards the base, when there sets booleans and increases map.radius as well as moves raduisPoint. 
+	 * @param nextPoint
+	 * @return Moved nextPoint
+	 */
 	private Point returnToBase(Point nP) {
 		if(nP.x>=1){
 			nP.move(nP.x-1, nP.y);
