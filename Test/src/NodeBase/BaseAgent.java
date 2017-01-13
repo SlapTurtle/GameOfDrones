@@ -1,4 +1,4 @@
-package baseAI;
+package NodeBase;
 import map.Map;
 import resources.Gold;
 
@@ -11,16 +11,17 @@ import org.cmg.resp.knowledge.Tuple;
 
 
 public class BaseAgent extends Agent {
-	protected int radius = 2;
-	protected int hRadius = 10;
+	int radius = 2;
+	int hRadius = 10;
 	Map map = new Map();
-	private LinkedList<Tuple> gold = new LinkedList<Tuple>();
-	private LinkedList<Tuple> tree = new LinkedList<Tuple>();
+	LinkedList<Tuple> gold = new LinkedList<Tuple>();
+	LinkedList<Tuple> tree = new LinkedList<Tuple>();
 	LinkedList<Point> pg = new LinkedList<Point>();
 	LinkedList<Point> pt = new LinkedList<Point>();
-	private Point center = new Point(0,0);
-	public BaseAgent(String name) {
-		super(name);
+	Point center = new Point(0,0);
+	
+	public BaseAgent() {
+		super("BaseAgent");
 	}
 
 	@Override

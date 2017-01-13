@@ -81,7 +81,8 @@ public class UI extends Application {
         	Empty empty = new Empty(gridDisplay, x, y);
         	this.pane.getChildren().add(empty);
         }
-        public void moveDrone(UUID id, Point p){
+        
+        public void moveDrone(String id, Point p){
         	for (Drone d : gridDisplay.drones){
         		if (d.getId().equals(id)){
         			d.point.x = p.x;
@@ -89,14 +90,14 @@ public class UI extends Application {
         		}
         	}
         }
-        public void moveDrone(UUID ID, int dir){
+        public void moveDrone(String ID, int dir){
         	if (ID == null)
         		return;
         	System.out.println(gridDisplay.drones.size());
         	for (Drone d : gridDisplay.drones){
         		System.out.println(d.point.toString());
-        		System.out.println(d.uuid);
-        		if (d.uuid.equals(ID)){
+        		System.out.println(d.id);
+        		if (d.id.equals(ID)){
         			switch(dir){
         			case 0: d.setX(d.point.x-1); break;
         			case 1: d.setX(d.point.x+1); break;
@@ -260,13 +261,13 @@ public class UI extends Application {
 	
 	static class Drone extends CoordinateShape {
 		static final Paint c = Color.INDIGO;		
-		public UUID uuid;
+		public String id;
 		Point point = new Point(0,0);
 		public Drone(GridDisplay gridDisplay, int x, int y, UIcontrol uic){
 			super(gridDisplay, x, y, c);
 			point.x = x;
 			point.y = y;
-			this.uuid = uic.getID(point);
+			id = uic.getID(point);
 			System.out.println("point " + point.toString());
 			System.out.println("setting id=" + uic.getID(point));
 			gridDisplay.drones.add(this);

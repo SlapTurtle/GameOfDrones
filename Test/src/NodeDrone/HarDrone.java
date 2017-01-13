@@ -1,24 +1,24 @@
-package gatheringAI;
+package NodeDrone;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import baseAI.BaseAgent;
+import NodeBase.BaseAgent;
 import map.Map;
-import resources.Drone;
 import util.AStarPoint;
 import util.Position;
 
-public class HarDrone extends Drone {
-	private boolean hasHarvested = false;
-	BaseAgent base = new BaseAgent("Allan");
+public class HarDrone extends DroneAI {
+	public static int droneCounter = 0;
+	
+	boolean hasHarvested = false;
 	LinkedList<Point> pathOut = new LinkedList<Point>();
 	LinkedList<Point> pathHome = new LinkedList<Point>();
 	
 	public HarDrone(Map map, Point position) {
-		super(map, position);
+		super(map, position, "HARDRONE" + droneCounter++);
 	}
 	
 	@Override

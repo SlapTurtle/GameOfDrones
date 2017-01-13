@@ -1,4 +1,4 @@
-package expAI;
+package NodeDrone;
 
 import java.awt.Point;
 
@@ -6,7 +6,9 @@ import map.Map;
 import resources.*;
 import util.Position;
 
-public class ExpDrone extends Drone {
+public class ExpDrone extends DroneAI {
+	public static int DroneCounter = 0;
+	
 	protected Position radiusPoint;
 	protected boolean returnToBase = false;
 	private boolean beenHereBefore = false;
@@ -15,8 +17,7 @@ public class ExpDrone extends Drone {
 	private int radius;
 		
 	public ExpDrone(Map map, Point position) {
-		super(map, position);
-		this.TYPE = "EXPDRONE";
+		super(map, position, "EXPDRONE" + DroneCounter++);
 		this.radiusPoint = new Position(map.radius, 0);
 		this.radius=map.radius;
 	}

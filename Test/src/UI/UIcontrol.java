@@ -3,10 +3,9 @@ package UI;
 import java.awt.Point;
 import java.util.UUID;
 
-
+import NodeDrone.DroneAI;
 import UI.UI.GridDisplay;
 import map.Map;
-import resources.Drone;
 
 
 public final class UIcontrol {
@@ -18,10 +17,10 @@ public final class UIcontrol {
 		this.gridDisplay = ui;
 	}
 	
-	public void move(UUID id, Point p) {
+	public void move(String id, Point p) {
 		gridDisplay.moveDrone(id, p);
 	}
-	public void move(UUID id, int dir){
+	public void move(String id, int dir){
 		System.out.println("moving " + id.toString() + " in dir " + dir);
 		gridDisplay.moveDrone(id, dir);
 	}
@@ -34,10 +33,10 @@ public final class UIcontrol {
 		
 	}
 	
-	public UUID getID(Point p){
-		for (Drone d : map.drones) {
+	public String getID(Point p){
+		for (DroneAI d : map.drones) {
 			if (d.position.equals(p)) {
-				return d.ID;
+				return d.id;
 			}
 		}
 		return null;

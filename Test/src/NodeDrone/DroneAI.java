@@ -1,4 +1,4 @@
-package resources;
+package NodeDrone;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -8,19 +8,25 @@ import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 import map.*;
 
-public class Drone extends Agent {
-
-	protected Map map;
-	public String TYPE;
-	public UUID ID;
-	public Point position = new Point();
+public abstract class DroneAI extends Agent {
 	
-	public Drone(Map map, Point position) {
-		super(UUID.randomUUID().toString());
-		this.ID = UUID.fromString(this.name);
+	//Assigned by Main class
+	public static PointToPoint self2base;
+	public static PointToPoint self2map;
+	public static PointToPoint[] self2drone;
+	//--------------------------------------
+	
+	protected Map map;
+	public String type;
+	public String id;
+	public Point position;
+	
+	public DroneAI(Map map, Point position, String ID) {
+		super(ID);
 		this.map = map;
 		this.position = position;
 		this.map.drones.add(this);
@@ -64,15 +70,14 @@ public class Drone extends Agent {
 		if (p.distance(position) > 1.21)
 			return;
 		try {
-			Template template = new Template(new ActualTemplateField(TYPE),
+			Template template = new Template(new ActualTemplateField(type),
 					new ActualTemplateField(position.x),
 					new ActualTemplateField(position.y));
 			get(template, Self.SELF);
 			int[] xy = new int[]{p.x,p.y};
 			position.move(xy[0], xy[1]);
-			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
+			Tuple t2 = new Tuple(type, xy[0], xy[1]);
 			put(t2, Self.SELF);
-			
 			explore();
 		} catch (Exception e) {
 			e.printStackTrace();

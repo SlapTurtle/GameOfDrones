@@ -1,26 +1,16 @@
 package resources;
 
-import org.cmg.resp.knowledge.Tuple;
-
-import map.Map;
-
 import java.util.UUID;
-import java.util.LinkedList;
-import java.util.List;
 import java.awt.Point;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-
 /** Base class representing all resources and their properties. */
-public class Resource {
+public abstract class Resource {
 	UUID cluster;
 	
-	private static final String TYPE = "default";
-	public static String type;
-	
-	public static boolean harvestable = false;
-	public static boolean pathable = true;
+	public String type;
+	public boolean harvestable;
+	public boolean pathable;
 	
 	public Point center;
 	public int shape;
@@ -31,10 +21,6 @@ public class Resource {
 		this.center = center;
 		this.shape = evaluateShape(shape);
 		this.size = size;
-	}
-
-	public static String type() {
-		return type;
 	}
 	
 	public static Class toClass(String name) {
@@ -49,7 +35,6 @@ public class Resource {
 	} 
 
 	public static boolean isPathable(String name) {
-		Object o = toClass(name);
 		boolean b = false;
 		try {
 			Field f = toClass(name).getField("pathable");
@@ -70,15 +55,5 @@ public class Resource {
 		case "polygon" :return 3;
 		default		   :return 0;
 		}
-	}
-
-//	public List<Tuple> addTuples() {
-//		
-//		List<Tuple> list = new LinkedList<Tuple>();
-//
-//		// TODO CALL ALGORITHM
-//		
-//		return list;
-//	}
-	
+	}	
 }

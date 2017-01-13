@@ -7,9 +7,10 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
+
+import NodeDrone.DroneAI;
 import UI.UIcontrol;
 import resources.Base;
-import resources.Drone;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class Map {
 	Generator generator;
 	World world;
 	int[] bounds;
-	public LinkedList<Drone> drones = new LinkedList<Drone>();
+	public LinkedList<DroneAI> drones = new LinkedList<DroneAI>();
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
