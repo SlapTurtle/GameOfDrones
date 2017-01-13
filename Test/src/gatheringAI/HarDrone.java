@@ -5,15 +5,56 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import baseAI.BaseAgent;
 import map.Map;
-import map.World;
+import resources.Drone;
 import util.AStarPoint;
+import util.Position;
 
-
-public class AStar {
-
+public class HarDrone extends Drone {
+	private boolean hasHarvested = false;
+	BaseAgent base = new BaseAgent("Allan");
+	LinkedList<Point> pathOut = new LinkedList<Point>();
+	LinkedList<Point> pathHome = new LinkedList<Point>();
 	
-	private static ArrayList<Point> algorithm (Point pointStart, Point pointEnd, Map map){
+	public HarDrone(Map map, Point position) {
+		super(map, position);
+	}
+	
+	@Override
+	protected void doRun() {
+		while(true) {
+			synchronized (map.render) {
+				try {
+					map.render.wait();
+					if (pathOut.isEmpty() && pathHome.isEmpty()) {
+						//target point from base
+						//call a star on target point
+						//ASTAR
+					}
+						
+					else if (!pathOut.isEmpty()) { //on way out
+						Point target = pathOut.remove(0);
+						super.move(target);
+						pathHome.add(0, target);
+						
+						//////////////////////////////////////////
+						// remeber to implement removing of res //
+						//////////////////////////////////////////
+						if (pathOut.isEmpty()) hasHarvested=true;
+					}
+					else { //on way home
+						Point target = pathHome.remove(0);
+						super.move(target);
+					}
+				} catch (InterruptedException e) {
+					
+				}
+			}
+			//move(0)1
+		}
+	}
+	private static ArrayList<Point> aStar(Point pointStart, Point pointEnd, Map map){
 		//Declaration of lists
 		LinkedList<AStarPoint> closedSet = new LinkedList<AStarPoint>();
 		LinkedList<AStarPoint> openSet = new LinkedList<AStarPoint>();
