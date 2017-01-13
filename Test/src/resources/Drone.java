@@ -1,6 +1,7 @@
 package resources;
 
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
@@ -9,27 +10,24 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 import map.*;
-import util.Position;
 
 public class Drone extends Agent {
 
 	protected Map map;
 	public String TYPE;
 	public UUID ID;
-	public Position position = new Position();
+	public Point position = new Point();
 	
 	public Drone(Map map, Point position) {
 		super(UUID.randomUUID().toString());
 		this.ID = UUID.fromString(this.name);
 		this.map = map;
-		this.position = new Position(position.x, position.y);
+		this.position = position;
 		this.map.drones.add(this);
 	}
 
 	protected void doRun() {
 		Random r = new Random();
-		Dice dice = new Dice(r);
-		int dir = r.nextInt(4);
 		try {
 			explore();
 		} catch (Exception e) {
@@ -44,18 +42,13 @@ public class Drone extends Agent {
 				}
 			}
 			
-			map.RetrievePathableNeighbors(new Point(position.x, position.y));
-			
-			if (dice.roll(0.4)) {
-				move(dir);
-			} else {
-				move(r.nextInt(4));
-			}
+			LinkedList<Point> list = map.RetrievePathableNeighbors(position);
+			move(list.get(r.nextInt(list.size())));
 		}
 	}
 	
 	private void explore() throws Exception {
-		for (Point p : World.getNeighbors(position.toPoint())) {
+		for (Point p : World.getNeighbors(position)) {
 			Template t = new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y));
 			boolean b = (queryp(t) == null) ? put(new Tuple(p.x, p.y), Self.SELF) : false;
 		}
@@ -68,7 +61,7 @@ public class Drone extends Agent {
 	}
 
 	protected void move(Point p) {
-		if (p.distance(position.toPoint()) > 1.21)
+		if (p.distance(position) > 1.21)
 			return;
 		try {
 			Template template = new Template(new ActualTemplateField(TYPE),

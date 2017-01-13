@@ -1,91 +1,92 @@
 package gatheringAI;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import map.Map;
 import map.World;
+import util.AStarPoint;
 
 
 public class AStar {
+
 	
-	private LinkedList<Point> closedSet = new LinkedList<Point>();
-	private LinkedList<Point> openSet = new LinkedList<Point>();
-	private LinkedList<Point> cameFrom = new LinkedList<Point>();
-	
-	private Point start; //0,0
-	private Point end; //goal,goal
-	private Point current;
-	
-	public AStar(Point start, Point end){
-		this.start=start;
-		this.end=end;
-		openSet.add(start);
-		current=start;
-		System.out.println(start());
-	}
-	
-	public LinkedList<Point> start(){
+	private static ArrayList<Point> algorithm (Point pointStart, Point pointEnd, Map map){
+		//Declaration of lists
+		LinkedList<AStarPoint> closedSet = new LinkedList<AStarPoint>();
+		LinkedList<AStarPoint> openSet = new LinkedList<AStarPoint>();
 		
-		int [][] gScore = new int[Math.abs(end.x)+1][Math.abs(end.y)+1];
-		int tentativeGScore = 1;
-		gScore[end.x][end.y]=1;
-		LinkedList<Point> neighbors = new LinkedList<Point>();
-		current=lowestGScore(gScore);
-		while(!openSet.isEmpty()){
-			if(current==end){
-				return reconstructPath();
+		//conversion of Points to AstarPoints
+		AStarPoint start = new AStarPoint(pointStart.x,pointStart.y);
+		AStarPoint end = new AStarPoint(pointEnd.x,pointEnd.y);
+		
+		//init of start node
+		start.gscore=0;
+		start.fscore=start.distance(end);
+		//Init of openSet
+		openSet.add(start);
+		
+		
+		while (!openSet.isEmpty()){
+			AStarPoint current;
+			
+			//Getting node with lowest fScore
+			Iterator<AStarPoint> it = openSet.iterator();
+			current=it.next();
+			while(it.hasNext()) {
+				AStarPoint temp = it.next();
+				if(temp.fscore<current.fscore) current=temp;
 			}
 			
+			if(current.equals(end)) return reconstructPath(current);
+			
+			//moving current to closedSet
 			openSet.remove(current);
 			closedSet.add(current);
 			
-			neighbors = World.getNeighbors(current);
-			LinkedList<Point> tempNeighbors = new LinkedList<Point>();
-			for(Point p1 : neighbors){
-				if(p1.x<0 || p1.y<0 ){
-					tempNeighbors.add(p1);
-				}
-			}
-			for(Point p1 : tempNeighbors){
-				neighbors.remove(p1);
+			//hacks to get AStarPoint neigbors list
+			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(map.RetrievePathableNeighbors(current));
+			
+			for(AStarPoint neighbor : neighbors){
+				//ignores already visited points.
+				if(closedSet.contains(neighbor)) continue;
+				
+				int tentativeGscore = current.gscore + 1;
+				
+				//if neighbor is not registered before
+				if(!openSet.contains(neighbor)) openSet.add(neighbor);
+				
+				//if neighbor is registered before
+				//investigate if this path is better
+				else if(tentativeGscore>=neighbor.gscore) continue;
+				
+				//if neighbor is not registered before or this is a better path than the excisting
+				//calculate following:
+				
+				neighbor.cameFrom=current;
+				neighbor.gscore=tentativeGscore;
+				neighbor.fscore=neighbor.gscore+neighbor.distance(end);
+				
 			}
 			
-			for(Point p1 : neighbors){
-				if(closedSet.contains(p1))continue;
-				
-				tentativeGScore=gScore[current.x][current.y]+1;
-				
-				if(!openSet.contains(p1)) openSet.add(p1);
-				
-				else if(tentativeGScore>=gScore[p1.x][p1.y]) continue;
-				
-				cameFrom.add(p1);
-				gScore[p1.x][p1.y] = tentativeGScore;
-			}
 		}
 		
-		return cameFrom;
+		return null;
 	}
 
-	
-
-	private Point lowestGScore(int[][] gScore) {
-		Point p=new Point(openSet.getFirst());
-		int min=gScore[p.x][p.y];
-		
-		for(Point p1 : openSet){
-			if(gScore[p1.x][p1.y]<min && gScore[p1.x][p1.y]!=0){
-				p=p1;
-				min=gScore[p1.x][p1.y];
-			}
+	private static ArrayList<Point> reconstructPath(AStarPoint end) {
+		ArrayList<AStarPoint> path = new ArrayList<AStarPoint>();
+		AStarPoint current=end;
+		path.add(current);
+		while(current.cameFrom!=null){
+			current=current.cameFrom;
+			path.add(0,current);
 		}
-				
-		return p;
+		
+		
+		return AStarPoint.convertToPointList(path);
 	}
-	
-	
-	private LinkedList<Point> reconstructPath() {
-		LinkedList<Point> path = new LinkedList<Point>();
-		return cameFrom;
-	}
+
 }

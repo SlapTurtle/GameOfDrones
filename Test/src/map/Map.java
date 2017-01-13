@@ -207,8 +207,7 @@ public class Map {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			e.printStackTrace();		}
 		LinkedList<Point> list = retriever.neighbors;
 		System.out.println("FOUND " + list.size() + " PATHABLE NEIGHBORS");
 		return list;
@@ -221,7 +220,7 @@ public class Map {
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
-		Point p = drones.getFirst().position.toPoint();
+		Point p = drones.getFirst().position;
 		
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
