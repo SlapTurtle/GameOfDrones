@@ -6,14 +6,14 @@ import map.Map;
 
 public class ExplorationDrone extends Resource {
 	
-	public static final String TYPE = "EXPDRONE";
-	public static boolean harvestable = false;
-	public static boolean pathable = false;
+	public static final String type = "EXPDRONE";
+	public static final boolean harvestable = false;
+	public static final boolean pathable = true;
 	
 	public ExplorationDrone(Point center, String shape, int size){
 		super(center, shape, size);
-		type = "EXPDRONE";
-		harvestable = false;
-		pathable = false;
+		super.pathable = pathable;
+		super.harvestable = harvestable;
+		super.type = type;
 	}
 }

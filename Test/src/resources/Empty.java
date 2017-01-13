@@ -6,14 +6,14 @@ import map.Map;
 
 public class Empty extends Resource {
 	
-	public static final String TYPE = "EMPTY";
-	public static boolean harvestable = false;
-	public static boolean pathable = true;
+	public static final String type = "EMPTY";
+	public static final boolean harvestable = false;
+	public static final boolean pathable = true;
 	
 	public Empty(Point center, String shape, int size){
 		super(center, shape, size);
-		type = "EMPTY";
-		harvestable = false;
-		pathable = true;
+		super.pathable = pathable;
+		super.harvestable = harvestable;
+		super.type = type;
 	}
 }
