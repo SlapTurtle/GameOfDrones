@@ -6,12 +6,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import map.Map;
-import map.World;
 import util.AStarPoint;
 
 
 public class AStar {
 
+	public AStar(){
+		
+	}
 	
 	private static ArrayList<Point> algorithm (Point pointStart, Point pointEnd, Map map){
 		//Declaration of lists
