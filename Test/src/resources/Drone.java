@@ -73,8 +73,6 @@ public class Drone extends Agent {
 			Tuple t2 = new Tuple(TYPE, xy[0], xy[1]);
 			put(t2, Self.SELF);
 			
-			//map.UI.moveDrone(map.random.nextInt(10), 0);
-			
 			explore();
 		} catch (Exception e) {
 			e.printStackTrace();

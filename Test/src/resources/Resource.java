@@ -30,7 +30,6 @@ public class Resource {
 		this.center = center;
 		this.shape = evaluateShape(shape);
 		this.size = size;
-		//System.out.println("New cluster, ID=" + cluster.toString());
 	}
 
 	public static String type() {
@@ -42,9 +41,6 @@ public class Resource {
 		Class c = null;
 		try {
 			c = Class.forName("resources." + s);
-			//Constructor<?> constructor = c.getConstructor(Map.class, Point.class, String.class, int.class);
-			//res = getDeclaredConstructor(Map.class, Point.class, String.class, int.class).newInstance(null, new Point(), new String(), 0);
-			//res = constructor.newInstance(new Object[] { , null, null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -116,8 +112,6 @@ public class Resource {
 				}
 			}
 		}
-		
-		
 
 		// Scatter
 		if (shape == 2) {
