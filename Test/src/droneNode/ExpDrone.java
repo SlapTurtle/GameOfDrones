@@ -1,42 +1,40 @@
 package droneNode;
 
 import java.awt.Point;
+import java.io.IOException;
 
-import map.Map;
-import resources.*;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
+
 import util.Position;
 
 public class ExpDrone extends DroneAI {
 	public static int DroneCounter = 0;
 	
-	protected Position radiusPoint;
+	protected Position radiusPoint = new Position(0,0);
 	protected boolean returnToBase = false;
 	private boolean beenHereBefore = false;
 	private boolean returnToCirculation = false;
 	
-	private int radius;
+	private int radius = 0;
 		
-	public ExpDrone(Map map, Point position) {
-		super(map, position, "EXPDRONE" + DroneCounter++);
-		this.radiusPoint = new Position(map.radius, 0);
-		this.radius=map.radius;
+	public ExpDrone(Point position) {
+		super(position, "EXPDRONE" + DroneCounter++);
 	}
 
 	@Override
 	protected void doRun() {
 		while(true) {
-			synchronized (map.render) {
-				try {
-					map.render.wait();
-				} catch (InterruptedException e) {
-					
-				}
-			}
-			
-			
-			
-			move(moveDrone(new Position(position.x,position.y),this.radius));
-			//move(0);
+			try {
+				get(new Template(new ActualTemplateField("go")), Self.SELF);
+				move(moveDrone(new Position(position.x,position.y)));
+				put(new Tuple("ready"),Self.SELF);
+			} catch (Exception e){
+				e.printStackTrace();
+			}			
 		}
 	}
 
@@ -45,8 +43,11 @@ public class ExpDrone extends DroneAI {
 	 * @param d
 	 * @param dir
 	 * @return
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	private Point moveDrone(Position d, int radius){
+	private Point moveDrone(Position d) throws InterruptedException, IOException{
+		
 		Point nP = new Point(d.getX(), d.getY());
 		
 		if(returnToBase) return returnToBase(nP);
@@ -103,8 +104,10 @@ public class ExpDrone extends DroneAI {
 	 * Moves the drone towards the base, when there sets booleans and increases map.radius as well as moves raduisPoint. 
 	 * @param nextPoint
 	 * @return Moved nextPoint
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	private Point returnToBase(Point nP) {
+	private Point returnToBase(Point nP) throws InterruptedException, IOException {
 		if(nP.x>=1){
 			nP.move(nP.x-1, nP.y);
 		}
@@ -112,11 +115,18 @@ public class ExpDrone extends DroneAI {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
-			map.radius+=2;
-			this.radius=map.radius;
-			radiusPoint.move(map.radius, radiusPoint.getY());
+			radius = getNewRadius();
+			radiusPoint.set(radius, radiusPoint.y);
 		}
 		return nP;
+	}
+	
+	private int getNewRadius() throws InterruptedException, IOException {
+		 return query(
+				 	new Template(	new ActualTemplateField("Radius"),
+				 					new FormalTemplateField(Integer.class)),
+				 	DroneAI.self2base)
+				.getElementAt(Integer.class, 1);
 	}
 
 	/**
@@ -165,8 +175,7 @@ public class ExpDrone extends DroneAI {
 	 */
 	private Position[] getFieldsToCheck(Position p){
 		Position[] arr = new Position[2];
-		int q; 
-		q=getQuadrant(p);
+		int q = getQuadrant(p);
 		switch(q){
 			case 1 : arr[0]= new Position(p.getX()-1, p.getY());
 					 arr[1]= new Position(p.getX(), p.getY()+1);
@@ -198,10 +207,10 @@ public class ExpDrone extends DroneAI {
 	private int getQuadrant(Position p) {
 		int q=0;
 		
-		if(p.getX()>0 && p.getY()>=0) q=1;
-		else if(p.getX()<=0 && p.getY()>0) q=2;
-		else if(p.getX()<0 && p.getY()<=0) q=3;
-		else if(p.getX()>=0 && p.getY()<0) q=4;
+		if(p.getX()>=0 && p.getY()>=0) q=1;
+		else if(p.getX()<=0 && p.getY()>=0) q=2;
+		else if(p.getX()<=0 && p.getY()<=0) q=3;
+		else if(p.getX()>=0 && p.getY()<=0) q=4;
 		
 		return q;
 	}

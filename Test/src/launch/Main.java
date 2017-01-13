@@ -1,6 +1,9 @@
 package launch;
 
+import java.awt.Point;
+
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.PointToPoint;
@@ -45,23 +48,24 @@ public class Main {
 		baseNode.addPort(port);
 		baseNode.addAgent(new MapMerger());
 		baseNode.addAgent(new BaseAgent());
+		baseNode.put(new Tuple("Radius", 0));
 		baseNode.put(new Tuple("GoldCounter", startGoldCount));
 		baseNode.put(new Tuple("TreeCounter", startTreeCount));
 		baseNode.put(new Tuple("ExpDroneCounter", exploreDrones));
 		baseNode.put(new Tuple("HarDroneCounter", harvestDrones));
 		baseNode.start();
 		
-		
 		//Drones
 		int max = exploreDrones+harvestDrones;
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
 		for(int i = 0; i<max; i++){
+			Point p = new Point(0, 0); //TODO: different {x,y}
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
-//			Agent AI = (i > exploreDrones) ? new HarDrone() : new ExpDrone();
-//			AI.setPostition(new Point(x?, y?));
-//			drone.addAgent(AI);
+			DroneAI AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
+			droneNode.addAgent(AI);
+			droneNode.addAttribute(new Attribute("AI", AI));
 			droneNodes[i] = droneNode;
 			p2drones[i] = new PointToPoint(droneID+i, new VirtualPortAddress(port_int));
 		}
@@ -83,7 +87,7 @@ public class Main {
 //		//UI - getall "ready" tuples + put for all "go!" tuple
 		
 		//TEMP
-		Map map = new Map();
-		new Console(map, DELAY, FIELD);
+		//Map map = new Map();
+		new Console(baseNode, mapNode, droneNodes, DELAY, FIELD);
 	}
 }

@@ -33,7 +33,7 @@ public class Map {
 	World world;
 	int[] bounds;
 	public LinkedList<DroneAI> drones = new LinkedList<DroneAI>();
-	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
+	protected LinkedList<DroneListener> listeners = new LinkedList<DroneListener>();
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
 	
@@ -101,12 +101,12 @@ public class Map {
 
 	public void addListeners(World world) {
 		LinkedList<Point> dlist = new LinkedList<Point>();
-		for (droneListener d : listeners) {
+		for (DroneListener d : listeners) {
 			dlist.add(d.center);
 		}
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
 			if (world.center.equals(new Point(0,0))) {
-				droneListener a = new droneListener(this, p);
+				DroneListener a = new DroneListener(this, p);
 				map.addAgent(a);
 				listeners.add(a);
 			} else if (!p.equals(new Point(0,0))) {
@@ -116,7 +116,7 @@ public class Map {
 						exists = true;
 				}
 				if (!exists) {
-					droneListener a = new droneListener(this, p);
+					DroneListener a = new DroneListener(this, p);
 					map.addAgent(a);
 					listeners.add(a);
 				}

@@ -1,4 +1,4 @@
-package mapNode;
+package baseNode;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -9,6 +9,7 @@ import org.cmg.resp.topology.Self;
 
 public class MapMerger extends Agent {
 	public static final String ACTION_NEW = "new";
+	public static final String ACTION_OLD = "old";
 	public static final String MAP_EDGE = "mapedge";
 	
 	public MapMerger() {
@@ -50,6 +51,6 @@ public class MapMerger extends Agent {
 	}
 	
 	private Template searchXY(int x, int y){
-		return new Template(new ActualTemplateField(ACTION_NEW), new ActualTemplateField(x), new ActualTemplateField(y));
+		return new Template(new ActualTemplateField(ACTION_OLD), new ActualTemplateField(x), new ActualTemplateField(y));
 	}
 }

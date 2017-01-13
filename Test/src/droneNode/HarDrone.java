@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import baseNode.BaseAgent;
-import map.Map;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
+
+import map.Map; //TEMP
 import util.AStarPoint;
 import util.Position;
 
@@ -17,43 +21,46 @@ public class HarDrone extends DroneAI {
 	LinkedList<Point> pathOut = new LinkedList<Point>();
 	LinkedList<Point> pathHome = new LinkedList<Point>();
 	
-	public HarDrone(Map map, Point position) {
-		super(map, position, "HARDRONE" + droneCounter++);
+	public HarDrone(Point position) {
+		super(position, "HARDRONE" + droneCounter++);
 	}
 	
 	@Override
 	protected void doRun() {
 		while(true) {
-			synchronized (map.render) {
-				try {
-					map.render.wait();
-					if (pathOut.isEmpty() && pathHome.isEmpty()) {
-						//target point from base
-						//call a star on target point
-						//ASTAR
-					}
-						
-					else if (!pathOut.isEmpty()) { //on way out
-						Point target = pathOut.remove(0);
-						super.move(target);
-						pathHome.add(0, target);
-						
-						//////////////////////////////////////////
-						// remeber to implement removing of res //
-						//////////////////////////////////////////
-						if (pathOut.isEmpty()) hasHarvested=true;
-					}
-					else { //on way home
-						Point target = pathHome.remove(0);
-						super.move(target);
-					}
-				} catch (InterruptedException e) {
-					
-				}
-			}
-			//move(0)1
+			try {
+				get(new Template(new ActualTemplateField("go")), Self.SELF);
+				move();
+				put(new Tuple("ready"),Self.SELF);
+			} catch (Exception e){
+				e.printStackTrace();
+			}			
 		}
 	}
+	
+	private void move(){
+		if (pathOut.isEmpty() && pathHome.isEmpty()) {
+			//target point from base
+			//call a star on target point
+			//ASTAR
+		}
+			
+		else if (!pathOut.isEmpty()) { //on way out
+			Point target = pathOut.remove(0);
+			super.move(target);
+			pathHome.add(0, target);
+			
+			//////////////////////////////////////////
+			// remeber to implement removing of res //
+			//////////////////////////////////////////
+			if (pathOut.isEmpty()) hasHarvested=true;
+		}
+		else { //on way home
+			Point target = pathHome.remove(0);
+			super.move(target);
+		}
+	}
+	
 	private static ArrayList<Point> aStar(Point pointStart, Point pointEnd, Map map){
 		//Declaration of lists
 		LinkedList<AStarPoint> closedSet = new LinkedList<AStarPoint>();

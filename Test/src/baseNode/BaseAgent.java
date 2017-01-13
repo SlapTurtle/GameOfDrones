@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.Tuple;
 
-
-
 public class BaseAgent extends Agent {
 	int radius = 2;
 	int hRadius = 10;

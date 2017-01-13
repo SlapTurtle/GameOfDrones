@@ -20,37 +20,14 @@ public abstract class DroneAI extends Agent {
 	public static PointToPoint[] self2drone;
 	//--------------------------------------
 	
-	protected Map map;
 	public String type;
 	public String id;
 	public Point position;
 	
-	public DroneAI(Map map, Point position, String ID) {
-		super(ID);
-		this.map = map;
+	public DroneAI(Point position, String id) {
+		super(id);
+		this.id = id;
 		this.position = position;
-		this.map.drones.add(this);
-	}
-
-	protected void doRun() {
-		Random r = new Random();
-		try {
-			explore();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		while(true) {
-			synchronized (map.render) {
-				try {
-					map.render.wait();
-				} catch (InterruptedException e) {
-					
-				}
-			}
-			
-			LinkedList<Point> list = map.RetrievePathableNeighbors(position);
-			move(list.get(r.nextInt(list.size())));
-		}
 	}
 	
 	private void explore() throws Exception {
@@ -60,11 +37,11 @@ public abstract class DroneAI extends Agent {
 		}
 	}
 	
-	private void move(int dir) {
-		int[] xy = getDirection(dir, position.x, position.y);
-		move(new Point(xy[0], xy[1]));
-		//map.UI.move(ID, dir);
-	}
+//	protected void move(int dir) {
+//		int[] xy = getDirection(dir, position.x, position.y);
+//		move(new Point(xy[0], xy[1]));
+//		//map.UI.move(ID, dir);
+//	}
 
 	protected void move(Point p) {
 		if (p.distance(position) > 1.21)
@@ -84,14 +61,14 @@ public abstract class DroneAI extends Agent {
 		}
 	}
 	
-	private static int[] getDirection(int dir, int x, int y){
-		switch(dir){
-			case 0: x-=1; break; // LEFT
-			case 1: x+=1; break; // RIGHT
-			case 2: y-=1; break; // UP
-			case 3: y+=1; break; // DOWN
-		}
-		return new int[]{x,y};
-	}
+//	private static int[] getDirection(int dir, int x, int y){
+//		switch(dir){
+//			case 0: x-=1; break; // LEFT
+//			case 1: x+=1; break; // RIGHT
+//			case 2: y-=1; break; // UP
+//			case 3: y+=1; break; // DOWN
+//		}
+//		return new int[]{x,y};
+//	}
 }
 
