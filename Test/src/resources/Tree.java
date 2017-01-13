@@ -10,8 +10,8 @@ public class Tree extends Resource {
 	public static boolean harvestable = true;
 	public static boolean pathable = false;
 	
-	public Tree(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
+	public Tree(Point center, String shape, int size) {
+		super(center, shape, size);
 		type = "TREE";
 		harvestable = true;
 		pathable = false;

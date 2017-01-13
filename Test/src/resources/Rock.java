@@ -10,8 +10,8 @@ public class Rock extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = false;
 	
-	public Rock(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
+	public Rock(Point center, String shape, int size) {
+		super(center, shape, size);
 		type = "ROCK";
 		harvestable = false;
 		pathable = false;

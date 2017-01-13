@@ -42,7 +42,5 @@ public class Hasher {
 	public int h(int A, int x, int B, int y, int C, int D) {
 		
 		return (D != 0) ? (A / (x + B)) % (y + C) % D : (A / (x + B)) % (C - y);
-	}
-	
-	
+	}	
 }

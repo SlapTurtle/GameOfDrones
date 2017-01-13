@@ -10,8 +10,8 @@ public class HarvestingDrone extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = true;
 	
-	public HarvestingDrone(Map map, Point center, String shape, int size){
-			super(map, center, shape, size);
+	public HarvestingDrone(Point center, String shape, int size){
+			super(center, shape, size);
 			type = "HARDRONE";
 			harvestable = false;
 			pathable = false;

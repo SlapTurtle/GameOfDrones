@@ -1,6 +1,7 @@
 package map;
 
 import UI.Console;
+import map.Map;
 
 public class Main {
 

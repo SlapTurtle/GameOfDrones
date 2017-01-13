@@ -19,8 +19,8 @@ public class BaseAgent extends Agent {
 	LinkedList<Point> pg = new LinkedList<Point>();
 	LinkedList<Point> pt = new LinkedList<Point>();
 	
-	public BaseAgent(String name) {
-		super(name);
+	public BaseAgent() {
+		super("BaseAgent");
 	}
 
 	@Override
@@ -55,16 +55,16 @@ public class BaseAgent extends Agent {
 			}
 	}
 	
-	public Point[] sendHarvester(){
-		if(gold.isEmpty() && tree.isEmpty()){
-			getGold();
-			getTree();
-			sendHarvester();
-		}
-		else if (gold.isEmpty()){
-			
-		}
-	}
+//	public Point[] sendHarvester(){
+//		if(gold.isEmpty() && tree.isEmpty()){
+//			getGold();
+//			getTree();
+//			sendHarvester();
+//		}
+//		else if (gold.isEmpty()){
+//			
+//		}
+//	}
 	
 //	public Point[] getPath(Point p1, Point p2){
 //		

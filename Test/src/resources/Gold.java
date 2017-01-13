@@ -10,8 +10,8 @@ public class Gold extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = false;
 
-	public Gold(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
+	public Gold(Point center, String shape, int size) {
+		super(center, shape, size);
 		type = "GOLD";
 		harvestable = true;
 		pathable = true;

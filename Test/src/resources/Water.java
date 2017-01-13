@@ -10,8 +10,8 @@ public class Water extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = false;
 	
-	public Water(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
+	public Water(Point center, String shape, int size) {
+		super(center, shape, size);
 		type = "WATER";
 		harvestable = false;
 		pathable = false;

@@ -10,8 +10,8 @@ public class Empty extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = true;
 	
-	public Empty(Map map, Point center, String shape, int size){
-		super(map, center, shape, size);
+	public Empty(Point center, String shape, int size){
+		super(center, shape, size);
 		type = "EMPTY";
 		harvestable = false;
 		pathable = true;

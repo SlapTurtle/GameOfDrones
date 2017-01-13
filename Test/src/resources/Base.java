@@ -10,8 +10,8 @@ public class Base extends Resource {
 	public static boolean harvestable = false;
 	public static boolean pathable = false;
 	
-	public Base(Map map, Point center, String shape, int size) {
-		super(map, center, shape, size);
+	public Base(Point center, String shape, int size) {
+		super(center, shape, size);
 		type = "BASE";
 		harvestable = false;
 		pathable = false;

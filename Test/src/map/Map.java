@@ -7,7 +7,6 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
-import UI.UI.GridDisplay;
 import UI.UIcontrol;
 import resources.Base;
 import resources.Drone;
@@ -24,18 +23,15 @@ public class Map {
 	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
+	public static final Point center = new Point(0,0);
 	
-	public UIcontrol UI;
 	public UUID ID;
 	public Node map;
-	public Node changes;
 	VirtualPort port = new VirtualPort(8080);
 	String seed;
 	public Random random;
 	Generator generator;
 	World world;
-	public Base base;
-	Point center = new Point(0,0);
 	int[] bounds;
 	public LinkedList<Drone> drones = new LinkedList<Drone>();
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
@@ -50,7 +46,6 @@ public class Map {
 	public void Init(String seed) {
 		ID = UUID.randomUUID();
 		map = new Node(ID.toString(), new TupleSpace());
-		changes = new Node(ID.toString(), new TupleSpace());
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
@@ -92,14 +87,13 @@ public class Map {
 	public void Generate(World world, String seed) {
 		// LEFT 0, RIGHT 1, UP 2, DOWN 3
 		if (bounds == null) {
-			center = new Point(0,0);
 			bounds = new int[4];
 			bounds[0] = -world.X() / 2;
 			bounds[1] = world.X() / 2;
 			bounds[2] = -world.Y() / 2;
 			bounds[3] = world.Y() / 2;
 		}
-		generator = new Generator(this, ID, world, seed);
+		generator = new Generator(this, this.map, ID, world, seed);
 		map.addAgent(generator);
 		addListeners(world);
 	}
@@ -217,7 +211,7 @@ public class Map {
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
-		Point p = drones.getFirst().position;
+		Point p = new Point(0,0);
 		
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
@@ -232,7 +226,7 @@ public class Map {
 				}
 			}
 		}
-		N[size/2][size/2] = "EXPDRONE";
+		N[size/2][size/2] = "BASE";
 		return N;
 	}
 	

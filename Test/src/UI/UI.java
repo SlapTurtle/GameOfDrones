@@ -126,7 +126,7 @@ public class UI extends Application {
 		Map map = new Map(world);
 		this.map = map;
 		UIcontrol uic = new UIcontrol(map, this.gridDisplay);
-		map.UI = uic;
+		//map.UI = uic;
 		try {
 			Thread.currentThread().sleep(200);
 		} catch (InterruptedException e1) {
