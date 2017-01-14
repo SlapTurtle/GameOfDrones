@@ -12,6 +12,7 @@ import org.cmg.resp.topology.Self;
 import util.Position;
 
 public class ExpDrone extends DroneAI {
+	public static final String type = "EXPDRONE";
 	public static int DroneCounter = 0;
 	
 	protected Position radiusPoint = new Position(0,0);
@@ -22,20 +23,7 @@ public class ExpDrone extends DroneAI {
 	private int radius = 0;
 		
 	public ExpDrone(Point position) {
-		super(position, "EXPDRONE" + DroneCounter++);
-	}
-
-	@Override
-	protected void doRun() {
-		while(true) {
-			try {
-				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				move(moveDrone(new Position(position.x,position.y)));
-				put(new Tuple("ready"),Self.SELF);
-			} catch (Exception e){
-				e.printStackTrace();
-			}			
-		}
+		super(position, type, type + DroneCounter++);
 	}
 
 	/**
@@ -46,8 +34,10 @@ public class ExpDrone extends DroneAI {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private Point moveDrone(Position d) throws InterruptedException, IOException{
+	@Override
+	protected Point moveDrone() throws Exception {
 		
+		Position d = new Position(position.x, position.y);
 		Point nP = new Point(d.getX(), d.getY());
 		
 		if(returnToBase) return returnToBase(nP);
@@ -115,18 +105,19 @@ public class ExpDrone extends DroneAI {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
-			radius = getNewRadius();
+			radius = getNewRadius(); 
 			radiusPoint.set(radius, radiusPoint.y);
 		}
 		return nP;
 	}
 	
+	//updates base's radius and applies it to next exploration route
 	private int getNewRadius() throws InterruptedException, IOException {
-		 return query(
-				 	new Template(	new ActualTemplateField("Radius"),
-				 					new FormalTemplateField(Integer.class)),
-				 	DroneAI.self2base)
-				.getElementAt(Integer.class, 1);
+		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
+		Tuple tu = get(tp,DroneAI.self2base);
+		int radius = tu.getElementAt(Integer.class, 1) + 2;
+		put(new Tuple("Radius", radius),self2base);
+		return radius;
 	}
 
 	/**

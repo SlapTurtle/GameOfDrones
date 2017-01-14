@@ -9,9 +9,6 @@ public class Tree extends Resource {
 	public static boolean pathable = false;
 	
 	public Tree(Point center, String shape, int size) {
-		super(center, shape, size);
-		super.pathable = pathable;
-		super.harvestable = harvestable;
-		super.type = type;
+		super(center, shape, size, pathable, harvestable, type);
 	}
 }

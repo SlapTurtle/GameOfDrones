@@ -25,7 +25,7 @@ public class Map {
 	public static final Point center = new Point(0,0);
 	
 	public UUID ID;
-	public Node map;
+	static public Node map = new Node("node", new TupleSpace());
 	VirtualPort port = new VirtualPort(8080);
 	String seed;
 	public Random random;
@@ -37,16 +37,14 @@ public class Map {
 	protected Hasher hasher;
 	protected String[] hash = new String[EXP_HASHES];
 	
-	public Object render = new Object();
-	Object syncRetrieval = new Object();
+	static public Object render = new Object();
+	static public Object syncRetrieval = new Object();
 	
 	public int radius=1;
 	
 	/** Initialization of the Map object. Must be called upon construction.
 	 * @param*/
 	public void Init(String seed) {
-		ID = UUID.randomUUID();
-		map = new Node(ID.toString(), new TupleSpace());
 		this.seed = !(seed == null || seed.isEmpty()) ? seed : UUID.randomUUID().toString();
 		random = new Random(this.seed.hashCode());
 		hasher = new Hasher(this, random, this.seed);
@@ -94,7 +92,7 @@ public class Map {
 			bounds[2] = -world.Y() / 2;
 			bounds[3] = world.Y() / 2;
 		}
-		generator = new Generator(this, this.map, ID, world, seed);
+		generator = new Generator(world, seed);
 		map.addAgent(generator);
 		addListeners(world);
 	}
@@ -169,8 +167,8 @@ public class Map {
 	}
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a linked list. */
-	public LinkedList<Tuple> RetrieveTuples() {
-		Retriever retriever = new Retriever(this);
+	public static LinkedList<Tuple> RetrieveTuples() {
+		Retriever retriever = new Retriever();
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
@@ -182,8 +180,8 @@ public class Map {
 		return retriever.Tuples;
 	}
 
-	public LinkedList<Tuple> RetrieveTuples(String TYPE) {
-		Retriever retriever = new Retriever(this, TYPE);
+	public static LinkedList<Tuple> RetrieveTuples(String TYPE) {
+		Retriever retriever = new Retriever(TYPE);
 		map.addAgent(retriever);
 		synchronized (syncRetrieval) {
 			try {
@@ -195,8 +193,8 @@ public class Map {
 		return retriever.Tuples;
 	}
 
-	public LinkedList<Point> RetrievePathableNeighbors(Point p) {
-		NeighborRetriever retriever = new NeighborRetriever(this, p);
+	public static LinkedList<Point> RetrievePathableNeighbors(Point p) {
+		NeighborRetriever retriever = new NeighborRetriever(p);
 		map.addAgent(retriever);
 		try {
 			Thread.sleep(150);
@@ -208,7 +206,7 @@ public class Map {
 	}
 
 	/** (Asynchronous) Retrieves all Tuples in the Map Tublespace and returns as a 2-dimensional int array. */
-	public String[][] Retrieve(int size) {
+	public static String[][] Retrieve(int size) {
 		String[][] N = new String[size][size];
 		String TRIGGER = "X";
 		
@@ -227,7 +225,6 @@ public class Map {
 				}
 			}
 		}
-		N[size/2][size/2] = "BASE";
 		return N;
 	}
 	
@@ -276,6 +273,4 @@ public class Map {
 	public UUID ID() {
 		return ID;
 	}
-	
-	
 }

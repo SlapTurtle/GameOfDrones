@@ -6,7 +6,7 @@ import java.util.Random;
 /** Class responsible for hash functions associated with world expansion. */
 public class Hasher {
 
-	Map map;
+	Map map; //temp
 	Random random;
 	String seed;
 
@@ -40,7 +40,6 @@ public class Hasher {
 	}
 	
 	public int h(int A, int x, int B, int y, int C, int D) {
-		
 		return (D != 0) ? (A / (x + B)) % (y + C) % D : (A / (x + B)) % (C - y);
 	}	
 }

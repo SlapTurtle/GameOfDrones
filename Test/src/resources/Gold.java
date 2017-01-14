@@ -9,10 +9,7 @@ public class Gold extends Resource {
 	public static final boolean pathable = false;
 
 	public Gold(Point center, String shape, int size) {
-		super(center, shape, size);
-		super.pathable = pathable;
-		super.harvestable = harvestable;
-		super.type = type;
+		super(center, shape, size, pathable, harvestable, type);
 	}
 
 }

@@ -9,6 +9,7 @@ import org.cmg.resp.knowledge.Tuple;
 
 import baseNode.*;
 import droneNode.*;
+import map.Map;
 import mapNode.*;
 
 public class Console implements Runnable {
@@ -17,7 +18,8 @@ public class Console implements Runnable {
 	int size;
 	Node base;
 	Node map;
-	Node[] drones;
+	Node[] drones;	
+	UserInterfaceAgent UserInterfaceAgent;
 
 	public Console(Node baseNode, Node mapNode, Node[] droneNodes, int delay, int size) {
 		board = new String[size][size];
@@ -26,6 +28,10 @@ public class Console implements Runnable {
 		drones = droneNodes;
 		this.delay = delay;
 		this.size = size;
+		if(baseNode != null) {
+			UserInterfaceAgent = new UserInterfaceAgent();
+			baseNode.addAgent(UserInterfaceAgent);
+		}
 		run();
 	}
 
@@ -37,16 +43,20 @@ public class Console implements Runnable {
 				//wait for all things to be ready
 				//base.get(rdy);
 				//map.get(rdy);
+				//System.out.println("UI gets");
 				for(Node drone : drones){
 					drone.get(rdy);
 				}
+				//System.out.println("UI Renders");
+				Thread.currentThread().sleep(delay);
 				
 				//renders new image
-				render();
+				//render();
 				
 				//tells everything to make next move
-				base.put(go);
-				map.put(go);
+				//base.put(go);
+				//map.put(go);
+				//System.out.println("UI puts");
 				for(Node drone : drones){
 					drone.put(go);
 				}
@@ -60,12 +70,11 @@ public class Console implements Runnable {
 	 * Avoid invoking while other instances of the method are running.
 	 * @param*/
 	public void render() {
-		board = new String[size][size];//map.Retrieve(size);
+		board = (UserInterfaceAgent != null) ? UserInterfaceAgent.getMap() : Map.Retrieve(size);
 		for(Node drone : drones){
 			DroneAI AI = (DroneAI) drone.getAttribute("AI").getValue();
 			Point p = AI.position;
-			//TODO: Offset
-			board[p.x][p.y] = (AI instanceof ExpDrone) ? "EXPDRONE" : "HARDRONE"; 
+			board[p.x + board.length/2][p.y + board.length/2] = AI.type; 
 		}
 		System.out.println("\n\n\n\n\n");
 		for (int y = 0; y < board.length; y++) {
@@ -73,6 +82,7 @@ public class Console implements Runnable {
 				char c = '.';
 				if (board[x][y] != null && board[x][y] != "-") {
 					switch (board[x][y]) {
+					case "TEST": c = 'X'; break;
 					case "BASE": c = 'B'; break;
 					case "GOLD": c = 'G'; break;
 					case "ROCK": c = 'R'; break;

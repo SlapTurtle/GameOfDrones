@@ -2,9 +2,12 @@ package resources;
 
 import java.util.UUID;
 import java.awt.Point;
+import java.io.Serializable;
 
 /** Base class representing all resources and their properties. */
-public abstract class Resource {
+public abstract class Resource implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	UUID cluster;
 	
 	public String type;
@@ -15,11 +18,14 @@ public abstract class Resource {
 	public int shape;
 	public int size;
 	
-	protected Resource(Point center, String shape, int size) {
+	protected Resource(Point center, String shape, int size, boolean pathable, boolean harvestable, String type) {
 		cluster = UUID.randomUUID();
 		this.center = center;
 		this.shape = evaluateShape(shape);
 		this.size = size;
+		this.pathable = pathable;
+		this.harvestable = harvestable;
+		this.type = type;
 	}
 	
 	public static Class<?> toClass(String name) {

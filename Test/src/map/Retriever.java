@@ -14,27 +14,24 @@ import resources.Resource;
 /** Agent for retrieving Tuples from the Map Tublespace. */
 class Retriever extends Agent {
 	
-	Map map;
 	String type;
 	protected LinkedList<Tuple> Tuples;
 
-	public Retriever(Map map, String type) {
+	public Retriever(String type) {
 		super(UUID.randomUUID().toString());
-		this.map = map;
 		this.type = type;
 	}
 
-	public Retriever(Map map) {
-		super(UUID.randomUUID().toString());
-		this.map = map;		
+	public Retriever() {
+		super(UUID.randomUUID().toString());	
 	}
 	
 	protected void doRun() {	
 		Template T = (type == null) ? Map.TEMPLATE_ALL
 									: new Template(new ActualTemplateField(type), Map.AnyInteger, Map.AnyInteger);
 		Tuples = queryAll(T);
-		synchronized (map.syncRetrieval) {
-			map.syncRetrieval.notifyAll();
+		synchronized (Map.syncRetrieval) {
+			Map.syncRetrieval.notifyAll();
 		}
 	}
 }
@@ -44,8 +41,8 @@ class NeighborRetriever extends Retriever {
 	LinkedList<Point> neighbors = new LinkedList<Point>();
 	Point point;
 	
-	public NeighborRetriever(Map map, Point p) {
-		super(map);
+	public NeighborRetriever(Point p) {
+		super();
 		this.point = p;
 	}
 
@@ -55,15 +52,15 @@ class NeighborRetriever extends Retriever {
 				Tuple t = queryp(templateFromPoint(p));
 				if (t != null) {
 					if (Resource.isPathable(t.getElementAt(String.class, 0))) {
-						this.neighbors.add(new Point(map.getTupleX(t), map.getTupleY(t)));
+						this.neighbors.add(new Point(Map.getTupleX(t), Map.getTupleY(t)));
 					}
 				} else {
 					this.neighbors.add(p);
 				}
 			}	
 		}
-		synchronized (map.syncRetrieval) {
-			map.syncRetrieval.notifyAll();
+		synchronized (Map.syncRetrieval) {
+			Map.syncRetrieval.notifyAll();
 		}
 	}
 	

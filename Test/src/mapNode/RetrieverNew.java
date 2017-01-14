@@ -1,5 +1,7 @@
 package mapNode;
 
+import java.awt.Point;
+
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
@@ -7,6 +9,7 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import resources.Gold;
 import resources.Resource;
 
 public class RetrieverNew extends Agent {
@@ -32,13 +35,13 @@ public class RetrieverNew extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			Resource[] list = null;
+			Resource[] list = new Resource[4];
 			switch(order){
-			case "neighbour_all": list = getNeighbours(x,y,false);
-			case "neighbour_pathable": list = getNeighbours(x,y,true);
+			case "test": list = new Resource[]{null, null, new Gold(new Point(0,1), "CIRCULAR", 1), null}; break;
+			case "neighbour_all": list = getNeighbours(x,y,false); break;
+			case "neighbour_pathable": list = getNeighbours(x,y,true); break;
 			}
-			put(new Tuple(order, id, list),Self.SELF);
-			
+			put(new Tuple(order, id, list[0], list[1], list[2], list[3]), Self.SELF);			
 		}
 	}
 	

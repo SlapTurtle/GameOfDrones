@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.cmg.resp.knowledge.ActualTemplateField;
-import org.cmg.resp.knowledge.Template;
-import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.topology.Self;
-
 import map.Map; //TEMP
 import util.AStarPoint;
 import util.Position;
 
 public class HarDrone extends DroneAI {
+	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
 	boolean hasHarvested = false;
@@ -22,42 +18,29 @@ public class HarDrone extends DroneAI {
 	LinkedList<Point> pathHome = new LinkedList<Point>();
 	
 	public HarDrone(Point position) {
-		super(position, "HARDRONE" + droneCounter++);
+		super(position, type, type + droneCounter++);
 	}
 	
 	@Override
-	protected void doRun() {
-		while(true) {
-			try {
-				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				move();
-				put(new Tuple("ready"),Self.SELF);
-			} catch (Exception e){
-				e.printStackTrace();
-			}			
-		}
-	}
-	
-	private void move(){
+	protected Point moveDrone(){
 		if (pathOut.isEmpty() && pathHome.isEmpty()) {
 			//target point from base
 			//call a star on target point
 			//ASTAR
 		}
 			
-		else if (!pathOut.isEmpty()) { //on way out
+		if (!pathOut.isEmpty()) { //on way out
 			Point target = pathOut.remove(0);
-			super.move(target);
+			if (pathOut.isEmpty()) hasHarvested=true;
 			pathHome.add(0, target);
+			return target;
 			
 			//////////////////////////////////////////
-			// remeber to implement removing of res //
+			// TODO: implement removing of res //
 			//////////////////////////////////////////
-			if (pathOut.isEmpty()) hasHarvested=true;
 		}
 		else { //on way home
-			Point target = pathHome.remove(0);
-			super.move(target);
+			return pathHome.remove(0);
 		}
 	}
 	

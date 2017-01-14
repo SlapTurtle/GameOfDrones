@@ -1,38 +1,27 @@
 package map;
 
 import org.cmg.resp.behaviour.Agent;
-import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
-import droneNode.ExpDrone;
 import resources.*;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 /** Agent used for the generation of content in a given world. */
 public class Generator extends Agent {
 	
-	Map map2; // TEMP!
-	Node map;
-	String mapID;
 	World world;
-	UUID worldID;
 	Random random;
 	String seed;
 	boolean b = false;
 	
-	public Generator(Map map2, Node map, UUID mapID, World world, String seed) {
-		super(UUID.randomUUID().toString());
-		this.map2 = map2;
-		this.map = map;
-		this.mapID = mapID.toString();
+	public Generator(World world, String seed) {
+		super("Generator");
 		this.world = world;
-		this.world.ID = worldID;
 		this.seed = seed;
 		random = new Random(seed.hashCode());
 	}
@@ -54,19 +43,19 @@ public class Generator extends Agent {
 			Base base = new Base(world.center, "circular", 1);
 			putResource(base, base.center);
 
-			for (int i = -1; i < 1; i+=2) {
-				Point p = new Point(world.center.x, world.center.y+i);
-				Exp_drone drone = new Exp_drone(p, "circular", 1);
-				ExpDrone expdrone = new ExpDrone(p);
-				map.addAgent(expdrone);
-				putResource(drone, p);
-				
-////				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
-////				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
-////				ExpDrone expdrone2 = new ExpDrone(map, p2);
-////				map.map.addAgent(expdrone2);
-////				putResource(drone2, p2);
-			}
+//			for (int i = -1; i < 1; i+=2) {
+//				Point p = new Point(world.center.x, world.center.y+i);
+//				Exp_drone drone = new Exp_drone(p, "circular", 1);
+//				ExpDrone expdrone = new ExpDrone(p);
+//				map.addAgent(expdrone);
+//				putResource(drone, p);
+//				
+//				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
+//				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
+//				ExpDrone expdrone2 = new ExpDrone(map, p2);
+//				map.map.addAgent(expdrone2);
+//				putResource(drone2, p2);
+//			}
 		}
 		
 		/* 				 *
@@ -141,7 +130,7 @@ public class Generator extends Agent {
 
 	/** Populates the current World with a given type, shape and size of a resource.
 	 * @params */
-	public void populate(Class classname, String shape, int size) {
+	public void populate(Class<?> classname, String shape, int size) {
 		try {
 			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
 			Point p = getRandomPoint();
@@ -166,8 +155,8 @@ public class Generator extends Agent {
 	 * @param */
 	public Point translatePoint(int x, int y) {
 		Point p = new Point(
-				(x - world.X()/2) + (world.center.x - Map.center.x),
-				(y - world.Y()/2) + (world.center.y - Map.center.y));
+				(x - world.X()/2) + (world.center.x - 0),// Map.center.x),
+				(y - world.Y()/2) + (world.center.y - 0));//Map.center.y));
 		return p;
 	}
 	

@@ -9,9 +9,6 @@ public class Base extends Resource {
 	public static final boolean pathable = false;
 	
 	public Base(Point center, String shape, int size) {
-		super(center, shape, size);
-		super.pathable = pathable;
-		super.harvestable = harvestable;
-		super.type = type;
+		super(center, shape, size, pathable, harvestable, type);
 	}
 }
