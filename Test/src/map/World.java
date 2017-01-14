@@ -56,21 +56,21 @@ public class World {
 	}
 	
 	/** Adjusts the bounds of the Map to contain the World. */
-	public void adjustBounds() {
-		if (center.getX() < map.center.getX()) {
-			map.bounds[0] -= x;
-			map.world.x += x;
-		} else if (center.getX() > map.center.getX()) {
-			map.bounds[1] += x;
-			map.world.x += x;
-		} else if (center.getY() < map.center.getY()) {
-			map.bounds[2] -= y;
-			map.world.y += y;
-		} else {
-			map.bounds[3] += x;
-			map.world.y += y;
-		}
-	}
+//	public void adjustBounds() {
+//		if (center.getX() < map.center.getX()) {
+//			map.bounds[0] -= x;
+//			map.world.x += x;
+//		} else if (center.getX() > map.center.getX()) {
+//			map.bounds[1] += x;
+//			map.world.x += x;
+//		} else if (center.getY() < map.center.getY()) {
+//			map.bounds[2] -= y;
+//			map.world.y += y;
+//		} else {
+//			map.bounds[3] += x;
+//			map.world.y += y;
+//		}
+//	}
 	
 	public int set(int z) {
 		return (z > 0 && z < Integer.MAX_VALUE) ? z : DEFAULT;
@@ -84,8 +84,8 @@ public class World {
 		return y;
 	}
 	
-	public boolean pointInWorld(Point p) {
-		return (p.getX() >= map.bounds[0] && p.getX() <= map.bounds[1] && p.getY() >= map.bounds[2] && p.getY() <= map.bounds[3] );
+	public boolean pointInWorld(int[] bounds, Point p) {
+		return (p.getX() >= bounds[0] && p.getX() <= bounds[1] && p.getY() >= bounds[2] && p.getY() <= bounds[3] );
 	}
 	
 	public boolean pointInWorldDistance(Point p, int dist) {
@@ -93,9 +93,9 @@ public class World {
 		int Y = Y()/2 - dist;
 		return (p.x >= center.x - X && p.x <= center.x + X && p.y >= center.y - Y && p.y <= center.y + Y);
 	}
-	
+
 	public boolean pointNearCenter(Point p) {
-		return map.center != null ? p.distance(map.center) <= 3 : false; 
+		return (p.distance(new Point(0,0)) <= 3); 
 	}
 
 	public static LinkedList<Point> getNeighbors(Point p) {

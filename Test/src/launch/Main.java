@@ -45,7 +45,7 @@ public class Main {
 		Tuple t = map.get(new Template(new ActualTemplateField("bob"), Map.AnyString));
 		System.out.println("Hash: " + (String)t.getElementAt(1));
 	}
-	
+
 	public static void main(String[] args) throws InterruptedException{
 		nicklas();
 		//michael();
