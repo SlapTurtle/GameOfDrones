@@ -36,8 +36,7 @@ public class Map extends Node {
 	World world;
 	public Base base;
 	Point center = new Point(0,0);
-	int[] bounds;
-	public LinkedList<AbstractDrone> drones = new LinkedList<AbstractDrone>();
+	public LinkedList<Drone> drones = new LinkedList<Drone>();
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	
 	public Object render = new Object();
@@ -51,8 +50,22 @@ public class Map extends Node {
 		world.map = this;
 		random = new Random(this.seed.hashCode());
 
+		int[] bounds = new int[4];
+		// LEFT 0, RIGHT 1, UP 2, DOWN 3
+		bounds[0] = -world.X() / 2;
+		bounds[1] = world.X() / 2;
+		bounds[2] = -world.Y() / 2;
+		bounds[3] = world.Y() / 2;
+		put(new Tuple("bounds", bounds));
+		
 		// Agents
 		addAgent(new Generator());
+		put(new Tuple("generate", world, seed));
+		
+
+		
+		
+		
 		//addListeners(world);
 		
 		start();
@@ -60,19 +73,6 @@ public class Map extends Node {
 		//Generate(world, seed);
 	}
 
-	/** Generates a given World using the provided seed as a String.
-	 * @param*/
-	public void Generate(World world, String seed) {
-		// LEFT 0, RIGHT 1, UP 2, DOWN 3
-		if (bounds == null) {
-			center = new Point(0,0);
-			bounds = new int[4];
-			bounds[0] = -world.X() / 2;
-			bounds[1] = world.X() / 2;
-			bounds[2] = -world.Y() / 2;
-			bounds[3] = world.Y() / 2;
-		}
-	}
 
 	public void addListeners(World world) {
 		LinkedList<Point> dlist = new LinkedList<Point>();
@@ -106,14 +106,14 @@ public class Map extends Node {
 		Point center = p;
 		World newWorld = new World(center, newOffset);
 		newWorld.map = this;
-		newWorld.adjustBounds();
+		//newWorld.adjustBounds();
 		addAgent(new Hasher());
 		String identifier;
 		put(new HashRequest(identifier = UUID.randomUUID().toString(), center, seed, Map.EXP_HASHLENGTH));
 		Tuple t;
 		try {
 			t = get(new Template(new ActualTemplateField(identifier), Map.AnyString));
-			Generate(newWorld, (String)t.getElementAt(1));
+			//Generate(newWorld, (String)t.getElementAt(1));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -124,16 +124,16 @@ public class Map extends Node {
 	public void expandWorld(int direction) {
 		int newOffset = Math.min(world.X(), world.Y());
 		int offsetX = 0, offsetY = 0;
-		switch (direction) {
-			case 0: offsetX = bounds[0] - newOffset; break;
-			case 1: offsetX = bounds[1] + newOffset; break;
-			case 2: offsetY = bounds[2] - newOffset; break;
-			case 3: offsetY = bounds[3] + newOffset; break;
-		}
+//		switch (direction) {
+//			case 0: offsetX = bounds[0] - newOffset; break;
+//			case 1: offsetX = bounds[1] + newOffset; break;
+//			case 2: offsetY = bounds[2] - newOffset; break;
+//			case 3: offsetY = bounds[3] + newOffset; break;
+//		}
 		Point center = new Point(offsetX/2, offsetY/2);
 		World newWorld = new World(center, newOffset);
 		newWorld.map = this;
-		newWorld.adjustBounds();
+		//newWorld.adjustBounds();
 		addAgent(new Hasher());
 		String identifier;
 		put(new HashRequest(identifier = UUID.randomUUID().toString(), center, seed, Map.EXP_HASHLENGTH));
@@ -141,7 +141,7 @@ public class Map extends Node {
 		try {
 			t = get(new Template(new ActualTemplateField(identifier), Map.AnyString));
 			System.out.println("HASH: " + (String)t.getElementAt(1));
-			Generate(newWorld, (String)t.getElementAt(1));
+			//Generate(newWorld, (String)t.getElementAt(1));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -225,39 +225,39 @@ public class Map extends Node {
 		return N;
 	}
 
-	public int[][] Retrieve() {
-		System.out.println("\nRendering Map...\n");
-		int[][] N = new int[bounds[1]-bounds[0]+1][bounds[3]-bounds[2]+1];
-		int TRIGGER = -1;
-		for (int x = 0; x < world.X()+1; x++) {
-			TRIGGER = 0; if (x == 0) { break; };
-			for (int y = 0; y < world.Y()+1; y++) {
-				Tuple t = queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
-				if (t != null) {
-					N[x][y] = TRIGGER;
-				}
-			}
-		}
-		LinkedList<Tuple> list = RetrieveTuples();
-		for (Tuple t : list) {
-			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == TRIGGER) {
-				if (t.getElementAt(String.class, 0) == "GOLD") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
-				} else if (t.getElementAt(String.class, 0) == "TREE") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
-				} else if (t.getElementAt(String.class, 0) == "BASE") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
-				} else if (t.getElementAt(String.class, 0) == "WATER") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
-				} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
-				} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
-					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
-				}
-			}
-		}
-		return N;
-	}
+//	public int[][] Retrieve() {
+//		System.out.println("\nRendering Map...\n");
+//		int[][] N = new int[bounds[1]-bounds[0]+1][bounds[3]-bounds[2]+1];
+//		int TRIGGER = -1;
+//		for (int x = 0; x < world.X()+1; x++) {
+//			TRIGGER = 0; if (x == 0) { break; };
+//			for (int y = 0; y < world.Y()+1; y++) {
+//				Tuple t = queryp(new Template(new ActualTemplateField(x+bounds[0]), new ActualTemplateField(y+bounds[2])));
+//				if (t != null) {
+//					N[x][y] = TRIGGER;
+//				}
+//			}
+//		}
+//		LinkedList<Tuple> list = RetrieveTuples();
+//		for (Tuple t : list) {
+//			if (N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] == TRIGGER) {
+//				if (t.getElementAt(String.class, 0) == "GOLD") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 1;
+//				} else if (t.getElementAt(String.class, 0) == "TREE") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 2;
+//				} else if (t.getElementAt(String.class, 0) == "BASE") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 3;
+//				} else if (t.getElementAt(String.class, 0) == "WATER") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 4;
+//				} else if (t.getElementAt(String.class, 0) == "EXPDRONE") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 5;
+//				} else if (t.getElementAt(String.class, 0) == "HARDRONE") {
+//					N[getTupleX(t)-bounds[0]][getTupleY(t)-bounds[2]] = 6;
+//				}
+//			}
+//		}
+//		return N;
+//	}
 	
 	public static int getTupleX(Tuple t) {
 		return t.getElementAt(Integer.class, 1);

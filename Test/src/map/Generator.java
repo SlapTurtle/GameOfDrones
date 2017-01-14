@@ -19,6 +19,9 @@ import resources.*;
 public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
+	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
+	
+	int[] bounds;
 
 	public Generator() {
 		super("generator");
@@ -29,8 +32,9 @@ public class Generator extends Agent {
 			// REQUEST
 			Tuple request = get(getT, Self.SELF);
 			World world = request.getElementAt(World.class, 1);
-			Random random = new Random(request.getElementAt(String.class, 2).hashCode());
-
+			Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
+			bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
+			
 			// PROCESS
 			populateMap(world, random);
 		}
@@ -135,9 +139,9 @@ public class Generator extends Agent {
 				(y - world.Y()/2) + world.center.y);
 		return p;
 	}
-	
+
 	public void putResource(Resource resource, Point p) throws Exception {
-		Tuple t = new Tuple(resource.type, (int)p.getX(), (int)p.getY());	
+		Tuple t = new Tuple(resource.type, (int)p.getX(), (int)p.getY());
 		put(t, Self.SELF);
 	}
 	
@@ -145,7 +149,8 @@ public class Generator extends Agent {
 	 * @param */
 	public void addResource(Resource resource, World world, Random random) throws Exception {
 		for (Point p : resource.getPoints(random)) {
-			if (world.pointInWorld(p) && !world.pointNearCenter(p)) {
+			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p)) {
+				System.out.println("adding resource");
 				putResource(resource, p);
 			}
 		}
