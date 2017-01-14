@@ -31,11 +31,11 @@ public class TestDrone extends DroneAI {
 				new FormalTemplateField(Resource.class),
 				new FormalTemplateField(Resource.class));
 		Tuple tu = get(tp, self2map);
-		String s = id+"-------" + "\n";
-		s += "move: " + j++ + " : "+tu.getElementAt(Resource.class, 4).getClass().toString() + "\n";
-		s += "f: "+ position.x + position.y + " - t: " + (position.x+1) + position.y + "\n";
-		s += "-------";
-		System.out.println(s);
+//		String s = id+"-------" + "\n";
+//		s += "move: " + j++ + " : "+tu.getElementAt(Resource.class, 4).getClass().toString() + "\n";
+//		s += "f: "+ position.x + position.y + " - t: " + (position.x+1) + position.y + "\n";
+//		s += "-------";
+//		System.out.println(s);
 		return new Point(position.x+1, position.y);
 	}
 }

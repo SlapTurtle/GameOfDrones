@@ -18,7 +18,7 @@ import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 100;
+	public static final int DELAY = 1000;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
@@ -91,9 +91,6 @@ public class Main {
 //		//UI - prints board
 //		//UI - getall "ready" tuples + put for all "go!" tuple
 		
-		//TEMP
-		//Map map = new Map();
-		System.out.println("go");
 		new Console(baseNode, mapNode, droneNodes, DELAY, FIELD);
 	}
 }

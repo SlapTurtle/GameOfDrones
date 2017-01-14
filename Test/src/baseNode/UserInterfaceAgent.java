@@ -10,7 +10,9 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 public class UserInterfaceAgent extends Agent {
-
+	
+	public int[] bounds = new int[]{0,0,0,0};
+	
 	public UserInterfaceAgent() {
 		super("UserInterfaceAgent");
 	}
@@ -27,7 +29,6 @@ public class UserInterfaceAgent extends Agent {
 				new FormalTemplateField(Integer.class));
 		
 		LinkedList<Tuple> list = queryAll(tp);
-		int[] bounds = new int[]{0,0,0,0};
 		for(Tuple tu : list){
 			if(tu != null){
 				int x = tu.getElementAt(Integer.class, 1);

@@ -51,7 +51,7 @@ public class Console implements Runnable {
 				Thread.currentThread().sleep(delay);
 				
 				//renders new image
-				//render();
+				render();
 				
 				//tells everything to make next move
 				//base.put(go);
@@ -71,18 +71,20 @@ public class Console implements Runnable {
 	 * @param*/
 	public void render() {
 		board = (UserInterfaceAgent != null) ? UserInterfaceAgent.getMap() : Map.Retrieve(size);
+		int offsetx = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[1] : 0 ;
+		int offsety = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[3] : 0 ;
 		for(Node drone : drones){
 			DroneAI AI = (DroneAI) drone.getAttribute("AI").getValue();
 			Point p = AI.position;
-			board[p.x + board.length/2][p.y + board.length/2] = AI.type; 
+			board[p.x + offsetx][p.y + offsety] = AI.type; 
 		}
 		System.out.println("\n\n\n\n\n");
 		for (int y = 0; y < board.length; y++) {
-			for (int x = 0; x < board.length; x++) {
+			for (int x = 0; x < board[0].length; x++) {
 				char c = '.';
 				if (board[x][y] != null && board[x][y] != "-") {
 					switch (board[x][y]) {
-					case "TEST": c = 'X'; break;
+					case "TEST": c = 'J'; break;
 					case "BASE": c = 'B'; break;
 					case "GOLD": c = 'G'; break;
 					case "ROCK": c = 'R'; break;
