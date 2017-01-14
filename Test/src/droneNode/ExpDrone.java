@@ -2,6 +2,7 @@ package droneNode;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
@@ -9,9 +10,10 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import baseNode.MapMerger;
 import util.Position;
 
-public class ExpDrone extends Drone {
+public class ExpDrone extends AbstractDrone {
 	public static final String type = "EXPDRONE";
 	public static int DroneCounter = 0;
 	
@@ -73,7 +75,8 @@ public class ExpDrone extends Drone {
 			         break;
 			default: nP.move(nP.x, nP.y);
 					 break;
-		}		
+		}
+		explore(nP);
 		return nP; 
 	}
 
@@ -120,7 +123,7 @@ public class ExpDrone extends Drone {
 	//updates base's radius and applies it to next exploration route
 	private int getNewRadius() throws InterruptedException, IOException {
 		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
-		Tuple tu = get(tp,Drone.self2base);
+		Tuple tu = get(tp,AbstractDrone.self2base);
 		int radius = tu.getElementAt(Integer.class, 1) + 2;
 		put(new Tuple("Radius", radius),self2base);
 		return radius;
@@ -212,4 +215,13 @@ public class ExpDrone extends Drone {
 		return q;
 	}
 	
+	private void explore(Point position) throws Exception {
+		for (Point p : getNeighbors(position)) {
+			Template t0 = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
+			Template t1 = new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class));
+			int radius = query(t1, self2base).getElementAt(Integer.class, 1);
+			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null)
+				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
+		}
+	}
 }

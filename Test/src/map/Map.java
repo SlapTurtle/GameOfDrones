@@ -37,7 +37,7 @@ public class Map extends Node {
 	public Base base;
 	Point center = new Point(0,0);
 	int[] bounds;
-	public LinkedList<Drone> drones = new LinkedList<Drone>();
+	public LinkedList<AbstractDrone> drones = new LinkedList<AbstractDrone>();
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
 	
 	public Object render = new Object();

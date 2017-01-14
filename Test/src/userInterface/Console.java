@@ -72,7 +72,7 @@ public class Console implements Runnable {
 		int offsetx = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[1] : 0 ;
 		int offsety = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[3] : 0 ;
 		for(Node drone : drones){
-			Drone AI = (Drone) drone.getAttribute("AI").getValue();
+			AbstractDrone AI = (AbstractDrone) drone.getAttribute("AI").getValue();
 			Point p = AI.position;
 			board[p.x + offsetx][p.y + offsety] = AI.type; 
 		}

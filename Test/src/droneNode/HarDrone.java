@@ -15,7 +15,7 @@ import map.Map; //TEMP
 import util.AStarPoint;
 import util.Position;
 
-public class HarDrone extends Drone {
+public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
@@ -32,49 +32,28 @@ public class HarDrone extends Drone {
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
-			Point target;	
+			Point target = null;
 			
 			if (pathOut.isEmpty() && pathHome.isEmpty()) { //drone is at base, need new target
+				//TODO delete (get) resource from own ts
+				//TODO increment (get->put) specific resource counter for base
 				while(pathOut.isEmpty()){
 					target = getNewTarget();
 					pathOut.addAll(aStar(position, target));
 				}
-				//TODO delete resource from own ts
-				//TODO increment specific resource counter for base
-				return null;
 			}
 			
 			else if (!pathOut.isEmpty()) { //on way out
 				//TODO evade
+				//TODO get resource tuple from base ts and put in own ts
 				target = pathOut.removeFirst();
-				/*if(map.isDroneAt(target)) {
-					
-					
-					//pathOut.add(0, target);
-					//pathOut.add(0, position);
-				}	
-				else {
-					if (!pathHome.contains(target)) //if needed for evade scenario*/
-						pathHome.addFirst(target);
-					
-					//TODO cut resource tuple from base ts and place in drone ts
-					
-					if (pathOut.isEmpty()) hasHarvested=true;
-				//}
+				pathHome.addFirst(target);
+				if (pathOut.isEmpty()) hasHarvested=true;
 			}
 			
 			else { //on way home
+				//TODO evade
 				target = pathHome.removeFirst();
-				
-				/*if(map.isDroneAt(target)) {
-					//TODO evade
-					
-					pathHome.add(0, target);
-					pathHome.add(0, position);
-				}
-				else {
-				
-				}*/
 			}
 
 			return target;
@@ -83,11 +62,15 @@ public class HarDrone extends Drone {
 	private Point getNewTarget() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
 		put(new Tuple("order",id), self2base);
-		Tuple tu = get(tp,Drone.self2base);
+		Tuple tu = get(tp,AbstractDrone.self2base);
 		return tu.getElementAt(Point.class, 2);
 	}
-	private LinkedList<Point> getPathablePoints(){
-		return null;
+	
+	private LinkedList<Point> getPathablePoints() throws InterruptedException, IOException{
+		Template tp = new Template(new ActualTemplateField("neighbours_pathable"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
+		put(new Tuple("neighbours_pathable",id, position.x, position.y), self2base);
+		Tuple tu = get(tp,AbstractDrone.self2base);
+		return tu.getElementAt(LinkedList.class, 2);
 	}
 	
 	private void evade (ArrayList<Object> list) {
@@ -100,7 +83,7 @@ public class HarDrone extends Drone {
 		//if winner continue
 	}
 	
-	private static ArrayList<Point> aStar(Point pointStart, Point pointEnd){
+	private ArrayList<Point> aStar(Point pointStart, Point pointEnd) throws InterruptedException, IOException{
 		//Declaration of lists
 		LinkedList<AStarPoint> closedSet = new LinkedList<AStarPoint>();
 		LinkedList<AStarPoint> openSet = new LinkedList<AStarPoint>();
@@ -134,7 +117,7 @@ public class HarDrone extends Drone {
 			closedSet.add(current);
 			
 			//hacks to get AStarPoint neigbors list
-			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(map.RetrievePathableNeighbors(current)); //retriever
+			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(getPathablePoints()); //retriever
 			
 			for(AStarPoint neighbor : neighbors){
 				//ignores already visited points.
