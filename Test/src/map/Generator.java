@@ -1,67 +1,44 @@
 package map;
 
 import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
-
-import resources.*;
+import resources.Base;
+import resources.Gold;
+import resources.Resource;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
+import java.util.UUID;
+import resources.*;
 
 /** Agent used for the generation of content in a given world. */
 public class Generator extends Agent {
 	
-	World world;
-	Random random;
-	String seed;
-	boolean b = false;
-	
-	public Generator(World world, String seed) {
-		super("Generator");
-		this.world = world;
-		this.seed = seed;
-		random = new Random(seed.hashCode());
+	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
+
+	public Generator() {
+		super("generator");
 	}
 
-	protected void doRun() {
-		try {
-			populateMap();
-		} catch (Exception e) {
-			e.printStackTrace();
+	protected void doRun() throws Exception {
+		while(true) {
+			// REQUEST
+			Tuple request = get(getT, Self.SELF);
+			World world = request.getElementAt(World.class, 1);
+			Random random = new Random(request.getElementAt(String.class, 2).hashCode());
+
+			// PROCESS
+			populateMap(world, random);
 		}
 	}
 
 	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
-	public void populateMap() throws Exception {
+	public void populateMap(World world, Random random) {
 		Dice dice = new Dice(random);
-		
-		// Initial field initalization
-		if (world.center.equals(new Point(0,0))) {
-			Base base = new Base(world.center, "circular", 1);
-			putResource(base, base.center);
-
-//			for (int i = -1; i < 1; i+=2) {
-//				Point p = new Point(world.center.x, world.center.y+i);
-//				Exp_drone drone = new Exp_drone(p, "circular", 1);
-//				ExpDrone expdrone = new ExpDrone(p);
-//				map.addAgent(expdrone);
-//				putResource(drone, p);
-//				
-//				Point p2 = new Point(map.base.center.x+i, map.base.center.y);
-//				ExplorationDrone drone2 = new ExplorationDrone(map, p2, "circular", 1);
-//				ExpDrone expdrone2 = new ExpDrone(map, p2);
-//				map.map.addAgent(expdrone2);
-//				putResource(drone2, p2);
-//			}
-		}
-		
-		/* 				 *
-		 * Generate area *
-		 * 				 */
-
 
 		/* WATER */
 
@@ -69,28 +46,28 @@ public class Generator extends Agent {
 		for (int j = sea; j > 0; j--) {
 			double probability = (double)j * 0.12;
 			if (dice.roll(1-probability)) {
-				populate(Water.class, "polygon", j);
+				populate(Water.class, "polygon", j, world, random);
 				break;
 			}
 		}
 
 		for (int j = 1; j < 2; j++) {
 			if (dice.roll(0.3))
-				populate(Water.class, "polygon", j);
+				populate(Water.class, "polygon", j, world, random);
 		}
 
 		/* ROCK */
 		
 		for (int j = 2; j >= 0; j--) {
 			if (dice.roll(0.15)) {
-				populate(Rock.class, "polygon", j);
+				populate(Rock.class, "polygon", j, world, random);
 				break;
 			}
 		}
 
 		for (int j = 0; j < 3; j++) {
 			if (dice.roll(0.5))
-				populate(Rock.class, "polygon", random.nextInt(1));
+				populate(Rock.class, "polygon", random.nextInt(1), world, random);
 		}
 
 		
@@ -99,30 +76,29 @@ public class Generator extends Agent {
 		for (int j = 1; j >= 0; j--) {
 			double probability = (double)j * 0.4;
 			if (dice.roll(1-probability)) {
-				populate(Tree.class, "polygon", j);
+				populate(Tree.class, "polygon", j, world, random);
 				break;
 			}
 		}
 		
 		for (int j = 0; j < random.nextInt((int)(World.DEFAULT*1.5)) + World.DEFAULT; j++) {
 			if (dice.roll(0.4 * (j/2))) {
-				populate(Tree.class, "circular", 0);
+				populate(Tree.class, "circular", 0, world, random);
 			}
 		}
-		
 		
 		/* GOLD */
 
 		int gold = random.nextInt((int)(World.DEFAULT/10) +1);
 		if (dice.roll(0.9 - gold * 0.22) && !world.center.equals(new Point(0,0)))
-			populate(Gold.class, "polygon", random.nextInt(1) + 1);
+			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
 		
 		for (int j = 0; j < gold + 3; j++) {
-			populate(Gold.class, "polygon", random.nextInt(1) + 1);
+			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
 		}
 		
 		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++) {
-			populate(Gold.class, "circular", 0);
+			populate(Gold.class, "circular", 0, world, random);
 		}
 		
 		
@@ -130,16 +106,16 @@ public class Generator extends Agent {
 
 	/** Populates the current World with a given type, shape and size of a resource.
 	 * @params */
-	public void populate(Class<?> classname, String shape, int size) {
+	public void populate(Class classname, String shape, int size, World world, Random random) {
 		try {
 			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
-			Point p = getRandomPoint();
+			Point p = getRandomPoint(world, random);
 			int dist = (shape == "polygon") ? 2*size : size+1;
 			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p)) {
-				p = getRandomPoint();
+				p = getRandomPoint(world, random);
 			}
 			Object res = constructor.newInstance(new Object[] {p, shape, size });
-			addResource((Resource) res);
+			addResource((Resource) res, world, random);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -147,83 +123,32 @@ public class Generator extends Agent {
 
 	/** Returns a random point inside the World associated with the Generator Agent.
 	 * The point is represented using its generalized map coordinates. */
-	public Point getRandomPoint() {
-		return translatePoint(random.nextInt(world.X()), random.nextInt(world.Y()));
+	public Point getRandomPoint(World world, Random random) {
+		return translatePoint(random.nextInt(world.X()), random.nextInt(world.Y()), world);
 	}
 
 	/** Tanslates a point from its internal world coordinates to its generalized map coordinates.
 	 * @param */
-	public Point translatePoint(int x, int y) {
+	public Point translatePoint(int x, int y, World world) {
 		Point p = new Point(
-				(x - world.X()/2) + (world.center.x - 0),// Map.center.x),
-				(y - world.Y()/2) + (world.center.y - 0));//Map.center.y));
+				(x - world.X()/2) + world.center.x,
+				(y - world.Y()/2) + world.center.y);
 		return p;
 	}
 	
 	public void putResource(Resource resource, Point p) throws Exception {
-		Tuple t = new Tuple(resource.type, (int) p.getX(), (int)p.getY());	
+		Tuple t = new Tuple(resource.type, (int)p.getX(), (int)p.getY());	
 		put(t, Self.SELF);
 	}
 	
 	/** Adds a resource cluster's tubles to the Map Tublespace.
 	 * @param */
-	public void addResource(Resource resource) throws Exception {
-		for (Point p : getPoints(resource)) {
+	public void addResource(Resource resource, World world, Random random) throws Exception {
+		for (Point p : resource.getPoints(random)) {
 			if (world.pointInWorld(p) && !world.pointNearCenter(p)) {
 				putResource(resource, p);
 			}
 		}
-	}
-	
-	/** Gets all points associated with this Resource. */
-	public List<Point> getPoints(Resource resource) {
-		List<Point> list = new LinkedList<Point>();
-		Point center = resource.center;
-		int size = resource.size;
-		int shape = resource.shape;
-		list.add(center);
-
-		// Circular
-		if (shape == 0 || shape == 2) {
-			for (int y = -size+center.y; y <= size+center.y; y++) {
-				for (int x = -size+center.x; x <= size+center.x; x++) {
-					Point p = new Point(x,y);
-					if (p.distance(center) <= size) {
-						list.add(p);
-					}
-				}
-			}
-		}
-
-		// Polygon
-		if (shape == 3) {
-			Point[] reshaper = new Point[2];
-			for (int k = 0; k < 2; k++) {
-				//map.random x2
-				reshaper[k] = new Point(random.nextInt(2*size+1)-size-1+center.x, random.nextInt(2*size+1)-size-1+center.y);
-			}
-			for (int y = (-2*size)+center.y; y <= (2*size)+center.y; y++) {
-				for (int x = (-2*size)+center.x; x <= (2*size)+center.x; x++) {
-					Point p = new Point(x,y);
-					if (p.distance(center) <= size || p.distance(reshaper[0]) <= size || p.distance(reshaper[1]) <= size) {
-						list.add(p);
-					}
-				}
-			}
-		}
-
-		// Scatter
-		if (shape == 2) {
-			for (int i = 0; i < random.nextInt(size) + size/2; i++) {	//map.random
-				if (list.size() > 2) {
-					list.remove(random.nextInt(list.size()));			//map.random
-				} else {
-					break;
-				}
-			}
-		}
-		
-		return list;
 	}
 	
 }

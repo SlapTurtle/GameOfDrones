@@ -15,7 +15,7 @@ import baseNode.MapMerger;
 import map.*;
 import util.Position;
 
-public abstract class DroneAI extends Agent {
+public abstract class Drone extends Agent {
 	
 	//Assigned by Main class
 	public static PointToPoint self2base;
@@ -27,7 +27,7 @@ public abstract class DroneAI extends Agent {
 	public String id;
 	public Point position;
 	
-	public DroneAI(Point position, String type, String id) {
+	public Drone(Point position, String type, String id) {
 		super(id);
 		this.type = type;
 		this.id = id;

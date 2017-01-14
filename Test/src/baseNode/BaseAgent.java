@@ -3,81 +3,104 @@ package baseNode;
 import map.Map; //TEMP
 
 import java.awt.Point;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Random;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
 
 public class BaseAgent extends Agent {
 	
-	LinkedList<Tuple> gold = new LinkedList<Tuple>();
-	LinkedList<Tuple> tree = new LinkedList<Tuple>();
 	LinkedList<Point> pg = new LinkedList<Point>();
 	LinkedList<Point> pt = new LinkedList<Point>();
 	Point center = new Point(0,0);
 	
 	public BaseAgent() {
 		super("BaseAgent");
+		pg = new LinkedList<Point>();
+		pt = new LinkedList<Point>();
 	}
 
 	@Override
 	protected void doRun() throws Exception {
+		Template in = new Template(new ActualTemplateField("order"), new FormalTemplateField(String.class));
 		while(true){
-			//Await Request from Harvester Drone
+			Tuple tu = get(in, Self.SELF);
+			String order = tu.getElementAt(String.class, 0);
+			String id = tu.getElementAt(String.class, 1);
+			put(new Tuple(order, id, getResourcePoint()),Self.SELF);
 		}
 	}
 	
-	public void getResource(){
-		int tempx;
-		int tempy;
-		
+	private void getResources(){
 		Template tpg = new Template(new ActualTemplateField("GOLD"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
-		gold = queryAll(tpg);
-			for (Tuple tu : gold) {
-				tempx = tu.getElementAt(Integer.class, 1);
-				tempy = tu.getElementAt(Integer.class, 2);
-				pg.add(new Point(tempx, tempy));
-		}
 		
-		Template tpt = new Template(new ActualTemplateField("GOLD"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
-		tree = queryAll(tpt);
-			for (Tuple tu : gold) {
-				tempx = tu.getElementAt(Integer.class, 1);
-				tempy = tu.getElementAt(Integer.class, 2);
-				pt.add(new Point(tempx, tempy));
+		LinkedList<Tuple> gold = queryAll(tpg);
+			for (Tuple tu : gold) { 
+				pg.add(new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2)));
 		}
+		pg = quickSort(pg);
+		
+		Template tpt = new Template(new ActualTemplateField("TREE"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
+		LinkedList<Tuple> tree = queryAll(tpt);
+			for (Tuple tu : tree) {
+				pt.add(new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2)));
+		}
+		pt = quickSort(pt);
 	}
 	
-//	public LinkedList<Point> sendHarvester(){
-//		LinkedList<Point> path;
-//		if(gold.isEmpty() && tree.isEmpty()){
-//			getResource();
-//			sendHarvester();
-//		}
-//		else if (gold.isEmpty()){
-//			while (!pt.isEmpty()){
-//				path = getPath(center,pt.getFirst());
-//				pt.removeFirst();
-//				return path;
-//			}
-//			
-//		}
-//		else {
-//			while(!pg.isEmpty()){
-//				path = getPath(center, pg.getFirst());
-//				pg.removeFirst();
-//				return path;
-//			}
-//		}
-//		return null;
-//	}
-//	
-//	public LinkedList<Point> getPath(Point p1, Point p2){
-//		//A* algorithm
-//		return null;
-//	}
+	public Point getResourcePoint(){		
+		if (!pg.isEmpty()){
+			return pg.removeFirst();
+		}
+		else if (!pt.isEmpty()){
+			return pt.removeFirst();
+		}	
+		getResources();
+		return getResourcePoint();
+	}
+	
+	
+	private static LinkedList<Point> quickSort(LinkedList<Point> points){
+		if (points.size() <= 1) return points;
+		
+		Point basePoint=new Point(0,0);
+        int pivot=new Random().nextInt(points.size());
+        Point pivotPoint=points.get(pivot);
+        double pivotValue = pivotPoint.distance(basePoint);
+
+        LinkedList<Point> S1 = new LinkedList<Point>();
+        LinkedList<Point> S2 = new LinkedList<Point>();
+        LinkedList<Point> pivotValues = new LinkedList<Point>();
+
+
+        for (Point point:points) {
+        	double value=point.distance(basePoint);
+        	
+        	if (value == pivotValue) pivotValues.add(point);
+            else if (value < pivotValue) S1.add(point);
+            else S2.add(point);
+        }
+
+        LinkedList<Point> lower = quickSort(S1);
+        LinkedList<Point> higher = quickSort(S2);
+
+        return joinLists(lower, pivotValues, higher);
+    }
+	
+	private static LinkedList<Point> joinLists (LinkedList<Point> lower, LinkedList<Point> mid, LinkedList<Point> higher) {
+		for (Point p:mid) {
+			lower.addLast(p);
+		}
+		for (Point p:higher) {
+			lower.addLast(p);
+		}
+		return lower;
+	}
 }	
 

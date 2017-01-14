@@ -2,16 +2,17 @@ package map;
 
 import java.awt.Point;
 import java.util.LinkedList;
+import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.Tuple;
 
-public class DroneListener extends Agent {
+public class droneListener extends Agent {
 	
 	Map map;
 	Point center;
 
-	public DroneListener(Map map, Point center) {
-		super("DroneListener"+center.x+center.y);
+	public droneListener(Map map, Point center) {
+		super(UUID.randomUUID().toString());
 		this.map = map;
 		this.center = center;
 	}
@@ -35,7 +36,14 @@ public class DroneListener extends Agent {
 						b = false;
 					}
 				}
-			}	
-		}	
+			}
+			
+		}
+		
+		
+		
 	}
+
+	
+	
 }

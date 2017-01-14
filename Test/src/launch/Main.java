@@ -1,9 +1,12 @@
 package launch;
 
 import java.awt.Point;
+import java.util.UUID;
 
 import org.cmg.resp.comp.Node;
+import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Attribute;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.PointToPoint;
@@ -13,7 +16,7 @@ import org.cmg.resp.topology.VirtualPortAddress;
 
 import baseNode.*;
 import droneNode.*;
-import mapNode.*;
+import map.*;
 import userInterface.*;
 
 public class Main {
@@ -33,7 +36,22 @@ public class Main {
 	static final int startTreeCount = 0;
 	static final String seed = null;
 	
-	public static void main(String[] args) throws InterruptedException {		
+	public static void nicklas() throws InterruptedException{
+		Node map = new Map();
+		Node base = new Node(UUID.randomUUID().toString(), new TupleSpace());
+
+		map.addAgent(new Hasher());
+		map.put(new HashRequest("bob", new Point(20, 0), "asjdwe", 16));
+		Tuple t = map.get(new Template(new ActualTemplateField("bob"), Map.AnyString));
+		System.out.println("Hash: " + (String)t.getElementAt(1));
+	}
+	
+	public static void main(String[] args) throws InterruptedException{
+		nicklas();
+		//michael();
+	}
+	
+	public static void michael() throws InterruptedException {		
 		//Map
 		Node mapNode = new Node(mapID, new TupleSpace());
 		mapNode.addPort(port);
@@ -58,8 +76,8 @@ public class Main {
 		baseNode.start();
 		
 		//Drones
-		DroneAI.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
-		DroneAI.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
+		Drone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
+		Drone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
 		int max = exploreDrones+harvestDrones;
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
@@ -68,7 +86,7 @@ public class Main {
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
 			//DroneAI AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
-			DroneAI AI = new TestDrone(p);
+			Drone AI = new TestDrone(p);
 			droneNode.addAgent(AI);
 			droneNode.addAttribute(new Attribute("AI", AI)); //for UI Only
 			droneNodes[i] = droneNode;
@@ -76,21 +94,13 @@ public class Main {
 			
 			baseNode.put(new Tuple(AI.type, p.x, p.y));
 		}
-		DroneAI.self2drone = p2drones;
+		Drone.self2drone = p2drones;
 		for(Node droneNode : droneNodes){
 			droneNode.put(new Tuple("ready"));
 			droneNode.start();
 		}
 		
-		//UI
-//		new Console(mapNode, baseNode, droneNodes).start();
-
-//		//UI - query for all nodes to put a "ready" tuple in their own TupleSpace
-//		//UI - reads position of baseNode and every droneNode
-//		//UI - reads position of known resources from baseNode's TupleSpace
-//		//UI - prints board
-//		//UI - getall "ready" tuples + put for all "go!" tuple
-		
+		//UI		
 		new Console(baseNode, mapNode, droneNodes, DELAY, FIELD);
 	}
 }

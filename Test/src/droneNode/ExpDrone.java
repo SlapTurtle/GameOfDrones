@@ -11,19 +11,23 @@ import org.cmg.resp.topology.Self;
 
 import util.Position;
 
-public class ExpDrone extends DroneAI {
+public class ExpDrone extends Drone {
 	public static final String type = "EXPDRONE";
 	public static int DroneCounter = 0;
 	
-	protected Position radiusPoint = new Position(0,0);
-	protected boolean returnToBase = false;
-	private boolean beenHereBefore = false;
-	private boolean returnToCirculation = false;
+	protected Position radiusPoint;
+	protected boolean returnToBase;
+	private boolean beenHereBefore;
+	private boolean returnToCirculation;
 	
 	private int radius = 0;
 		
 	public ExpDrone(Point position) {
 		super(position, type, type + DroneCounter++);
+		radiusPoint = new Position(radius, 0);
+		returnToBase = false;
+		beenHereBefore = false;
+		returnToCirculation = false;
 	}
 
 	/**
@@ -78,8 +82,11 @@ public class ExpDrone extends DroneAI {
 	 * the drone knows when to return to base
 	 * @param nextPoint
 	 * @return moved nextPoint
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
-	private Point returnToCirculation(Point nP) {
+	private Point returnToCirculation(Point nP) throws InterruptedException, IOException {
+		radius = getNewRadius(); 
 		if(nP.x==this.radius){
 			returnToCirculation=false;
 			beenHereBefore=true;
@@ -105,7 +112,6 @@ public class ExpDrone extends DroneAI {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
-			radius = getNewRadius(); 
 			radiusPoint.set(radius, radiusPoint.y);
 		}
 		return nP;
@@ -114,7 +120,7 @@ public class ExpDrone extends DroneAI {
 	//updates base's radius and applies it to next exploration route
 	private int getNewRadius() throws InterruptedException, IOException {
 		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
-		Tuple tu = get(tp,DroneAI.self2base);
+		Tuple tu = get(tp,Drone.self2base);
 		int radius = tu.getElementAt(Integer.class, 1) + 2;
 		put(new Tuple("Radius", radius),self2base);
 		return radius;

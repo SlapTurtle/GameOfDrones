@@ -3,35 +3,44 @@ package map;
 import java.awt.Point;
 import java.util.Random;
 
+import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
+
 /** Class responsible for hash functions associated with world expansion. */
-public class Hasher {
+public class Hasher extends Agent{
 
-	Map map; //temp
-	Random random;
-	String seed;
+	Template getT = new Template(new ActualTemplateField("hash"), Map.AnyString, Map.AnyPoint, Map.AnyString, Map.AnyInteger);
 
-	public Hasher(Map map, Random random, String seed) {
-		this.map = map;
-		this.random = random;
-		this.seed = seed;
+	public Hasher() {
+		super("hasher");
 	}
 
-	public String[] expansionHashes(int length) {
-		String[] hash = new String[length];
-		for (int i = 0; i < length; i++) {
-			hash[i] = generateHash(random, length);
+	protected void doRun() throws Exception {
+		while(true) {
+			// REQUEST
+			Tuple request = get(getT, Self.SELF);
+			String target = request.getElementAt(String.class, 1);
+			Point center = request.getElementAt(Point.class, 2);
+			String seed = request.getElementAt(String.class, 3);
+			int hashlength = request.getElementAt(Integer.class, 4);
+			// PROCESS
+			String hash = getExpansionHash(seed, center, hashlength);
+			// RESPONSE
+			Tuple response = new Tuple(target, hash);
+			put(response, Self.SELF);
 		}
-		return hash;
 	}
 
-	public String getExpansionHash(Point center) {
-		int index = Math.abs(h(seed.hashCode(), center.x, 11, center.y, 7, map.hash.length));
-		int newHash = -1*h(Math.abs(map.hash[index].hashCode()), center.y-center.x, index+3, 2*center.y-1, seed.hashCode(), 0);
+	public String getExpansionHash(String seed, Point center, int hashlength) {
+		int newHash = h(Math.abs(seed.hashCode()), center.y-center.x, center.x+3, 2*center.y-1, seed.hashCode());
+		return generateHash(newHash, Map.EXP_HASHLENGTH);
+	}
+
+	public String generateHash(int newHash, int length) {
 		Random r = new Random(newHash);
-		return generateHash(r, Map.EXP_HASHLENGTH);
-	}
-
-	public String generateHash(Random r, int length) {
 		String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 		StringBuilder sb = new StringBuilder();
 	    for( int j = 0; j < length; j++ ) 
@@ -39,7 +48,10 @@ public class Hasher {
 		return sb.toString();
 	}
 	
-	public int h(int A, int x, int B, int y, int C, int D) {
-		return (D != 0) ? (A / (x + B)) % (y + C) % D : (A / (x + B)) % (C - y);
-	}	
+	public int h(int A, int x, int B, int y, int C) {
+		
+		return (A / (x + B)) % (C - y);
+	}
+	
+	
 }

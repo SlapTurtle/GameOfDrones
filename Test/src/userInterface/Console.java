@@ -9,8 +9,7 @@ import org.cmg.resp.knowledge.Tuple;
 
 import baseNode.*;
 import droneNode.*;
-import map.Map;
-import mapNode.*;
+import map.*;
 
 public class Console implements Runnable {
 	String[][] board;
@@ -22,7 +21,6 @@ public class Console implements Runnable {
 	UserInterfaceAgent UserInterfaceAgent;
 
 	public Console(Node baseNode, Node mapNode, Node[] droneNodes, int delay, int size) {
-		board = new String[size][size];
 		base = baseNode;
 		map = mapNode;
 		drones = droneNodes;
@@ -70,11 +68,11 @@ public class Console implements Runnable {
 	 * Avoid invoking while other instances of the method are running.
 	 * @param*/
 	public void render() {
-		board = (UserInterfaceAgent != null) ? UserInterfaceAgent.getMap() : Map.Retrieve(size);
+		board = UserInterfaceAgent.getMap();
 		int offsetx = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[1] : 0 ;
 		int offsety = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[3] : 0 ;
 		for(Node drone : drones){
-			DroneAI AI = (DroneAI) drone.getAttribute("AI").getValue();
+			Drone AI = (Drone) drone.getAttribute("AI").getValue();
 			Point p = AI.position;
 			board[p.x + offsetx][p.y + offsety] = AI.type; 
 		}

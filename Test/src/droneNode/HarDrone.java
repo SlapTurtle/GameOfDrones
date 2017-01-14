@@ -1,50 +1,106 @@
 package droneNode;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
+import org.cmg.resp.knowledge.Tuple;
 
 import map.Map; //TEMP
 import util.AStarPoint;
 import util.Position;
 
-public class HarDrone extends DroneAI {
+public class HarDrone extends Drone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
-	boolean hasHarvested = false;
-	LinkedList<Point> pathOut = new LinkedList<Point>();
-	LinkedList<Point> pathHome = new LinkedList<Point>();
+	boolean hasHarvested;
+	LinkedList<Point> pathOut;
+	LinkedList<Point> pathHome;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
+		hasHarvested = false;
+		pathOut = new LinkedList<Point>();
+		pathHome = new LinkedList<Point>();
 	}
 	
 	@Override
-	protected Point moveDrone(){
-		if (pathOut.isEmpty() && pathHome.isEmpty()) {
-			//target point from base
-			//call a star on target point
-			//ASTAR
-		}
+	protected Point moveDrone() throws InterruptedException, IOException{
+			Point target;	
 			
-		if (!pathOut.isEmpty()) { //on way out
-			Point target = pathOut.remove(0);
-			if (pathOut.isEmpty()) hasHarvested=true;
-			pathHome.add(0, target);
+			if (pathOut.isEmpty() && pathHome.isEmpty()) { //drone is at base, need new target
+				while(pathOut.isEmpty()){
+					target = getNewTarget();
+					pathOut.addAll(aStar(position, target));
+				}
+				//TODO delete resource from own ts
+				//TODO increment specific resource counter for base
+				return null;
+			}
+			
+			else if (!pathOut.isEmpty()) { //on way out
+				//TODO evade
+				target = pathOut.removeFirst();
+				/*if(map.isDroneAt(target)) {
+					
+					
+					//pathOut.add(0, target);
+					//pathOut.add(0, position);
+				}	
+				else {
+					if (!pathHome.contains(target)) //if needed for evade scenario*/
+						pathHome.addFirst(target);
+					
+					//TODO cut resource tuple from base ts and place in drone ts
+					
+					if (pathOut.isEmpty()) hasHarvested=true;
+				//}
+			}
+			
+			else { //on way home
+				target = pathHome.removeFirst();
+				
+				/*if(map.isDroneAt(target)) {
+					//TODO evade
+					
+					pathHome.add(0, target);
+					pathHome.add(0, position);
+				}
+				else {
+				
+				}*/
+			}
+
 			return target;
-			
-			//////////////////////////////////////////
-			// TODO: implement removing of res //
-			//////////////////////////////////////////
-		}
-		else { //on way home
-			return pathHome.remove(0);
-		}
 	}
 	
-	private static ArrayList<Point> aStar(Point pointStart, Point pointEnd, Map map){
+	private Point getNewTarget() throws InterruptedException, IOException{
+		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
+		put(new Tuple("order",id), self2base);
+		Tuple tu = get(tp,Drone.self2base);
+		return tu.getElementAt(Point.class, 2);
+	}
+	private LinkedList<Point> getPathablePoints(){
+		return null;
+	}
+	
+	private void evade (ArrayList<Object> list) {
+		//list is used so if list when drode returning it uses that
+		//and if drone is gathering it uses that list
+		
+		//decide if drone is winner
+		//if loser step aside 
+		
+		//if winner continue
+	}
+	
+	private static ArrayList<Point> aStar(Point pointStart, Point pointEnd){
 		//Declaration of lists
 		LinkedList<AStarPoint> closedSet = new LinkedList<AStarPoint>();
 		LinkedList<AStarPoint> openSet = new LinkedList<AStarPoint>();
@@ -78,7 +134,7 @@ public class HarDrone extends DroneAI {
 			closedSet.add(current);
 			
 			//hacks to get AStarPoint neigbors list
-			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(map.RetrievePathableNeighbors(current));
+			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(map.RetrievePathableNeighbors(current)); //retriever
 			
 			for(AStarPoint neighbor : neighbors){
 				//ignores already visited points.
@@ -119,5 +175,4 @@ public class HarDrone extends DroneAI {
 		
 		return AStarPoint.convertToPointList(path);
 	}
-
 }
