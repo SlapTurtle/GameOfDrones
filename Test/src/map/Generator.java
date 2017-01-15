@@ -10,7 +10,9 @@ import resources.Base;
 import resources.Gold;
 import resources.Resource;
 import java.awt.Point;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 import resources.*;
@@ -20,6 +22,7 @@ public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
+	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
 	
 	int[] bounds;
 
@@ -27,16 +30,22 @@ public class Generator extends Agent {
 		super("generator");
 	}
 
-	protected void doRun() throws Exception {
+	protected void doRun() {
 		while(true) {
-			// REQUEST
-			Tuple request = get(getT, Self.SELF);
-			World world = request.getElementAt(World.class, 1);
-			Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
-			bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
-			
-			// PROCESS
-			populateMap(world, random);
+			try {
+				// REQUEST
+				Tuple request = get(getT, Self.SELF);
+				World world = request.getElementAt(World.class, 1);
+				Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
+				bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
+				
+				// PROCESS
+				populateMap(world, random);
+				addListeners(world);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -73,7 +82,6 @@ public class Generator extends Agent {
 			if (dice.roll(0.5))
 				populate(Rock.class, "polygon", random.nextInt(1), world, random);
 		}
-
 		
 		/* TREE */
 		
@@ -103,9 +111,7 @@ public class Generator extends Agent {
 		
 		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++) {
 			populate(Gold.class, "circular", 0, world, random);
-		}
-		
-		
+		}	
 	}
 
 	/** Populates the current World with a given type, shape and size of a resource.
@@ -150,8 +156,26 @@ public class Generator extends Agent {
 	public void addResource(Resource resource, World world, Random random) throws Exception {
 		for (Point p : resource.getPoints(random)) {
 			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p)) {
-				System.out.println("adding resource");
 				putResource(resource, p);
+			}
+		}
+	}
+
+	public void addListeners(World world) throws InterruptedException, IOException {
+		System.out.println("adding listeners...");
+		LinkedList<Tuple> list = queryAll(getPoints);
+		
+		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
+			boolean exists = false;
+			for (Tuple t : list) {
+				if (p.equals((Point)t.getElementAt(1))) {
+					exists = true;
+					break;
+				}
+			}
+			if (!exists) {
+				System.out.println("listener added at " + p.toString());
+				put(new Tuple("listen", p), Self.SELF);
 			}
 		}
 	}

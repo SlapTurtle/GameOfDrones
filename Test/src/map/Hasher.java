@@ -36,7 +36,7 @@ public class Hasher extends Agent{
 
 	public String getExpansionHash(String seed, Point center, int hashlength) {
 		int newHash = h(Math.abs(seed.hashCode()), center.y-center.x, center.x+3, 2*center.y-1, seed.hashCode());
-		return generateHash(newHash, Map.EXP_HASHLENGTH);
+		return generateHash(newHash, hashlength);
 	}
 
 	public String generateHash(int newHash, int length) {

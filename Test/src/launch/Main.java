@@ -37,7 +37,7 @@ public class Main {
 	static final String seed = null;
 	
 	public static void nicklas() throws InterruptedException{
-		Node map = new Map();
+		Node map = new Map(UUID.randomUUID().toString());
 		Node base = new Node(UUID.randomUUID().toString(), new TupleSpace());
 
 		map.addAgent(new Hasher());

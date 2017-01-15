@@ -4,46 +4,59 @@ import java.awt.Point;
 import java.util.LinkedList;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
+import org.cmg.resp.knowledge.ActualTemplateField;
+import org.cmg.resp.knowledge.FormalTemplateField;
+import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
 
 public class droneListener extends Agent {
-	
-	Map map;
-	Point center;
 
-	public droneListener(Map map, Point center) {
+	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
+	
+	public droneListener() {
 		super(UUID.randomUUID().toString());
-		this.map = map;
-		this.center = center;
 	}
 
-	protected void doRun() throws Exception {
-		boolean b = true;
-		while(b) {
-			synchronized (map.render) {
-				try {
-					map.render.wait();
-				} catch (InterruptedException e) {
-				}
-			}
-			LinkedList<Tuple> drones = map.RetrieveTuples("EXPDRONE");
-			if (drones != null) {
-				for (Tuple t : drones) {
-					Point p = new Point(Map.getTupleX(t), Map.getTupleY(t));
-					if (b && p.distance(center) <= (World.DEFAULT-2)) {
-						//System.out.println("DRONE " + p.x + "," + p.y + " IN RANGE OF " + center.x + "," + center.y + " [" + p.distance(center) + "]");
-						map.expandWorld(center);
-						b = false;
+	protected void doRun() {
+		while(true) {
+			try {
+				Thread.sleep(50);
+				for(Tuple t : queryAll(getPoints)) {
+					Point p = (Point)t.getElementAt(1);
+	
+					// TODO retrieve list of drones
+					LinkedList<Tuple> drones = new LinkedList<Tuple>();
+					
+					for (Tuple d : drones) {
+						Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
+						if (p.distance(dp) <= Map.DEFAULTGRID-2) {
+							System.out.println("expanding map");
+							expandWorld(p);
+						}
 					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
 		}
-		
-		
-		
 	}
 
+	private boolean expandWorld(Point p) {		
+		World world = new World(p, Map.DEFAULTGRID);
+		try {		
+			String identifier;
+			String seed = (String)query(new Template(new ActualTemplateField("seed"), Map.AnyString), Self.SELF).getElementAt(1);
+			put(new HashRequest(identifier = UUID.randomUUID().toString(), p, seed, Map.EXP_HASHLENGTH), Self.SELF);
+			Tuple t = get(new Template(new ActualTemplateField(identifier), Map.AnyString), Self.SELF);
+			put(new Tuple("generate", world, seed), Self.SELF);
+			System.out.println("expansion succesful");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 	
 }
