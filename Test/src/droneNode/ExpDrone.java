@@ -33,7 +33,7 @@ public class ExpDrone extends AbstractDrone {
 	}
 
 	/**
-	 * Help function to move drone
+	 * main function to move exp drone
 	 * @param d
 	 * @param dir
 	 * @return
@@ -115,7 +115,6 @@ public class ExpDrone extends AbstractDrone {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
-			radiusPoint.set(radius, radiusPoint.y);
 		}
 		return nP;
 	}
@@ -126,6 +125,7 @@ public class ExpDrone extends AbstractDrone {
 		Tuple tu = get(tp,AbstractDrone.self2base);
 		int radius = tu.getElementAt(Integer.class, 1) + 2;
 		put(new Tuple("Radius", radius),self2base);
+		radiusPoint.set(radius, radiusPoint.y);
 		return radius;
 	}
 

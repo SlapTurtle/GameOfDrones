@@ -21,7 +21,7 @@ import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 1000;
+	public static final int DELAY = 500;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
@@ -48,7 +48,7 @@ public class Main {
 
 	public static void main(String[] args) throws InterruptedException{
 		nicklas();
-		//michael();
+		michael();
 	}
 	
 	public static void michael() throws InterruptedException {		
