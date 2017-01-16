@@ -13,7 +13,6 @@ import org.cmg.resp.knowledge.Tuple;
 
 import map.Map; //TEMP
 import util.AStarPoint;
-import util.Position;
 
 public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
