@@ -36,14 +36,34 @@ public class RetrieverNew extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			LinkedList list;
+			Object list;
 			switch(order){
 			default: list = null; break;
+			case "neighbours_explore" : list = getNeighboursExplore(x,y); break;
 			case "neighbours_all": list = getNeighbours(x,y); break;
 			case "neighbours_pathable": list = getPathableNeighbours(x,y); break;
 			}
 			put(new Tuple(order, id, list), Self.SELF);			
 		}
+	}
+	
+	
+	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
+		LinkedList<Tuple> list = new LinkedList<Tuple>();
+		for (int y = y0-1; y <= y0+1; y++) {
+			for (int x = x0-1; x <= x0+1; x++) { 
+				if (!(x == x0 && y == y0)) {
+					Tuple tu = queryp(templateXYExplore(x,y));
+					if(tu != null) {
+						list.add(tu);
+					}
+					else{
+						list.add(new Tuple(x, y, Empty.type));
+					}
+				}
+			}
+		}
+		return list;
 	}
 	
 	private LinkedList<Point> getPathableNeighbours(int x, int y) {
@@ -74,7 +94,7 @@ public class RetrieverNew extends Agent {
 		for (int y = y0-1; y <= y0+1; y++) {
 			for (int x = x0-1; x <= x0+1; x++) { 
 				if (!(x == x0 && y == y0)) {
-					Tuple tu = getp(templateXY(x+1,y));
+					Tuple tu = getp(templateXY(x,y));
 					if(tu != null) {
 						list.add(tu);
 					}
@@ -92,6 +112,14 @@ public class RetrieverNew extends Agent {
 				new FormalTemplateField(String.class),
 				new ActualTemplateField(x),
 				new ActualTemplateField(y)
+			);
+	}
+	
+	private Template templateXYExplore(int x, int y) {
+		return new Template(
+				new ActualTemplateField(x),
+				new ActualTemplateField(y),
+				new FormalTemplateField(String.class)
 			);
 	}
 }

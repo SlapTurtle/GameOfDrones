@@ -59,13 +59,12 @@ public abstract class AbstractDrone extends Agent {
 		try {
 			Template template = new Template(
 							new ActualTemplateField(type),
-							new ActualTemplateField(position.x),
-							new ActualTemplateField(position.y));
-			//get(template, self2map);
+							new FormalTemplateField(Integer.class),
+							new FormalTemplateField(Integer.class),
+							new ActualTemplateField(id));
+			position = new Point(p.x, p.y);
+			Tuple t2 = new Tuple(type, p.x, p.y, id);
 			get(template, self2base);
-			position.move(p.x, p.y);
-			Tuple t2 = new Tuple(type, position.x, position.y);
-			//put(t2, self2map);
 			put(t2, self2base);
 		} catch (Exception e) {
 			e.printStackTrace();

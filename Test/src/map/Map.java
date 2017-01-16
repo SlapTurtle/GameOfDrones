@@ -11,6 +11,7 @@ import map.HashRequest;
 import resources.Base;
 import resources.Exp_drone;
 import droneNode.*;
+import launch.Main;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Map extends Node {
 
 	public Map(String seed) {
 		super("map", new TupleSpace());
+		addPort(Main.port);
 		
 		System.out.println("Seed: " + seed);
 		put(new Tuple("seed", seed));

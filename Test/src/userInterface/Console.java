@@ -1,6 +1,8 @@
 package userInterface;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.util.Scanner;
 
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -37,28 +39,14 @@ public class Console implements Runnable {
 		try {
 			Template rdy = new Template(new ActualTemplateField("ready"));
 			Tuple go = new Tuple("go");
-			int i = 0;
 			while(true) {
-				//wait for all things to be ready
-				//System.out.println("UI gets");				
-				//map.get(rdy);
-				//base.get(rdy);
-				for(Node drone : drones){
-					drone.get(rdy);
-				}
-				
-				//System.out.println("UI Renders");
-				Thread.currentThread().sleep(delay);
-				
-				//renders new image
-				render();				
-				
-				//tells everything to make next move
-				//System.out.println("UI puts");
-				//map.put(go);
-				//base.put(go);
+				render();
+				new Scanner(System.in).nextLine();
 				for(Node drone : drones){
 					drone.put(go);
+				}
+				for(Node drone : drones){
+					drone.get(rdy);
 				}
 			}
 		} catch (Exception e) {
@@ -69,13 +57,15 @@ public class Console implements Runnable {
 	/** Displays a given map's current state to the console.
 	 * Avoid invoking while other instances of the method are running.
 	 * @param
-	 * @throws InterruptedException */
-	public void render() throws InterruptedException {
+	 * @throws InterruptedException 
+	 * @throws IOException */
+	public void render() throws InterruptedException, IOException {
 		//puts and gets UI handshake
-//		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
-//		Tuple goUI = new Tuple("goUI");
-//		base.put(goUI);
-//		base.get(rdyUI);
+		System.out.println(UserInterfaceAgent.queryAllTuples(true, false, false, false));
+		Template rdyMM = new Template(new ActualTemplateField("readyMM"));
+		Tuple goUI = new Tuple("goUI");
+		base.put(goUI);
+		base.get(rdyMM);
 		
 		board = UserInterfaceAgent.getMap();
 		int offsetx = -UserInterfaceAgent.bounds[1];
@@ -83,10 +73,10 @@ public class Console implements Runnable {
 		int b1 = UserInterfaceAgent.bounds[0]-UserInterfaceAgent.bounds[1]+1;
 		int b2 = UserInterfaceAgent.bounds[2]-UserInterfaceAgent.bounds[3]+1;
 		
-		
+		System.out.println("----");
 		for (int y = 0; y < b2; y++) {
 			for (int x = 0; x < b1; x++) {
-				char c = ' ';
+				char c = 'X';
 				if(board[x][y] != null) {
 					switch (board[x][y]) {
 					case "BASE": c = 'B'; break;
@@ -97,13 +87,15 @@ public class Console implements Runnable {
 					case "TREE": c = 'T'; break;
 					case "WATER": c = 'W'; break;
 					case "EMPTY": c = '.'; break;
-					default: 	 c = ' '; break;
+					default: 	 c = '.'; break;
 					}
 				}
 				System.out.print(c + " ");
 			}
 			System.out.println();
 		}
+
+		System.out.println("----");
 		System.out.println("\n\n\n\n\n");
 	}
 	

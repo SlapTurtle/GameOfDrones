@@ -16,32 +16,38 @@ import org.cmg.resp.topology.VirtualPortAddress;
 import baseNode.*;
 import droneNode.*;
 import map.*;
+import resources.Empty;
 import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 1000;
+	public static final int DELAY = 3000;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
-	static final VirtualPort port = new VirtualPort(port_int);
+	public static final VirtualPort port = new VirtualPort(port_int);
 	static final String baseID = "baseNode";
 	static String mapID;
 	static final String droneID = "droneNode";
 
-	static final int exploreDrones = 2;
+	static final int exploreDrones = 1;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	static final String seed = null;
 
 	public static void nicklas() throws InterruptedException{
-		Node map = new Map(mapID = UUID.randomUUID().toString());
+		//Node map = new Map(mapID="hej");//= UUID.randomUUID().toString());
+		Node map = new Node(mapID = UUID.randomUUID().toString(), new TupleSpace());
+		map.addPort(port);
+		map.addAgent(new RetrieverNew());
+		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
+		map.start();
 		
 		// michaels stuff
 		Node baseNode = new Node(baseID, new TupleSpace());
 		baseNode.addPort(port);
-		baseNode.addAgent(new MapMerger());
+//		baseNode.addAgent(new MapMerger());
 		baseNode.addAgent(new BaseAgent());
 		baseNode.addAgent(new RetrieverNew());
 		baseNode.put(new Tuple("BASE", 0, 0));
@@ -51,16 +57,15 @@ public class Main {
 		baseNode.put(new Tuple("ExpDroneCounter", exploreDrones));
 		baseNode.put(new Tuple("HarDroneCounter", harvestDrones));
 		baseNode.put(new Tuple("mapEdge", 0));
+		AbstractDrone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
 		baseNode.start();
 		
 		//Drones
-		AbstractDrone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
-		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
 		int max = exploreDrones+harvestDrones;
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
 		for(int i = 0; i<max; i++){
-			Point p = new Point(0,0);
+			Point p = new Point(0,1);
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
 			AbstractDrone AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
@@ -70,14 +75,24 @@ public class Main {
 			droneNodes[i] = droneNode;
 			p2drones[i] = new PointToPoint(droneID+i, new VirtualPortAddress(port_int));
 			
-			baseNode.put(new Tuple(AI.type, p.x, p.y));
-			map.put(new Tuple(AI.type, p.x, p.y));
+			baseNode.put(new Tuple(AI.type, p.x, p.y, AI.id));
 		}
 		AbstractDrone.self2drone = p2drones;
 		for(Node droneNode : droneNodes){
-			droneNode.put(new Tuple("ready"));
 			droneNode.start();
 		}
+		
+		//Adds initially explored tiles
+		for (int y = -1; y <= +2; y++) {
+			for (int x = -1; x <= +1; x++) { 
+				if (!(x == 0 && y == 0)) {
+					baseNode.put(new Tuple(x,y,MapMerger.ACTION_NEW));
+				}
+			}
+		}
+		
+		//UI
+		new Console(baseNode, map, droneNodes, DELAY, FIELD);
 		
 		
 	}
@@ -135,7 +150,7 @@ public class Main {
 			droneNodes[i] = droneNode;
 			p2drones[i] = new PointToPoint(droneID+i, new VirtualPortAddress(port_int));
 			
-			baseNode.put(new Tuple(AI.type, p.x, p.y));
+			baseNode.put(new Tuple(AI.type, AI.id, p.x, p.y));
 			//map.put(new Tuple(AI.type, p.x, p.y));
 		}
 		AbstractDrone.self2drone = p2drones;

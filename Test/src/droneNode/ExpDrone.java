@@ -4,10 +4,13 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
 import baseNode.MapMerger;
@@ -223,27 +226,56 @@ public class ExpDrone extends AbstractDrone {
 	}
 	
 	private void explore(Point position) throws Exception {
-		LinkedList<Tuple> list = getNeighbours(position);
-		System.out.println(list);
-		for (Tuple tu : list) {
-			Point p = new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2));
-			Template t0 = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
-			Template t1 = new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class));
-			int radius = query(t1, self2base).getElementAt(Integer.class, 1);
-			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null){
-				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
-				String s = tu.getElementAt(String.class, 0);
-				if(s != Empty.type){
-					put(get(t0, self2map),self2base);
+		//add explored location
+		LinkedList<Tuple> baseExplore = getNeighboursExplore(position);
+		System.out.println(baseExplore);
+		int range = getRadius(); 
+		for(Tuple tu : baseExplore){
+			if(tu.getElementAt(String.class, 2).equals(Empty.type)){
+				int x = tu.getElementAt(Integer.class, 0);
+				int y = tu.getElementAt(Integer.class, 1);
+				if(Math.abs(x) > range || Math.abs(y) > range){
+					put(new Tuple(x,y,MapMerger.ACTION_NEW), self2base);
+				}
+			}
+		}
+		
+		//add resources
+		LinkedList<Tuple> map = getNeighbours(position, true);
+		LinkedList<Tuple> base = getNeighbours(position, false);
+		for(Tuple tb : base){
+			String strb = tb.getElementAt(String.class, 0);
+			int xb = tb.getElementAt(Integer.class, 1);
+			int yb = tb.getElementAt(Integer.class, 2);
+			if(strb.equals(Empty.type)){
+				for(Tuple tm : map){
+					String strm = tm.getElementAt(String.class, 0);
+					int xm = tm.getElementAt(Integer.class, 1);
+					int ym = tm.getElementAt(Integer.class, 2);
+					if(xb==xm && yb==ym && !strm.equals(Empty.type)){
+						put(new Tuple(strm, xm, ym), self2base);
+					}
 				}
 			}
 		}
 	}
 	
-	private LinkedList<Tuple> getNeighbours(Point position) throws InterruptedException, IOException{
-		put(new Tuple("neighbours_all", id, position.x, position.y), self2map);
+	private int getRadius() throws InterruptedException, IOException{
+		return query(new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class)),self2base).getElementAt(Integer.class, 1);
+	}
+	
+	private LinkedList<Tuple> getNeighboursExplore(Point position) throws InterruptedException, IOException{
+		put(new Tuple("neighbours_explore", id, position.x, position.y), self2base);
+		Template tp = new Template(new ActualTemplateField("neighbours_explore"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
+		LinkedList<Tuple> list = get(tp, self2base).getElementAt(LinkedList.class, 2);
+		return list;
+	}
+	
+	private LinkedList<Tuple> getNeighbours(Point position, boolean bool) throws InterruptedException, IOException{
+		PointToPoint p2p = (bool) ? self2map : self2base;
+		put(new Tuple("neighbours_all", id, position.x, position.y), p2p);
 		Template tp = new Template(new ActualTemplateField("neighbours_all"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
-		LinkedList<Tuple> list = get(tp, self2map).getElementAt(LinkedList.class, 2);
+		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
 		return list;
 	}
 }
