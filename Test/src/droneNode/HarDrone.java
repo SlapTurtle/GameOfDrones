@@ -12,12 +12,11 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
-import map.Map; //TEMP
 import util.AStarPoint;
 
 //test regular move
 //do resource part: //TODO get resource tuple from base ts and put in own ts: 	//if (.isEmpty()) hasHarvested=true;
-	//in get new moves: //TODO delete (get) resource from own ts //TODO increment (get->put) specific resource counter for base
+//in get new moves: //TODO delete (get) resource from own ts //TODO increment (get->put) specific resource counter for base
 //evade move
 
 //if astar can't find path
@@ -52,8 +51,8 @@ public class HarDrone extends AbstractDrone {
 	
 	private Point getNewTarget() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
-		put(new Tuple("order",id), self2base);
-		Tuple tu = get(tp,AbstractDrone.self2base);
+		put(new Tuple("order",id), Drone.self2base);
+		Tuple tu = get(tp, Drone.self2base);
 		return tu.getElementAt(Point.class, 2);
 	}
 	
@@ -75,11 +74,11 @@ public class HarDrone extends AbstractDrone {
 	}
 	
 	//TODO what does this do?
-	//TODO self2base?: general point 2 point
+	//TODO Drone.self2base?: general point 2 point
 	private LinkedList<Point> getPathablePoints() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("neighbours_pathable"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
-		put(new Tuple("neighbours_pathable",id, position.x, position.y), self2base);
-		Tuple tu = get(tp,AbstractDrone.self2base);
+		put(new Tuple("neighbours_pathable",id, position.x, position.y), Drone.self2base);
+		Tuple tu = get(tp, Drone.self2base);
 		return tu.getElementAt(LinkedList.class, 2);
 	}
 	

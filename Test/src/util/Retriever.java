@@ -1,4 +1,4 @@
-package map;
+package util;
 
 import java.awt.Point;
 import java.util.LinkedList;
@@ -14,9 +14,9 @@ import org.cmg.resp.topology.Self;
 import resources.Empty;
 import resources.Resource;
 
-public class RetrieverNew extends Agent {
+public class Retriever extends Agent {
 	
-	public RetrieverNew() {
+	public Retriever() {
 		super(UUID.randomUUID().toString());
 	}
 

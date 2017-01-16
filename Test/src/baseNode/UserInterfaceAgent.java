@@ -34,7 +34,7 @@ public class UserInterfaceAgent extends Agent {
 				put(new Tuple(x,y,MapMerger.ACTION_OLD),Self.SELF);
 				//add update to UI
 			}
-			put(new Tuple("goMM"),Self.SELF);
+			put(new Tuple("readyUI"),Self.SELF);
 		}
 	}
 	
@@ -54,10 +54,10 @@ public class UserInterfaceAgent extends Agent {
 				new FormalTemplateField(String.class));
 		//Bounds minimum is range
 		int range = query(new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF).getElementAt(Integer.class, 1);
-		bounds[0] = (range > bounds[0]) ? range : bounds[0];
-		bounds[1] = (-range < bounds[1]) ? -range : bounds[1];
-		bounds[2] = (range > bounds[2]) ? range : bounds[2];
-		bounds[3] = (-range < bounds[3]) ? -range : bounds[3];
+		bounds[0] = (range+1 > bounds[0]) ? range+1 : bounds[0];
+		bounds[1] = (-range-1 < bounds[1]) ? -range-1 : bounds[1];
+		bounds[2] = (range+1 > bounds[2]) ? range+1 : bounds[2];
+		bounds[3] = (-range-1 < bounds[3]) ? -range-1 : bounds[3];
 		//update bounds to latest
 		LinkedList<Tuple> list = queryAll(tm);
 		for(Tuple tu : list){
@@ -82,7 +82,7 @@ public class UserInterfaceAgent extends Agent {
 				}
 			}
 		}
-		//add all explored fields outside of mapedge
+		//add all explored fields outside of mapEdge
 		for(Tuple tu : list){
 			if(tu != null){
 				int x = tu.getElementAt(Integer.class, 0);

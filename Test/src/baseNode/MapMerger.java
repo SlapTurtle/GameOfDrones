@@ -1,6 +1,7 @@
 package baseNode;
 
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -28,24 +29,17 @@ public class MapMerger extends Agent {
 			int range = trange.getElementAt(Integer.class, 1) + 1;
 			
 			//checks that a ring exists
-			boolean b = true;
 			LinkedList<Tuple> list = queryAll(new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField(ACTION_OLD)));
 			LinkedList<Tuple> get = new LinkedList<Tuple>();
 			for(Tuple tu : list){
 				int x = tu.getElementAt(Integer.class, 0);
 				int y = tu.getElementAt(Integer.class, 1);
-				if(Math.abs(x)==range || Math.abs(y)==range){
-					boolean bx = (Math.abs(x) == range && y <= range && y >= -range);
-					boolean by = (Math.abs(y) == range && x <= range && x >= -range);
-					b = bx || by;
-					get.add(tu);
-				}
-				else if(Math.abs(x) <= range-1 && Math.abs(y) <= range-1){
-					get(searchXY(x,y),Self.SELF);
-				}
-				if(!b) break;
+				boolean bx = (Math.abs(x) == range && Math.abs(y) <= range);
+				boolean by = (Math.abs(y) == range && Math.abs(x) <= range);
+				if(bx || by) get.add(tu);
+				else if(Math.abs(x) < range && Math.abs(y) < range) get(searchXY(x,y),Self.SELF);
 			}
-			if(b && get.size() > 0){
+			if(get.size() == 8*(range)){ //amount of point in ring
 				//gets all tuples in the ring.
 				for(Tuple tu : get){
 					int x = tu.getElementAt(Integer.class, 0);
@@ -57,7 +51,6 @@ public class MapMerger extends Agent {
 				trange = get(new Template(new ActualTemplateField(MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF);
 				int i = trange.getElementAt(Integer.class, 1) + 1;
 				put(new Tuple(MAP_EDGE, i),Self.SELF);
-				System.out.println("MAPEDGE"+ i);
 			}
 			put(new Tuple("readyMM"),Self.SELF);
 		}

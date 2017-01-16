@@ -1,6 +1,7 @@
 package droneNode;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.cmg.resp.behaviour.Agent;
@@ -11,17 +12,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
-import baseNode.MapMerger;
-import map.*;
-
-
 public abstract class AbstractDrone extends Agent {
-	
-	//Assigned by Main class
-	public static PointToPoint self2base;
-	public static PointToPoint self2map;
-	public static PointToPoint[] self2drone;
-	//--------------------------------------
 	
 	public String type;
 	public String id;
@@ -41,11 +32,8 @@ public abstract class AbstractDrone extends Agent {
 	protected final void doRun() throws Exception {
 		while(true){
 			try {
-				//wait for go signal
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				//moves
 				move(moveDrone());
-				//put rdy signal in own tuplespace
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
@@ -53,22 +41,17 @@ public abstract class AbstractDrone extends Agent {
 		}
 	}
 
-	public void move(Point p) {
+	public void move(Point p) throws InterruptedException, IOException {
 		if (p.distance(position) > 1.21)
-			return;
-		try {
-			Template template = new Template(
-							new ActualTemplateField(type),
-							new FormalTemplateField(Integer.class),
-							new FormalTemplateField(Integer.class),
-							new ActualTemplateField(id));
-			position = new Point(p.x, p.y);
-			Tuple t2 = new Tuple(type, p.x, p.y, id);
-			get(template, self2base);
-			put(t2, self2base);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		return;
+		Template template = new Template(
+						new ActualTemplateField(type),
+						new FormalTemplateField(Integer.class),
+						new FormalTemplateField(Integer.class),
+						new ActualTemplateField(id));
+		position = new Point(p.x, p.y);
+		get(template, Drone.self2base);
+		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 	}
 	
 	protected final LinkedList<Point> getNeighborPoints(Point p) {
