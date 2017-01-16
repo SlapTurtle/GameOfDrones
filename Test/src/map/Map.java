@@ -27,7 +27,6 @@ public class Map extends Node {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final FormalTemplateField AnyPoint = new FormalTemplateField(Point.class);
 	public static final FormalTemplateField AnyWorld = new FormalTemplateField(World.class);
-	public static final FormalTemplateField AnyRandom = new FormalTemplateField(Random.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);	
 
 	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
