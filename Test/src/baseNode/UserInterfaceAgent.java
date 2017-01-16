@@ -23,15 +23,15 @@ public class UserInterfaceAgent extends Agent {
 	protected void doRun() throws Exception {
 		Template tp = new Template(new ActualTemplateField(MapMerger.ACTION_NEW), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
 		while(true){
-			get(new Template(new ActualTemplateField("goUI")), Self.SELF);
-			LinkedList<Tuple> list = getAll(tp);
-			for(Tuple t : list) {
-				int x = t.getElementAt(Integer.class, 1);
-				int y = t.getElementAt(Integer.class, 2);
-				put(new Tuple(MapMerger.ACTION_OLD,x,y),Self.SELF);
-				//add update to UI
-			}
-			put(new Tuple("readyUI"),Self.SELF);
+//			get(new Template(new ActualTemplateField("goUI")), Self.SELF);
+//			LinkedList<Tuple> list = getAll(tp);
+//			for(Tuple t : list) {
+//				int x = t.getElementAt(Integer.class, 1);
+//				int y = t.getElementAt(Integer.class, 2);
+//				put(new Tuple(MapMerger.ACTION_OLD,x,y),Self.SELF);
+//				//add update to UI
+//			}
+//			put(new Tuple("readyUI"),Self.SELF);
 		}
 	}
 	
@@ -42,7 +42,6 @@ public class UserInterfaceAgent extends Agent {
 				new FormalTemplateField(Integer.class));
 		
 		LinkedList<Tuple> list = queryAll(tp);
-		System.out.println(list);
 		for(Tuple tu : list){
 			if(tu != null){
 				int x = tu.getElementAt(Integer.class, 1);
@@ -53,8 +52,8 @@ public class UserInterfaceAgent extends Agent {
 				bounds[3] = (y < bounds[3]) ? y : bounds[3];
 				}
 		}
-		System.out.println(""+bounds[0]+bounds[1]+bounds[2]+bounds[3]);
 		String[][] board = new String[bounds[0]-bounds[1]+1][bounds[2]-bounds[3]+1];
+		System.out.println("" + board.length + ":" + board[0].length);
 		for(Tuple tu : list){
 			if(tu != null){
 				String type = tu.getElementAt(String.class, 0);
@@ -63,8 +62,8 @@ public class UserInterfaceAgent extends Agent {
 				board[x-bounds[1]][y-bounds[3]] = type;
 			}
 		}
-		for(int x = 0; x<bounds[0]-bounds[1]+1; x++){
-			for(int y = 0; y<bounds[2]-bounds[3]+1; y++){
+		for(int y = 0; y<bounds[2]-bounds[3]+1; y++){
+			for(int x = 0; x<bounds[0]-bounds[1]+1; x++){
 				board[x][y] = (board[x][y] == null) ? Empty.type : board[x][y];
 			}
 		}

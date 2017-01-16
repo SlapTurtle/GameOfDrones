@@ -74,7 +74,6 @@ public class ExpDrone extends AbstractDrone {
 			default: nP.move(nP.x, nP.y);
 					 break;
 		}
-		explore(nP);
 		return nP; 
 	}
 
@@ -211,6 +210,16 @@ public class ExpDrone extends AbstractDrone {
 		else if(p.getX()>=0 && p.getY()<=0) q=4;
 		
 		return q;
+	}
+	
+	@Override
+	public void move(Point p) {
+		try{
+			super.move(p);
+			explore(p);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private void explore(Point position) throws Exception {

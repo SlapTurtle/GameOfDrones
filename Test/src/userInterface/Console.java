@@ -72,27 +72,33 @@ public class Console implements Runnable {
 	 * @throws InterruptedException */
 	public void render() throws InterruptedException {
 		//puts and gets UI handshake
-		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
-		Tuple goUI = new Tuple("goUI");
-		base.put(goUI);
-		base.get(rdyUI);
+//		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
+//		Tuple goUI = new Tuple("goUI");
+//		base.put(goUI);
+//		base.get(rdyUI);
 		
 		board = UserInterfaceAgent.getMap();
 		int offsetx = -UserInterfaceAgent.bounds[1];
 		int offsety = -UserInterfaceAgent.bounds[3];
+		int b1 = UserInterfaceAgent.bounds[0]-UserInterfaceAgent.bounds[1]+1;
+		int b2 = UserInterfaceAgent.bounds[2]-UserInterfaceAgent.bounds[3]+1;
 		
-		for (int x = 0; x < board.length; x++) {
-			for (int y = 0; y < board.length; y++) {
-				char c = '.';
-				switch (board[x][y]) {
-				case "BASE": c = 'B'; break;
-				case "GOLD": c = 'G'; break;
-				case "ROCK": c = 'R'; break;
-				case "EXPDRONE": c = 'E'; break;
-				case "HARDRONE": c = 'H'; break;
-				case "TREE": c = 'T'; break;
-				case "WATER": c = 'W'; break;
-				default: 	 c = '.'; break;
+		
+		for (int y = 0; y < b2; y++) {
+			for (int x = 0; x < b1; x++) {
+				char c = ' ';
+				if(board[x][y] != null) {
+					switch (board[x][y]) {
+					case "BASE": c = 'B'; break;
+					case "GOLD": c = 'G'; break;
+					case "ROCK": c = 'R'; break;
+					case "EXPDRONE": c = 'E'; break;
+					case "HARDRONE": c = 'H'; break;
+					case "TREE": c = 'T'; break;
+					case "WATER": c = 'W'; break;
+					case "EMPTY": c = '.'; break;
+					default: 	 c = ' '; break;
+					}
 				}
 				System.out.print(c + " ");
 			}

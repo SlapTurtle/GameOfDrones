@@ -53,7 +53,7 @@ public abstract class AbstractDrone extends Agent {
 		}
 	}
 
-	public final void move(Point p) {
+	public void move(Point p) {
 		if (p.distance(position) > 1.21)
 			return;
 		try {
