@@ -37,6 +37,7 @@ public class Console implements Runnable {
 		try {
 			Template rdy = new Template(new ActualTemplateField("ready"));
 			Tuple go = new Tuple("go");
+			int i = 0;
 			while(true) {
 				//wait for all things to be ready
 				//System.out.println("UI gets");				
@@ -50,7 +51,7 @@ public class Console implements Runnable {
 				Thread.currentThread().sleep(delay);
 				
 				//renders new image
-				render();
+				render();				
 				
 				//tells everything to make next move
 				//System.out.println("UI puts");
@@ -77,34 +78,27 @@ public class Console implements Runnable {
 		base.get(rdyUI);
 		
 		board = UserInterfaceAgent.getMap();
-		int offsetx = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[1] : 0 ;
-		int offsety = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[3] : 0 ;
-		for(Node drone : drones){
-			AbstractDrone AI = (AbstractDrone) drone.getAttribute("AI").getValue();
-			Point p = AI.position;
-			board[p.x + offsetx][p.y + offsety] = AI.type; 
-		}
-		System.out.println("\n\n\n\n\n");
-		for (int y = 0; y < board.length; y++) {
-			for (int x = 0; x < board[0].length; x++) {
+		int offsetx = -UserInterfaceAgent.bounds[1];
+		int offsety = -UserInterfaceAgent.bounds[3];
+		
+		for (int x = 0; x < board.length; x++) {
+			for (int y = 0; y < board.length; y++) {
 				char c = '.';
-				if (board[x][y] != null && board[x][y] != "-") {
-					switch (board[x][y]) {
-					case "TEST": c = 'J'; break;
-					case "BASE": c = 'B'; break;
-					case "GOLD": c = 'G'; break;
-					case "ROCK": c = 'R'; break;
-					case "EXPDRONE": c = 'E'; break;
-					case "HARDRONE": c = 'H'; break;
-					case "TREE": c = 'T'; break;
-					case "WATER": c = 'W'; break;
-					default: 	 c = ' '; break;
-					}
+				switch (board[x][y]) {
+				case "BASE": c = 'B'; break;
+				case "GOLD": c = 'G'; break;
+				case "ROCK": c = 'R'; break;
+				case "EXPDRONE": c = 'E'; break;
+				case "HARDRONE": c = 'H'; break;
+				case "TREE": c = 'T'; break;
+				case "WATER": c = 'W'; break;
+				default: 	 c = '.'; break;
 				}
 				System.out.print(c + " ");
 			}
 			System.out.println();
 		}
+		System.out.println("\n\n\n\n\n");
 	}
 	
 }

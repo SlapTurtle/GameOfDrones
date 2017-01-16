@@ -1,8 +1,10 @@
 package launch;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.UUID;
 
+import org.cmg.resp.behaviour.Agent;
 import org.cmg.resp.comp.Node;
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.Attribute;
@@ -29,7 +31,7 @@ public class Main {
 	static final String mapID = "mapNode";
 	static final String droneID = "droneNode";
 
-	static final int exploreDrones = 2;
+	static final int exploreDrones = 1;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
@@ -45,20 +47,22 @@ public class Main {
 //		System.out.println("Hash: " + (String)t.getElementAt(1));
 //	}
 
-	public static void main(String[] args) throws InterruptedException{
+	public static void main(String[] args) throws InterruptedException, IOException{
 		//nicklas();
 		michael();
 	}
 	
-	public static void michael() throws InterruptedException {		
+	public static void michael() throws InterruptedException, IOException {		
 		//Map
 		Node mapNode = new Node(mapID, new TupleSpace());
 		mapNode.addPort(port);
 		mapNode.addAgent(new RetrieverNew());
+//		mapNode.put(new Tuple("BASE", 0, 0));
 //		mapNode.addAgent(new Generator(seed)); //if null => random generator
 //		mapNode.addAgent(new Hasher());
 //		mapNode.addAgent(new Retriever());
 		mapNode.start();
+		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
 		
 		//Base
 		Node baseNode = new Node(baseID, new TupleSpace());
@@ -74,10 +78,9 @@ public class Main {
 		baseNode.put(new Tuple("HarDroneCounter", harvestDrones));
 		baseNode.put(new Tuple("mapEdge", 0));
 		baseNode.start();
+		AbstractDrone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
 		
 		//Drones
-		AbstractDrone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
-		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
 		int max = exploreDrones+harvestDrones;
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
@@ -86,19 +89,19 @@ public class Main {
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
 			AbstractDrone AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
-			//AbstractDrone AI = new TestDrone(p);
 			droneNode.addAgent(AI);
 			droneNode.addAttribute(new Attribute("AI", AI)); //for UI Only
 			droneNodes[i] = droneNode;
 			p2drones[i] = new PointToPoint(droneID+i, new VirtualPortAddress(port_int));
-			
-			baseNode.put(new Tuple(AI.type, p.x, p.y));
-			mapNode.put(new Tuple(AI.type, p.x, p.y));
+
+			mapNode.put(new Tuple(AI.type, 0, 0));
+			baseNode.put(new Tuple(AI.type, 0, 0));
 		}
 		AbstractDrone.self2drone = p2drones;
 		for(Node droneNode : droneNodes){
 			droneNode.put(new Tuple("ready"));
 			droneNode.start();
+			((AbstractDrone) (droneNode.getAttribute("AI")).getValue()).move(new Point(0,0));
 		}
 		
 		//UI		

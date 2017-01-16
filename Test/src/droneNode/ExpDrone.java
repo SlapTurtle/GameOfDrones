@@ -11,6 +11,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 import baseNode.MapMerger;
+import resources.Empty;
 import util.Position;
 
 public class ExpDrone extends AbstractDrone {
@@ -46,12 +47,9 @@ public class ExpDrone extends AbstractDrone {
 		Position d = new Position(position.x, position.y);
 		Point nP = new Point(d.getX(), d.getY());
 		
-		if(returnToBase) return returnToBase(nP);
-		
+		if(returnToBase) return returnToBase(nP);		
 		if(returnToCirculation) return returnToCirculation(nP);
-		//if drone is on (radius,0) and been here before.
-		if(d.equals(radiusPoint) && beenHereBefore) returnToBase=true;
-		
+		if(d.equals(radiusPoint) && beenHereBefore) returnToBase=true;		
 		if(d.equals(radiusPoint) && !beenHereBefore) beenHereBefore=true;
 		
 		int q = getQuadrant(d);
@@ -216,12 +214,27 @@ public class ExpDrone extends AbstractDrone {
 	}
 	
 	private void explore(Point position) throws Exception {
-		for (Point p : getNeighbors(position)) {
+		LinkedList<Tuple> list = getNeighbours(position);
+		System.out.println(list);
+		for (Tuple tu : list) {
+			Point p = new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2));
 			Template t0 = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
 			Template t1 = new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class));
 			int radius = query(t1, self2base).getElementAt(Integer.class, 1);
-			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null)
+			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null){
 				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
+				String s = tu.getElementAt(String.class, 0);
+				if(s != Empty.type){
+					put(get(t0, self2map),self2base);
+				}
+			}
 		}
+	}
+	
+	private LinkedList<Tuple> getNeighbours(Point position) throws InterruptedException, IOException{
+		put(new Tuple("neighbours_all", id, position.x, position.y), self2map);
+		Template tp = new Template(new ActualTemplateField("neighbours_all"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
+		LinkedList<Tuple> list = get(tp, self2map).getElementAt(LinkedList.class, 2);
+		return list;
 	}
 }

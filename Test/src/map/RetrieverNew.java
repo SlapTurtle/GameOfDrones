@@ -11,6 +11,7 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import resources.Empty;
 import resources.Resource;
 
 public class RetrieverNew extends Agent {
@@ -35,9 +36,9 @@ public class RetrieverNew extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			LinkedList<Point> list;
+			LinkedList list;
 			switch(order){
-			default: list = new LinkedList<Point>(); break;
+			default: list = null; break;
 			case "neighbours_all": list = getNeighbours(x,y); break;
 			case "neighbours_pathable": list = getPathableNeighbours(x,y); break;
 			}
@@ -68,14 +69,17 @@ public class RetrieverNew extends Agent {
 		return list;
 	}
 	
-	private LinkedList<Point> getNeighbours(int x0, int y0) {
-		LinkedList<Point> list = new LinkedList<Point>();
+	private LinkedList<Tuple> getNeighbours(int x0, int y0) {
+		LinkedList<Tuple> list = new LinkedList<Tuple>();
 		for (int y = y0-1; y <= y0+1; y++) {
 			for (int x = x0-1; x <= x0+1; x++) { 
 				if (!(x == x0 && y == y0)) {
 					Tuple tu = getp(templateXY(x+1,y));
 					if(tu != null) {
-						list.add(new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2)));
+						list.add(tu);
+					}
+					else{
+						list.add(new Tuple(Empty.type, x, y));
 					}
 				}
 			}
