@@ -3,6 +3,7 @@ package droneNode;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -15,48 +16,39 @@ import map.Map; //TEMP
 import util.AStarPoint;
 import util.Position;
 
+//test regular move
+//do resource part: //TODO get resource tuple from base ts and put in own ts: 	//if (.isEmpty()) hasHarvested=true;
+	//in get new moves: //TODO delete (get) resource from own ts //TODO increment (get->put) specific resource counter for base
+//evade move
+
+//if astar can't find path
+
+//exception in get new moves
+
 public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
 	boolean hasHarvested;
-	LinkedList<Point> pathOut;
-	LinkedList<Point> pathHome;
+	LinkedList<Point> path;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
 		hasHarvested = false;
-		pathOut = new LinkedList<Point>();
-		pathHome = new LinkedList<Point>();
+		path = new LinkedList<Point>();
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
-			Point target = null;
+			//drone is at base and it needs new moves
+			if (path.isEmpty()) 
+				getNewMoves();
 			
-			if (pathOut.isEmpty() && pathHome.isEmpty()) { //drone is at base, need new target
-				//TODO delete (get) resource from own ts
-				//TODO increment (get->put) specific resource counter for base
-				while(pathOut.isEmpty()){
-					target = getNewTarget();
-					pathOut.addAll(aStar(position, target));
-				}
-			}
-			
-			else if (!pathOut.isEmpty()) { //on way out
-				//TODO evade
-				//TODO get resource tuple from base ts and put in own ts
-				target = pathOut.removeFirst();
-				pathHome.addFirst(target);
-				if (pathOut.isEmpty()) hasHarvested=true;
-			}
-			
-			else { //on way home
-				//TODO evade
-				target = pathHome.removeFirst();
-			}
-
-			return target;
+			return regularMove();
+	}
+	
+	private Point regularMove() {
+		return path.removeFirst();
 	}
 	
 	private Point getNewTarget() throws InterruptedException, IOException{
@@ -66,6 +58,25 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(Point.class, 2);
 	}
 	
+	//TODO handling exception: what to do?
+	private void getNewMoves(){
+			Point target=null;
+			ArrayList moves=null;
+			try {
+				target = getNewTarget();
+				moves = aStar(position, target);
+			} catch (InterruptedException | IOException e) {
+				e.printStackTrace();
+			}
+			
+			path.addAll(moves);
+			
+			Collections.reverse(moves);
+			path.addAll(moves);
+	}
+	
+	//TODO what does this do?
+	//TODO self2base?: general point 2 point
 	private LinkedList<Point> getPathablePoints() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("neighbours_pathable"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
 		put(new Tuple("neighbours_pathable",id, position.x, position.y), self2base);
@@ -94,7 +105,7 @@ public class HarDrone extends AbstractDrone {
 		
 		//init of start node
 		start.gscore=0;
-		start.fscore=start.distance(end);
+		start.fscore=distance(pointStart, pointEnd);
 		//Init of openSet
 		openSet.add(start);
 		
@@ -137,13 +148,20 @@ public class HarDrone extends AbstractDrone {
 				
 				neighbor.cameFrom=current;
 				neighbor.gscore=tentativeGscore;
-				neighbor.fscore=neighbor.gscore+neighbor.distance(end);
+				
+				neighbor.fscore=neighbor.gscore+distance(neighbor, pointEnd);
 				
 			}
 			
 		}
 		
 		return null;
+	}
+	
+	private int distance(Point start, Point end){
+		int dx=Math.abs(end.x-start.x);
+		int dy=Math.abs(end.y-start.y);
+		return dx+dy;
 	}
 
 	private static ArrayList<Point> reconstructPath(AStarPoint end) {
@@ -154,8 +172,6 @@ public class HarDrone extends AbstractDrone {
 			current=current.cameFrom;
 			path.add(0,current);
 		}
-		
-		
 		return AStarPoint.convertToPointList(path);
 	}
 }
