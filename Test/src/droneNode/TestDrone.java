@@ -12,7 +12,7 @@ import org.cmg.resp.topology.Self;
 
 import resources.*;
 
-public class TestDrone extends Drone {
+public class TestDrone extends AbstractDrone {
 	static int i = 0;
 	public TestDrone(Point position) {
 		super(position, "TEST", "TEST" + i++);
@@ -21,7 +21,7 @@ public class TestDrone extends Drone {
 	int j = 0;
 	protected Point moveDrone() throws Exception{
 		//put request in map
-		put(new Tuple("test", getName(), position.x, position.y),Drone.self2map);
+		put(new Tuple("test", getName(), position.x, position.y),AbstractDrone.self2map);
 		//get answer fom map
 		Template tp = new Template(
 				new ActualTemplateField("test"),

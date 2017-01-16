@@ -76,8 +76,8 @@ public class Main {
 		baseNode.start();
 		
 		//Drones
-		Drone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
-		Drone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
+		AbstractDrone.self2base = new PointToPoint(baseID, new VirtualPortAddress(port_int));
+		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
 		int max = exploreDrones+harvestDrones;
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
@@ -86,7 +86,7 @@ public class Main {
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
 			//DroneAI AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
-			Drone AI = new TestDrone(p);
+			AbstractDrone AI = new TestDrone(p);
 			droneNode.addAgent(AI);
 			droneNode.addAttribute(new Attribute("AI", AI)); //for UI Only
 			droneNodes[i] = droneNode;
@@ -94,7 +94,7 @@ public class Main {
 			
 			baseNode.put(new Tuple(AI.type, p.x, p.y));
 		}
-		Drone.self2drone = p2drones;
+		AbstractDrone.self2drone = p2drones;
 		for(Node droneNode : droneNodes){
 			droneNode.put(new Tuple("ready"));
 			droneNode.start();

@@ -37,9 +37,9 @@ public class RetrieverNew extends Agent {
 			
 			LinkedList<Point> list;
 			switch(order){
-			default: list = null; break;
-			case "neighbour_all": list = getNeighbours(x,y); break;
-			case "neighbour_pathable": list = getPathableNeighbours(x,y); break;
+			default: list = new LinkedList<Point>(); break;
+			case "neighbours_all": list = getNeighbours(x,y); break;
+			case "neighbours_pathable": list = getPathableNeighbours(x,y); break;
 			}
 			put(new Tuple(order, id, list), Self.SELF);			
 		}
@@ -61,12 +61,11 @@ public class RetrieverNew extends Agent {
 		return list;
 	}
 	
-	private LinkedList<Point> getNeighbours(int i, int j) {
-		Point p = new Point(i,j);
+	private LinkedList<Point> getNeighbours(int x0, int y0) {
 		LinkedList<Point> list = new LinkedList<Point>();
-		for (int y = p.y-1; y <= p.y+1; y++) {
-			for (int x = p.x-1; x <= p.x+1; x++) { 
-				if (!(x == p.x && y == p.y)) {
+		for (int y = y0-1; y <= y0+1; y++) {
+			for (int x = x0-1; x <= x0+1; x++) { 
+				if (!(x == x0 && y == y0)) {
 					Tuple tu = getp(templateXY(x+1,y));
 					if(tu != null) {
 						list.add(new Point(tu.getElementAt(Integer.class, 1), tu.getElementAt(Integer.class, 2)));

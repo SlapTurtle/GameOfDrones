@@ -15,7 +15,7 @@ import baseNode.MapMerger;
 import map.*;
 import util.Position;
 
-public abstract class Drone extends Agent {
+public abstract class AbstractDrone extends Agent {
 	
 	//Assigned by Main class
 	public static PointToPoint self2base;
@@ -27,7 +27,7 @@ public abstract class Drone extends Agent {
 	public String id;
 	public Point position;
 	
-	public Drone(Point position, String type, String id) {
+	public AbstractDrone(Point position, String type, String id) {
 		super(id);
 		this.type = type;
 		this.id = id;
@@ -66,26 +66,15 @@ public abstract class Drone extends Agent {
 			position.move(p.x, p.y);
 			Tuple t2 = new Tuple(type, p.x, p.y);
 			put(t2, self2base);
-			if(type.equals(ExpDrone.type)) explore();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void explore() throws Exception {
-		for (Point p : getNeighbors(position)) {
-			Template t0 = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
-			Template t1 = new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class));
-			int radius = query(t1, self2base).getElementAt(Integer.class, 1);
-			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null)
-				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
-		}
-	}
-	
-	private LinkedList<Point> getNeighbors(Point p) {
+	protected final LinkedList<Point> getNeighbors(Point p) {
 		return getNeighbors(p, 1);
 	}
-	private LinkedList<Point> getNeighbors(Point p, int dist) {
+	protected final LinkedList<Point> getNeighbors(Point p, int dist) {
 		LinkedList<Point> list = new LinkedList<Point>();
 		for (int y = p.y-dist; y <= p.y+dist; y+=dist)
 			for (int x = p.x-dist; x <= p.x+dist; x+=dist) 
