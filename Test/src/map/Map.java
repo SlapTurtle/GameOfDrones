@@ -21,7 +21,6 @@ import java.util.UUID;
 public class Map extends Node {
 	
 	public static final int DEFAULTGRID = 40;
-	public static final int EXP_HASHES = 10;
 	public static final int EXP_HASHLENGTH = 16;
 	public static final FormalTemplateField AnyString = new FormalTemplateField(String.class);
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
@@ -29,8 +28,6 @@ public class Map extends Node {
 	public static final FormalTemplateField AnyWorld = new FormalTemplateField(World.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);	
 
-	protected LinkedList<droneListener> listeners = new LinkedList<droneListener>();
-	
 	public Object render = new Object();
 	Object syncRetrieval = new Object();
 
