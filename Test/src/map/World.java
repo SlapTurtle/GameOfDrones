@@ -7,9 +7,7 @@ import java.util.UUID;
 /** Class representing areas in the Map Tublesplace. */
 public class World {
 	
-	UUID ID = UUID.randomUUID();
 	public static final int DEFAULT = 40;
-	Map map;
 	private int x, y;
 	Point center;
 	

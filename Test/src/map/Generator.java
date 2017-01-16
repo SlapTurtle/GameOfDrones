@@ -10,7 +10,9 @@ import resources.Base;
 import resources.Gold;
 import resources.Resource;
 import java.awt.Point;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.UUID;
 import resources.*;
@@ -20,6 +22,7 @@ public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
+	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
 	
 	int[] bounds;
 
@@ -27,16 +30,22 @@ public class Generator extends Agent {
 		super("generator");
 	}
 
-	protected void doRun() throws Exception {
+	protected void doRun() {
 		while(true) {
-			// REQUEST
-			Tuple request = get(getT, Self.SELF);
-			World world = request.getElementAt(World.class, 1);
-			Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
-			bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
-			
-			// PROCESS
-			populateMap(world, random);
+			try {
+				// REQUEST
+				Tuple request = get(getT, Self.SELF);
+				World world = request.getElementAt(World.class, 1);
+				Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
+				bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
+				
+				// PROCESS
+				populateMap(world, random);
+				addListeners(world);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -55,25 +64,24 @@ public class Generator extends Agent {
 			}
 		}
 
-		for (int j = 1; j < 2; j++) {
+		for (int j = 1; j < 2; j++)
 			if (dice.roll(0.3))
 				populate(Water.class, "polygon", j, world, random);
-		}
+		
 
 		/* ROCK */
 		
-		for (int j = 2; j >= 0; j--) {
+		for (int j = 2; j >= 0; j--)
 			if (dice.roll(0.15)) {
 				populate(Rock.class, "polygon", j, world, random);
 				break;
 			}
-		}
+		
 
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++)
 			if (dice.roll(0.5))
 				populate(Rock.class, "polygon", random.nextInt(1), world, random);
-		}
-
+		
 		
 		/* TREE */
 		
@@ -85,11 +93,11 @@ public class Generator extends Agent {
 			}
 		}
 		
-		for (int j = 0; j < random.nextInt((int)(World.DEFAULT*1.5)) + World.DEFAULT; j++) {
-			if (dice.roll(0.4 * (j/2))) {
+		for (int j = 0; j < random.nextInt((int)(World.DEFAULT*1.5)) + World.DEFAULT; j++)
+			if (dice.roll(0.4 * (j/2)))
 				populate(Tree.class, "circular", 0, world, random);
-			}
-		}
+			
+		
 		
 		/* GOLD */
 
@@ -97,14 +105,11 @@ public class Generator extends Agent {
 		if (dice.roll(0.9 - gold * 0.22) && !world.center.equals(new Point(0,0)))
 			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
 		
-		for (int j = 0; j < gold + 3; j++) {
+		for (int j = 0; j < gold + 3; j++)
 			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
-		}
 		
-		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++) {
+		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++)
 			populate(Gold.class, "circular", 0, world, random);
-		}
-		
 		
 	}
 
@@ -115,9 +120,8 @@ public class Generator extends Agent {
 			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
 			Point p = getRandomPoint(world, random);
 			int dist = (shape == "polygon") ? 2*size : size+1;
-			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p)) {
+			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p))
 				p = getRandomPoint(world, random);
-			}
 			Object res = constructor.newInstance(new Object[] {p, shape, size });
 			addResource((Resource) res, world, random);
 		} catch (Exception e) {
@@ -141,19 +145,32 @@ public class Generator extends Agent {
 	}
 
 	public void putResource(Resource resource, Point p) throws Exception {
-		Tuple t = new Tuple(resource.type, (int)p.getX(), (int)p.getY());
-		put(t, Self.SELF);
+		if (queryp(new Template(Map.AnyString, new ActualTemplateField(p.x), new ActualTemplateField(p.y))) == null)
+			put(new Tuple(resource.type, (int)p.getX(), (int)p.getY()), Self.SELF);
+		
 	}
 	
 	/** Adds a resource cluster's tubles to the Map Tublespace.
 	 * @param */
 	public void addResource(Resource resource, World world, Random random) throws Exception {
-		for (Point p : resource.getPoints(random)) {
-			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p)) {
-				System.out.println("adding resource");
+		for (Point p : resource.getPoints(random))
+			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p))
 				putResource(resource, p);
+		
+	}
+
+	public void addListeners(World world) throws InterruptedException, IOException {
+		LinkedList<Tuple> list = queryAll(getPoints);
+		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
+			boolean exists = false;
+			for (Tuple t : list) {
+				if (p.equals((Point)t.getElementAt(1))) {
+					exists = true;
+					break;
+				}
 			}
+			if (!exists)
+				put(new Tuple("listen", p), Self.SELF);
 		}
 	}
-	
 }
