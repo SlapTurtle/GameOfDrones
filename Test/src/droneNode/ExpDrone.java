@@ -87,8 +87,7 @@ public class ExpDrone extends AbstractDrone {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private Point returnToCirculation(Point nP) throws InterruptedException, IOException {
-		radius = getNewRadius(); 
+	private Point returnToCirculation(Point nP) throws InterruptedException, IOException { 
 		if(nP.x==this.radius){
 			returnToCirculation=false;
 			beenHereBefore=true;
@@ -114,6 +113,7 @@ public class ExpDrone extends AbstractDrone {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
+			radius = getNewRadius();
 		}
 		return nP;
 	}
