@@ -19,7 +19,18 @@ public class UserInterfaceAgent extends Agent {
 
 	@Override
 	protected void doRun() throws Exception {
-		//does nothing
+		Template tp = new Template(new ActualTemplateField(MapMerger.ACTION_NEW), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class));
+		while(true){
+			get(new Template(new ActualTemplateField("goUI")), Self.SELF);
+			LinkedList<Tuple> list = getAll(tp);
+			for(Tuple t : list) {
+				int x = t.getElementAt(Integer.class, 1);
+				int y = t.getElementAt(Integer.class, 2);
+				put(new Tuple(MapMerger.ACTION_OLD,x,y),Self.SELF);
+				//add update to UI
+			}
+			put(new Tuple("readyUI"),Self.SELF);
+		}
 	}
 	
 	public String[][] getMap(){

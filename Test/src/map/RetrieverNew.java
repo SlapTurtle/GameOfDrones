@@ -53,9 +53,16 @@ public class RetrieverNew extends Agent {
 				getp(templateXY(x,y+1)),
 				getp(templateXY(x,y-1))				
 		};
-		for(Tuple r : res){
-			if(r != null && Resource.isPathable(r.getElementAt(String.class, 0))) {
-				list.add(new Point(r.getElementAt(Integer.class, 2), r.getElementAt(Integer.class, 3)));
+		for(int i = 0; i<res.length; i++){
+			if(res[i] == null || Resource.isPathable(res[i].getElementAt(String.class, 0))) {
+				int dx,dy;
+				switch(i){
+				default: dx = 1; dy = 0; break;
+				case 1: dx = -1; dy = 0; break;
+				case 2: dx = 0; dy = 1; break;
+				case 3: dx = 0; dy = -1; break;
+				}
+				list.add(new Point(x+dx,y+dy));
 			}
 		}		
 		return list;

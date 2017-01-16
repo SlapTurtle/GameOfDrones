@@ -39,12 +39,13 @@ public class Console implements Runnable {
 			Tuple go = new Tuple("go");
 			while(true) {
 				//wait for all things to be ready
-				//base.get(rdy);
+				//System.out.println("UI gets");				
 				//map.get(rdy);
-				//System.out.println("UI gets");
+				//base.get(rdy);
 				for(Node drone : drones){
 					drone.get(rdy);
 				}
+				
 				//System.out.println("UI Renders");
 				Thread.currentThread().sleep(delay);
 				
@@ -52,9 +53,9 @@ public class Console implements Runnable {
 				render();
 				
 				//tells everything to make next move
-				//base.put(go);
-				//map.put(go);
 				//System.out.println("UI puts");
+				//map.put(go);
+				//base.put(go);
 				for(Node drone : drones){
 					drone.put(go);
 				}
@@ -66,8 +67,15 @@ public class Console implements Runnable {
 
 	/** Displays a given map's current state to the console.
 	 * Avoid invoking while other instances of the method are running.
-	 * @param*/
-	public void render() {
+	 * @param
+	 * @throws InterruptedException */
+	public void render() throws InterruptedException {
+		//puts and gets UI handshake
+		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
+		Tuple goUI = new Tuple("goUI");
+		base.put(goUI);
+		base.get(rdyUI);
+		
 		board = UserInterfaceAgent.getMap();
 		int offsetx = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[1] : 0 ;
 		int offsety = (UserInterfaceAgent != null) ? -UserInterfaceAgent.bounds[3] : 0 ;
