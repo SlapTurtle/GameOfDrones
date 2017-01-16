@@ -24,10 +24,7 @@ public class droneListener extends Agent {
 				Thread.sleep(50);
 				for(Tuple t : queryAll(getPoints)) {
 					Point p = (Point)t.getElementAt(1);
-	
-					// TODO retrieve list of drones
-					LinkedList<Tuple> drones = new LinkedList<Tuple>();
-					
+					LinkedList<Tuple> drones = queryAll(Map.TEMPLATE_EXPDRONE);
 					for (Tuple d : drones) {
 						Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
 						if (p.distance(dp) <= Map.DEFAULTGRID-2) {

@@ -9,6 +9,7 @@ import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.VirtualPort;
 import map.HashRequest;
 import resources.Base;
+import resources.Exp_drone;
 import droneNode.*;
 
 import java.awt.Point;
@@ -26,28 +27,26 @@ public class Map extends Node {
 	public static final FormalTemplateField AnyInteger = new FormalTemplateField(Integer.class);
 	public static final FormalTemplateField AnyPoint = new FormalTemplateField(Point.class);
 	public static final FormalTemplateField AnyWorld = new FormalTemplateField(World.class);
-	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);	
+	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
+	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Exp_drone.type), AnyInteger, AnyInteger);
 
 	public Object render = new Object();
 	Object syncRetrieval = new Object();
 
 	public Map(String seed) {
 		super("map", new TupleSpace());
+		
 		System.out.println("Seed: " + seed);
-
 		put(new Tuple("seed", seed));
-		
-		// LEFT 0, RIGHT 1, UP 2, DOWN 3
-		int[] bounds = new int[] { -DEFAULTGRID/2, DEFAULTGRID/2, -DEFAULTGRID/2, DEFAULTGRID/2 };
-		put(new Tuple("bounds", bounds));
-		
+		put(new Tuple("bounds", new int[] { -DEFAULTGRID/2, DEFAULTGRID/2, -DEFAULTGRID/2, DEFAULTGRID/2 }));
+
 		// Agents
+		addAgent(new Hasher());
 		addAgent(new Generator());
 		addAgent(new droneListener());	
-		
+
 		// Generate map
-		World world = new World(new Point(0,0));
-		put(new Tuple("generate", world, seed));
+		put(new Tuple("generate", new World(new Point(0,0)), seed));
 
 		start();
 	}

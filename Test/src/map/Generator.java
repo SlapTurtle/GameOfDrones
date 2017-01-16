@@ -162,7 +162,6 @@ public class Generator extends Agent {
 	}
 
 	public void addListeners(World world) throws InterruptedException, IOException {
-		System.out.println("adding listeners...");
 		LinkedList<Tuple> list = queryAll(getPoints);
 		
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
@@ -174,7 +173,6 @@ public class Generator extends Agent {
 				}
 			}
 			if (!exists) {
-				System.out.println("listener added at " + p.toString());
 				put(new Tuple("listen", p), Self.SELF);
 			}
 		}
