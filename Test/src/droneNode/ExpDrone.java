@@ -228,7 +228,6 @@ public class ExpDrone extends AbstractDrone {
 	private void explore(Point position) throws Exception {
 		//add explored location
 		LinkedList<Tuple> baseExplore = getNeighboursExplore(position);
-		System.out.println(baseExplore);
 		int range = getRadius(); 
 		for(Tuple tu : baseExplore){
 			if(tu.getElementAt(String.class, 2).equals(Empty.type)){
@@ -243,6 +242,8 @@ public class ExpDrone extends AbstractDrone {
 		//add resources
 		LinkedList<Tuple> map = getNeighbours(position, true);
 		LinkedList<Tuple> base = getNeighbours(position, false);
+		System.out.println(map);
+		System.out.println(base);
 		for(Tuple tb : base){
 			String strb = tb.getElementAt(String.class, 0);
 			int xb = tb.getElementAt(Integer.class, 1);
@@ -253,7 +254,8 @@ public class ExpDrone extends AbstractDrone {
 					int xm = tm.getElementAt(Integer.class, 1);
 					int ym = tm.getElementAt(Integer.class, 2);
 					if(xb==xm && yb==ym && !strm.equals(Empty.type)){
-						put(new Tuple(strm, xm, ym), self2base);
+						System.out.println(strb);
+						put(tm, self2base);
 					}
 				}
 			}

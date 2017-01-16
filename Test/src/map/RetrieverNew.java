@@ -69,10 +69,10 @@ public class RetrieverNew extends Agent {
 	private LinkedList<Point> getPathableNeighbours(int x, int y) {
 		LinkedList<Point> list = new LinkedList<Point>();
 		Tuple res[] = {
-				getp(templateXY(x+1,y)),
-				getp(templateXY(x-1,y)),
-				getp(templateXY(x,y+1)),
-				getp(templateXY(x,y-1))				
+				queryp(templateXY(x+1,y)),
+				queryp(templateXY(x-1,y)),
+				queryp(templateXY(x,y+1)),
+				queryp(templateXY(x,y-1))				
 		};
 		for(int i = 0; i<res.length; i++){
 			if(res[i] == null || Resource.isPathable(res[i].getElementAt(String.class, 0))) {
@@ -94,7 +94,7 @@ public class RetrieverNew extends Agent {
 		for (int y = y0-1; y <= y0+1; y++) {
 			for (int x = x0-1; x <= x0+1; x++) { 
 				if (!(x == x0 && y == y0)) {
-					Tuple tu = getp(templateXY(x,y));
+					Tuple tu = queryp(templateXY(x,y));
 					if(tu != null) {
 						list.add(tu);
 					}

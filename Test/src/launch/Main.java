@@ -27,27 +27,39 @@ public class Main {
 	static final int port_int = 8080;
 	public static final VirtualPort port = new VirtualPort(port_int);
 	static final String baseID = "baseNode";
-	static String mapID;
+	static final String mapID = "mapNode";
 	static final String droneID = "droneNode";
 
 	static final int exploreDrones = 1;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
-	static final String seed = null;
+	static final String seed = UUID.randomUUID().toString();
 
 	public static void nicklas() throws InterruptedException{
-		//Node map = new Map(mapID="hej");//= UUID.randomUUID().toString());
-		Node map = new Node(mapID = UUID.randomUUID().toString(), new TupleSpace());
+		//Node map = new Map(mapID="hej", port_int);//= UUID.randomUUID().toString());
+		Node map = new Node(mapID, new TupleSpace());
 		map.addPort(port);
-		map.addAgent(new RetrieverNew());
 		AbstractDrone.self2map = new PointToPoint(mapID, new VirtualPortAddress(port_int));
+
+		// Agents
+		map.addAgent(new RetrieverNew());
+		map.addAgent(new Hasher());
+		map.addAgent(new Generator());
+		map.addAgent(new droneListener());	
+
+		// Generate map
+		System.out.println("Seed: " + seed);
+		map.put(new Tuple("seed", seed));
+		map.put(new Tuple("bounds", new int[] { -Map.DEFAULTGRID/2, Map.DEFAULTGRID/2, -Map.DEFAULTGRID/2, Map.DEFAULTGRID/2 }));
+		map.put(new Tuple("generate", new World(new Point(0,0)), seed));
+		
 		map.start();
 		
 		// michaels stuff
 		Node baseNode = new Node(baseID, new TupleSpace());
 		baseNode.addPort(port);
-//		baseNode.addAgent(new MapMerger());
+		baseNode.addAgent(new MapMerger());
 		baseNode.addAgent(new BaseAgent());
 		baseNode.addAgent(new RetrieverNew());
 		baseNode.put(new Tuple("BASE", 0, 0));

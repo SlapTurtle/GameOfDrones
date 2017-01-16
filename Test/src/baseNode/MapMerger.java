@@ -57,6 +57,7 @@ public class MapMerger extends Agent {
 				trange = get(new Template(new ActualTemplateField(MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF);
 				int i = trange.getElementAt(Integer.class, 1) + 1;
 				put(new Tuple(MAP_EDGE, i),Self.SELF);
+				System.out.println("MAPEDGE"+ i);
 			}
 			put(new Tuple("readyMM"),Self.SELF);
 		}

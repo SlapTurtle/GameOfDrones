@@ -16,6 +16,7 @@ import resources.Empty;
 public class UserInterfaceAgent extends Agent {
 	
 	public int[] bounds = new int[]{0,0,0,0};
+	public String[][] board;
 	
 	public UserInterfaceAgent() {
 		super("UserInterfaceAgent");
@@ -33,8 +34,7 @@ public class UserInterfaceAgent extends Agent {
 				put(new Tuple(x,y,MapMerger.ACTION_OLD),Self.SELF);
 				//add update to UI
 			}
-//			put(new Tuple("goMM"),Self.SELF);
-			put(new Tuple("readyMM"),Self.SELF);
+			put(new Tuple("goMM"),Self.SELF);
 		}
 	}
 	
@@ -64,14 +64,14 @@ public class UserInterfaceAgent extends Agent {
 			if(tu != null){
 				int x = tu.getElementAt(Integer.class, 0);
 				int y = tu.getElementAt(Integer.class, 1);
-				bounds[0] = (x > bounds[0]) ? x : bounds[0];
-				bounds[1] = (x < bounds[1]) ? x : bounds[1];
-				bounds[2] = (y > bounds[2]) ? y : bounds[2];
-				bounds[3] = (y < bounds[3]) ? y : bounds[3];
+				bounds[0] = (x >= bounds[0]) ? x+1 : bounds[0];
+				bounds[1] = (x <= bounds[1]) ? x-1 : bounds[1];
+				bounds[2] = (y >= bounds[2]) ? y+1 : bounds[2];
+				bounds[3] = (y <= bounds[3]) ? y-1 : bounds[3];
 				}
 		}
 		//create board
-		String[][] board = new String[bounds[0]-bounds[1]+1][bounds[2]-bounds[3]+1];
+		board = new String[bounds[0]-bounds[1]+1][bounds[2]-bounds[3]+1];
 		//add all explored field within mapedge
 		for(int y = bounds[3]; y<bounds[2]-bounds[3]+1; y++){
 			for(int x = bounds[1]; x<bounds[0]-bounds[1]+1; x++){
