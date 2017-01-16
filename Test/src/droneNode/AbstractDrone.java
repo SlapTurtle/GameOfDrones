@@ -9,7 +9,6 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
 public abstract class AbstractDrone extends Agent {
@@ -52,6 +51,8 @@ public abstract class AbstractDrone extends Agent {
 		position = new Point(p.x, p.y);
 		get(template, Drone.self2base);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
+		get(template, Drone.self2map);
+		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
 	}
 	
 	protected final LinkedList<Point> getNeighborPoints(Point p) {

@@ -2,6 +2,7 @@ package droneNode;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.ActualTemplateField;
@@ -221,9 +222,9 @@ public class ExpDrone extends AbstractDrone {
 	}
 	
 	private void explore(Point position) throws Exception {
-		//gets explorer drones lock
-		Tuple lock = get(new Template(new ActualTemplateField("ExpLock")),Drone.self2base);
 		//add explored location
+		//gets explorer lock
+		Tuple lock = get(new Template(new ActualTemplateField("ExpLock")),Drone.self2base);
 		LinkedList<Tuple> baseExplore = getNeighboursExplore(position);
 		int range = getMapEdgeRadius(); 
 		for(Tuple tu : baseExplore){
@@ -231,30 +232,33 @@ public class ExpDrone extends AbstractDrone {
 				int x = tu.getElementAt(Integer.class, 0);
 				int y = tu.getElementAt(Integer.class, 1);
 				if(Math.abs(x) > range || Math.abs(y) > range){
+					
 					put(new Tuple(x,y,MapMerger.ACTION_NEW), Drone.self2base);
 				}
 			}
 		}
+		//gives back explorer lock
+		put(lock, Drone.self2base);
 		//add resources
+		//gets resources lock
+		lock = get(new Template(new ActualTemplateField("ResLock")),Drone.self2base);
 		LinkedList<Tuple> map = getNeighbours(position, true);
 		LinkedList<Tuple> base = getNeighbours(position, false);
-		for(Tuple tb : base){
+		Iterator<Tuple> iMap = map.iterator();
+		Iterator<Tuple> iBase = base.iterator();
+		while(iBase.hasNext()){
+			Tuple tb = iBase.next();
+			Tuple tm = iMap.next();
 			String strb = tb.getElementAt(String.class, 0);
-			int xb = tb.getElementAt(Integer.class, 1);
-			int yb = tb.getElementAt(Integer.class, 2);
-			if(strb.equals(Empty.type)){
-				for(Tuple tm : map){
-					String strm = tm.getElementAt(String.class, 0);
-					int xm = tm.getElementAt(Integer.class, 1);
-					int ym = tm.getElementAt(Integer.class, 2);
-					if(xb==xm && yb==ym && !strm.equals(Empty.type)){
-						Template tp = new Template(new ActualTemplateField(strm), new ActualTemplateField(xm),new ActualTemplateField(ym));
-						put(get(tp, Drone.self2map), Drone.self2base);
-					}
-				}
+			String strm = tm.getElementAt(String.class, 0);
+			int x = tm.getElementAt(Integer.class, 1); //same x and y because of the nature of the retriever agent.
+			int y = tm.getElementAt(Integer.class, 2); //hence no need to check for it.
+			if(strb.equals(Empty.type) && !strm.equals(Empty.type)) {
+				Template tp = new Template(new ActualTemplateField(strm), new ActualTemplateField(x),new ActualTemplateField(y));
+				put(get(tp, Drone.self2map), Drone.self2base);
 			}
 		}
-		//gives back lock
+		//gives back resources lock
 		put(lock, Drone.self2base);
 	}
 	

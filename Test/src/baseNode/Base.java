@@ -26,7 +26,11 @@ public class Base extends Node {
 		addAgent(new Retriever());
 		
 		// Setup
-		put(new Tuple("ExpLock"));
+		if(exploreDrones > 0){
+			//Locks for Exploration and Resource transitions
+			put(new Tuple("ExpLock"));
+			put(new Tuple("ResLock"));
+		}
 		put(new Tuple("BASE", 0, 0));
 		put(new Tuple("Radius", 0));
 		put(new Tuple("GoldCounter", startGoldCount));

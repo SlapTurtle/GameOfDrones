@@ -42,7 +42,7 @@ public class Map extends Node {
 		addAgent(new Retriever());
 		addAgent(new Hasher());
 		addAgent(new Generator());
-		addAgent(new droneListener());	
+		addAgent(new DroneListener());	
 
 		// Generate map
 		System.out.println("Seed: " + seed);

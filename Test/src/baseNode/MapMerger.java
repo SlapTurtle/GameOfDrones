@@ -39,7 +39,7 @@ public class MapMerger extends Agent {
 				if(bx || by) get.add(tu);
 				else if(Math.abs(x) < range && Math.abs(y) < range) get(searchXY(x,y),Self.SELF);
 			}
-			if(get.size() == 8*(range)){ //amount of point in ring
+			if(get.size() == 8*(range)){
 				//gets all tuples in the ring.
 				for(Tuple tu : get){
 					int x = tu.getElementAt(Integer.class, 0);
@@ -49,8 +49,7 @@ public class MapMerger extends Agent {
 				
 				//increases count
 				trange = get(new Template(new ActualTemplateField(MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF);
-				int i = trange.getElementAt(Integer.class, 1) + 1;
-				put(new Tuple(MAP_EDGE, i),Self.SELF);
+				put(new Tuple(MAP_EDGE, range),Self.SELF);
 			}
 			put(new Tuple("readyMM"),Self.SELF);
 		}

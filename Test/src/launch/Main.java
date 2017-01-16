@@ -3,8 +3,6 @@ package launch;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import org.cmg.resp.comp.Node;
-import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.VirtualPort;
 
 import baseNode.*;
@@ -14,7 +12,7 @@ import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 100;
+	public static final int DELAY = 0;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
@@ -25,7 +23,7 @@ public class Main {
 	
 	static final String seed = UUID.randomUUID().toString();
 	
-	static final int exploreDrones = 3;
+	static final int exploreDrones = 5;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
@@ -42,7 +40,7 @@ public class Main {
 		
 		for(int i = 0; i<exploreDrones + harvestDrones; i++){
 			String type = (i < exploreDrones) ? "EXPDRONE" : "HARDRONE";
-			Drone droneNode = new Drone(droneID+i, type, port, port_int, base);
+			Drone droneNode = new Drone(droneID+i, type, port, port_int, base, map);
 			drones.add(droneNode);
 		}
 		

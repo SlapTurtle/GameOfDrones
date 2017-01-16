@@ -13,13 +13,14 @@ import org.cmg.resp.topology.VirtualPortAddress;
 
 import baseNode.Base;
 import droneNode.AbstractDrone;
+import map.Map;
 
 public class Drone extends Node {
 	public static PointToPoint self2base;
 	public static PointToPoint self2map;
 	public static LinkedList<PointToPoint> self2drone;
 	
-	public Drone(String name, String type, VirtualPort port, int port_int, Base baseNode) {
+	public Drone(String name, String type, VirtualPort port, int port_int, Base base, Map map) {
 		// new Node(name, new TupleSpace())
 		super(name, new TupleSpace());
 		
@@ -38,7 +39,8 @@ public class Drone extends Node {
 		addAgent(AI);
 		
 		// Add initial Location to Base
-		baseNode.put(new Tuple(AI.type, 0, 0, AI.id));
+		base.put(new Tuple(AI.type, 0, 0, AI.id));
+		map.put(new Tuple(AI.type, 0, 0, AI.id));
 		
 		// For UI Only
 		addAttribute(new Attribute("AI", AI));
