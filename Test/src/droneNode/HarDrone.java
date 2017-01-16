@@ -14,7 +14,6 @@ import org.cmg.resp.knowledge.Tuple;
 
 import map.Map; //TEMP
 import util.AStarPoint;
-import util.Position;
 
 //test regular move
 //do resource part: //TODO get resource tuple from base ts and put in own ts: 	//if (.isEmpty()) hasHarvested=true;
