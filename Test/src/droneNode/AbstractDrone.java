@@ -63,9 +63,11 @@ public abstract class AbstractDrone extends Agent {
 							new ActualTemplateField(position.y));
 			
 			get(template, self2base);
+			get(template, self2map);
 			position.move(p.x, p.y);
 			Tuple t2 = new Tuple(type, p.x, p.y);
 			put(t2, self2base);
+			put(t2, self2map);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,8 +78,8 @@ public abstract class AbstractDrone extends Agent {
 	}
 	protected final LinkedList<Point> getNeighbors(Point p, int dist) {
 		LinkedList<Point> list = new LinkedList<Point>();
-		for (int y = p.y-dist; y <= p.y+dist; y+=dist)
-			for (int x = p.x-dist; x <= p.x+dist; x+=dist) 
+		for (int y = p.y-dist; y <= p.y+dist; y++)
+			for (int x = p.x-dist; x <= p.x+dist; x++) 
 				if (!(x == p.x && y == p.y))
 					list.add(new Point(x,y));
 		return list;

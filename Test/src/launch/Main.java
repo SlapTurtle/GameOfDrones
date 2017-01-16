@@ -10,7 +10,6 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.PointToPoint;
-import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
@@ -36,6 +35,7 @@ public class Main {
 	static final int startTreeCount = 0;
 	static final String seed = null;
 	
+
 	public static void nicklas() throws InterruptedException{
 		Node map = new Map(UUID.randomUUID().toString());
 		Node base = new Node(UUID.randomUUID().toString(), new TupleSpace());
@@ -46,9 +46,10 @@ public class Main {
 		System.out.println("Hash: " + (String)t.getElementAt(1));
 	}
 
+
 	public static void main(String[] args) throws InterruptedException{
-		nicklas();
-		//michael();
+		//nicklas();
+		michael();
 	}
 	
 	public static void michael() throws InterruptedException {		
@@ -66,6 +67,7 @@ public class Main {
 		baseNode.addPort(port);
 		baseNode.addAgent(new MapMerger());
 		baseNode.addAgent(new BaseAgent());
+		baseNode.addAgent(new RetrieverNew());
 		baseNode.put(new Tuple("BASE", 0, 0));
 		baseNode.put(new Tuple("Radius", 0));
 		baseNode.put(new Tuple("GoldCounter", startGoldCount));
@@ -82,17 +84,18 @@ public class Main {
 		Node[] droneNodes = new Node[max];
 		PointToPoint[] p2drones = new PointToPoint[max];
 		for(int i = 0; i<max; i++){
-			Point p = new Point((int) Math.random()*10, (int) Math.random()*10); //TODO: different {x,y}
+			Point p = new Point(0,0);
 			Node droneNode = new Node(droneID+i, new TupleSpace());
 			droneNode.addPort(port);
-			//DroneAI AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
-			AbstractDrone AI = new TestDrone(p);
+			AbstractDrone AI = (i < exploreDrones) ? new ExpDrone(p) : new HarDrone(p);
+			//AbstractDrone AI = new TestDrone(p);
 			droneNode.addAgent(AI);
 			droneNode.addAttribute(new Attribute("AI", AI)); //for UI Only
 			droneNodes[i] = droneNode;
 			p2drones[i] = new PointToPoint(droneID+i, new VirtualPortAddress(port_int));
 			
 			baseNode.put(new Tuple(AI.type, p.x, p.y));
+			mapNode.put(new Tuple(AI.type, p.x, p.y));
 		}
 		AbstractDrone.self2drone = p2drones;
 		for(Node droneNode : droneNodes){
