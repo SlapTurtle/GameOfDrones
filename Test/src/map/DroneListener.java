@@ -10,6 +10,8 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import launch.Main;
+
 public class DroneListener extends Agent {
 
 	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString);
@@ -21,7 +23,7 @@ public class DroneListener extends Agent {
 	protected void doRun() {
 		while(true) {
 			try {
-				Thread.sleep(50);
+				Thread.sleep(Main.DELAY + Map.DEFAULTGRID);
 				LinkedList<Tuple> l = queryAll(getPoints);
 				for(Tuple t : l) {
 					Point p = new Point(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1));
