@@ -22,7 +22,7 @@ public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
-	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
+	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField("listen"));
 
 	int[] bounds;
 
@@ -46,7 +46,6 @@ public class Generator extends Agent {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 	
@@ -141,7 +140,6 @@ public class Generator extends Agent {
 		
 		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++)
 			populate(Gold.class, "circular", 0, world, random);
-		
 	}
 
 	/** Populates the current World with a given type, shape and size of a resource.
@@ -195,13 +193,13 @@ public class Generator extends Agent {
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
 			boolean exists = false;
 			for (Tuple t : list) {
-				if (p.equals((Point)t.getElementAt(1))) {
+				if (p.equals(new Point(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1)))) {
 					exists = true;
 					break;
 				}
 			}
 			if (!exists)
-				put(new Tuple("listen", p), Self.SELF);
+				put(new Tuple(p.x, p.y, "listen"), Self.SELF);
 		}
 	}
 }
