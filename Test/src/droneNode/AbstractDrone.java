@@ -1,7 +1,6 @@
 package droneNode;
 
 import java.awt.Point;
-import java.io.IOException;
 import java.util.LinkedList;
 
 import org.cmg.resp.behaviour.Agent;
@@ -9,9 +8,16 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
 public abstract class AbstractDrone extends Agent {
+	
+	//Assigned by Main class
+	public static PointToPoint self2base;
+	public static PointToPoint self2map;
+	public static PointToPoint[] self2drone;
+	//--------------------------------------
 	
 	public String type;
 	public String id;
@@ -31,34 +37,45 @@ public abstract class AbstractDrone extends Agent {
 	protected final void doRun() throws Exception {
 		while(true){
 			try {
+				//wait for go signal
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
+				//moves
 				move(moveDrone());
+				harvest();
+				//put rdy signal in own tuplespace
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
+	
+	protected abstract void harvest();
 
-	public void move(Point p) throws InterruptedException, IOException {
+	protected void move(Point p) {
 		if (p.distance(position) > 1.21)
-		return;
-		Template template = new Template(
-						new ActualTemplateField(type),
-						new FormalTemplateField(Integer.class),
-						new FormalTemplateField(Integer.class),
-						new ActualTemplateField(id));
-		position = new Point(p.x, p.y);
-		get(template, Drone.self2base);
-		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
-		get(template, Drone.self2map);
-		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
+			return;
+		try {
+			Template template = new Template(
+							new ActualTemplateField(type),
+							new ActualTemplateField(position.x),
+							new ActualTemplateField(position.y));
+			
+			get(template, self2base);
+			get(template, self2map);
+			position.move(p.x, p.y);
+			Tuple t2 = new Tuple(type, p.x, p.y);
+			put(t2, self2base);
+			put(t2, self2map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	protected final LinkedList<Point> getNeighborPoints(Point p) {
-		return getNeighborPoints(p, 1);
+	protected final LinkedList<Point> getNeighbors(Point p) {
+		return getNeighbors(p, 1);
 	}
-	protected final LinkedList<Point> getNeighborPoints(Point p, int dist) {
+	protected final LinkedList<Point> getNeighbors(Point p, int dist) {
 		LinkedList<Point> list = new LinkedList<Point>();
 		for (int y = p.y-dist; y <= p.y+dist; y++)
 			for (int x = p.x-dist; x <= p.x+dist; x++) 
