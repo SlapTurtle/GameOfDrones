@@ -2,34 +2,35 @@ package droneNode;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
-import org.cmg.resp.topology.Self;
+import org.cmg.resp.topology.PointToPoint;
 
 import baseNode.MapMerger;
-import util.Position;
+import resources.Empty;
 
 public class ExpDrone extends AbstractDrone {
 	public static final String type = "EXPDRONE";
 	public static int DroneCounter = 0;
 	
-	protected Position radiusPoint;
+	protected Point radiusPoint;
 	protected boolean returnToBase;
 	private boolean beenHereBefore;
 	private boolean returnToCirculation;
+	int radius;
 	
-	private int radius = 0;
-		
 	public ExpDrone(Point position) {
 		super(position, type, type + DroneCounter++);
-		radiusPoint = new Position(radius, 0);
+		radius = 0;
+		radiusPoint = new Point(radius, 0);
 		returnToBase = false;
 		beenHereBefore = false;
-		returnToCirculation = false;
+		returnToCirculation = true;
 	}
 
 	/**
@@ -43,20 +44,16 @@ public class ExpDrone extends AbstractDrone {
 	@Override
 	protected Point moveDrone() throws Exception {
 		
-		Position d = new Position(position.x, position.y);
-		Point nP = new Point(d.getX(), d.getY());
+		Point nP = new Point(position.x, position.y);
 		
 		if(returnToBase) return returnToBase(nP);
-		
 		if(returnToCirculation) return returnToCirculation(nP);
-		//if drone is on (radius,0) and been here before.
-		if(d.equals(radiusPoint) && beenHereBefore) returnToBase=true;
+		if(nP.equals(radiusPoint) && beenHereBefore) returnToBase=true;		
+		if(nP.equals(radiusPoint) && !beenHereBefore) beenHereBefore=true;
 		
-		if(d.equals(radiusPoint) && !beenHereBefore) beenHereBefore=true;
-		
-		int q = getQuadrant(d);
+		int q = getQuadrant(nP);
 		int dir=0;
-		Position[] posArr = getFieldsToCheck(d);
+		Point[] posArr = getFieldsToCheck(nP);
 		dir = getDirFromRadius(posArr[1],posArr[0], radius);
 		//new place for drone to be is called NP
 		switch(q){
@@ -76,7 +73,6 @@ public class ExpDrone extends AbstractDrone {
 			default: nP.move(nP.x, nP.y);
 					 break;
 		}
-		explore(nP);
 		return nP; 
 	}
 
@@ -88,8 +84,7 @@ public class ExpDrone extends AbstractDrone {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private Point returnToCirculation(Point nP) throws InterruptedException, IOException {
-		radius = getNewRadius(); 
+	private Point returnToCirculation(Point nP) throws InterruptedException, IOException { 
 		if(nP.x==this.radius){
 			returnToCirculation=false;
 			beenHereBefore=true;
@@ -115,28 +110,19 @@ public class ExpDrone extends AbstractDrone {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
+			radius = getNewRadius();
 		}
 		return nP;
 	}
-	
-	//updates base's radius and applies it to next exploration route
-	private int getNewRadius() throws InterruptedException, IOException {
-		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
-		Tuple tu = get(tp,AbstractDrone.self2base);
-		int radius = tu.getElementAt(Integer.class, 1) + 2;
-		put(new Tuple("Radius", radius),self2base);
-		radiusPoint.set(radius, radiusPoint.y);
-		return radius;
-	}
 
 	/**
-	 * Gets the direction using {@link #pythagoras(Position)}method
+	 * Gets the direction using {@link #pythagoras(Point)}method
 	 * @param p1
 	 * @param p2
 	 * @param radius
 	 * @return int of what direction to move. 1 for up, -1 for left
 	 */
-	private int getDirFromRadius(Position p1, Position p2, int radius){
+	private int getDirFromRadius(Point p1, Point p2, int radius){
 		int dir=0;
 		double c1 = 0;
 		double c2 = 0;
@@ -158,9 +144,9 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return squared c in pythagoras
 	 */
-	private double pythagoras(Position p){
-		int a=p.getX();
-		int b=p.getY();
+	private double pythagoras(Point p){
+		int a=p.x;
+		int b=p.y;
 		
 		return Math.sqrt(Math.pow(a,2)+Math.pow(b, 2));
 	}
@@ -173,23 +159,23 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return
 	 */
-	private Position[] getFieldsToCheck(Position p){
-		Position[] arr = new Position[2];
+	private Point[] getFieldsToCheck(Point p){
+		Point[] arr = new Point[2];
 		int q = getQuadrant(p);
 		switch(q){
-			case 1 : arr[0]= new Position(p.getX()-1, p.getY());
-					 arr[1]= new Position(p.getX(), p.getY()+1);
+			case 1 : arr[0]= new Point(p.x-1, p.y);
+					 arr[1]= new Point(p.x, p.y+1);
 					 break;
 			
-			case 2 : arr[0]= new Position(p.getX(), p.getY()-1);
-			 		 arr[1]= new Position(p.getX()-1, p.getY());
+			case 2 : arr[0]= new Point(p.x, p.y-1);
+			 		 arr[1]= new Point(p.x-1, p.y);
 					 break;
-			case 3 : arr[0]= new Position(p.getX()+1, p.getY());
-			 		 arr[1]= new Position(p.getX(), p.getY()-1);
+			case 3 : arr[0]= new Point(p.x+1, p.y);
+			 		 arr[1]= new Point(p.x, p.y-1);
 					 break;
 			
-			case 4 : arr[0]= new Position(p.getX(), p.getY()+1);
-			 		 arr[1]= new Position(p.getX()+1, p.getY());
+			case 4 : arr[0]= new Point(p.x, p.y+1);
+			 		 arr[1]= new Point(p.x+1, p.y);
 					 break;
 	
 			default :
@@ -204,24 +190,94 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return
 	 */
-	private int getQuadrant(Position p) {
+	private int getQuadrant(Point p) {
 		int q=0;
 		
-		if(p.getX()>=0 && p.getY()>=0) q=1;
-		else if(p.getX()<=0 && p.getY()>=0) q=2;
-		else if(p.getX()<=0 && p.getY()<=0) q=3;
-		else if(p.getX()>=0 && p.getY()<=0) q=4;
+		if(p.x>=0 && p.y>=0) q=1;
+		else if(p.x<=0 && p.y>=0) q=2;
+		else if(p.x<=0 && p.y<=0) q=3;
+		else if(p.x>=0 && p.y<=0) q=4;
 		
 		return q;
 	}
 	
-	private void explore(Point position) throws Exception {
-		for (Point p : getNeighbors(position)) {
-			Template t0 = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
-			Template t1 = new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class));
-			int radius = query(t1, self2base).getElementAt(Integer.class, 1);
-			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null)
-				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
+	
+	@Override
+	public void move(Point p) {
+		try{
+			super.move(p);
+			explore(p);
+		} catch(Exception e){
+			e.printStackTrace();
 		}
+	}
+	
+	private int getNewRadius() throws InterruptedException, IOException {
+		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
+		Tuple tu = get(tp, Drone.self2base);
+		int radius = tu.getElementAt(Integer.class, 1) + 2;
+		put(new Tuple("Radius", radius),Drone.self2base);
+		radiusPoint.move(radius, radiusPoint.y);
+		return radius;
+	}
+	
+	private void explore(Point position) throws Exception {
+		//add explored location
+		//gets explorer lock
+		Tuple lock = get(new Template(new ActualTemplateField("ExpLock")),Drone.self2base);
+		LinkedList<Tuple> baseExplore = getNeighboursExplore(position);
+		int range = getMapEdgeRadius(); 
+		for(Tuple tu : baseExplore){
+			if(tu.getElementAt(String.class, 2).equals(Empty.type)){
+				int x = tu.getElementAt(Integer.class, 0);
+				int y = tu.getElementAt(Integer.class, 1);
+				if(Math.abs(x) > range || Math.abs(y) > range){
+					
+					put(new Tuple(x,y,MapMerger.ACTION_NEW), Drone.self2base);
+				}
+			}
+		}
+		//gives back explorer lock
+		put(lock, Drone.self2base);
+		//add resources
+		//gets resources lock
+		lock = get(new Template(new ActualTemplateField("ResLock")),Drone.self2base);
+		LinkedList<Tuple> map = getNeighbours(position, true);
+		LinkedList<Tuple> base = getNeighbours(position, false);
+		Iterator<Tuple> iMap = map.iterator();
+		Iterator<Tuple> iBase = base.iterator();
+		while(iBase.hasNext()){
+			Tuple tb = iBase.next();
+			Tuple tm = iMap.next();
+			String strb = tb.getElementAt(String.class, 0);
+			String strm = tm.getElementAt(String.class, 0);
+			int x = tm.getElementAt(Integer.class, 1); //same x and y because of the nature of the retriever agent.
+			int y = tm.getElementAt(Integer.class, 2); //hence no need to check for it.
+			if(strb.equals(Empty.type) && !strm.equals(Empty.type)) {
+				Template tp = new Template(new ActualTemplateField(strm), new ActualTemplateField(x),new ActualTemplateField(y));
+				put(get(tp, Drone.self2map), Drone.self2base);
+			}
+		}
+		//gives back resources lock
+		put(lock, Drone.self2base);
+	}
+	
+	private int getMapEdgeRadius() throws InterruptedException, IOException{
+		return query(new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class)),Drone.self2base).getElementAt(Integer.class, 1);
+	}
+	
+	private LinkedList<Tuple> getNeighboursExplore(Point position) throws InterruptedException, IOException{
+		put(new Tuple("neighbours_explore", id, position.x, position.y), Drone.self2base);
+		Template tp = new Template(new ActualTemplateField("neighbours_explore"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
+		LinkedList<Tuple> list = get(tp, Drone.self2base).getElementAt(LinkedList.class, 2);
+		return list;
+	}
+	
+	private LinkedList<Tuple> getNeighbours(Point position, boolean bool) throws InterruptedException, IOException{
+		PointToPoint p2p = (bool) ? Drone.self2map : Drone.self2base;
+		put(new Tuple("neighbours_all", id, position.x, position.y), p2p);
+		Template tp = new Template(new ActualTemplateField("neighbours_all"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
+		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
+		return list;
 	}
 }

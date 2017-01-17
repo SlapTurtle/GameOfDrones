@@ -1,9 +1,6 @@
 package baseNode;
 
-import map.Map; //TEMP
-
 import java.awt.Point;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -14,14 +11,14 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
-public class BaseAgent extends Agent {
+public class HarvestAgent extends Agent {
 	
 	LinkedList<Point> pg = new LinkedList<Point>();
 	LinkedList<Point> pt = new LinkedList<Point>();
 	Point center = new Point(0,0);
 	
-	public BaseAgent() {
-		super("BaseAgent");
+	public HarvestAgent() {
+		super("HarvestAgent");
 		pg = new LinkedList<Point>();
 		pt = new LinkedList<Point>();
 	}
