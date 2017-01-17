@@ -62,22 +62,7 @@ public class Generator extends Agent {
 		}
 		return bounds;
 	}
-	
-//	public void adjustBounds() {
-//	if (center.getX() < map.center.getX()) {
-//		map.bounds[0] -= x;
-//		map.world.x += x;
-//	} else if (center.getX() > map.center.getX()) {
-//		map.bounds[1] += x;
-//		map.world.x += x;
-//	} else if (center.getY() < map.center.getY()) {
-//		map.bounds[2] -= y;
-//		map.world.y += y;
-//	} else {
-//		map.bounds[3] += x;
-//		map.world.y += y;
-//	}
-//}
+
 
 	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
 	public void populateMap(World world, Random random) {
@@ -189,7 +174,7 @@ public class Generator extends Agent {
 	}
 
 	public void addListeners(World world) throws InterruptedException, IOException {
-		LinkedList<Tuple> list = queryAll(getPoints);
+		LinkedList<Tuple> list = queryAll(new Template(getPoints.getElementAt(0), getPoints.getElementAt(1), Map.AnyString));
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
 			boolean exists = false;
 			for (Tuple t : list) {
