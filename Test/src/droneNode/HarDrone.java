@@ -27,50 +27,72 @@ public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
-	boolean hasHarvested;
 	LinkedList<Point> path;
+	Point resourcePoint;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
-		hasHarvested = false;
 		path = new LinkedList<Point>();
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
 			//drone is at base and it needs new moves
-			if (path.isEmpty()) 
-				getNewMoves();
-			
-			return regularMove();
+			if (!path.isEmpty()) 
+				return regularMove();
+			getNewMoves();
+			return null;
+	}
+	
+	//TODO is it here two turns?
+	@Override
+	protected void harvest() {
+		if (super.position.equals(resourcePoint)) {
+			//TODO harvest by getting tuple
+		}
 	}
 	
 	private Point regularMove() {
 		return path.removeFirst();
 	}
 	
+	//TODO handling exception: what to do?
+	private void getNewMoves(){
+			Point target=null;
+			ArrayList<Point> moves=null;
+			while (moves==null) {
+				try {
+					target = getNewTarget();
+					if (target==null) return; //no ressources available
+					moves = aStar(position, target);
+				} catch (InterruptedException | IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			path.addAll(moves);
+			Collections.reverse(moves);
+			path.addAll(moves);
+			resourcePoint=moves.get(0);
+	}
+
+	private void evade (ArrayList<Object> list) {
+		//if hardrone at postion targets current as next
+			//while (not move to side)
+				//move back
+			//move to side
+		//else 
+			//stand still
+	}
+	
+	
+	//help functions
+	
 	private Point getNewTarget() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
 		put(new Tuple("order",id), Drone.self2base);
 		Tuple tu = get(tp, Drone.self2base);
 		return tu.getElementAt(Point.class, 2);
-	}
-	
-	//TODO handling exception: what to do?
-	private void getNewMoves(){
-			Point target=null;
-			ArrayList moves=null;
-			try {
-				target = getNewTarget();
-				moves = aStar(position, target);
-			} catch (InterruptedException | IOException e) {
-				e.printStackTrace();
-			}
-			
-			path.addAll(moves);
-			
-			Collections.reverse(moves);
-			path.addAll(moves);
 	}
 	
 	//TODO what does this do?
@@ -80,16 +102,6 @@ public class HarDrone extends AbstractDrone {
 		put(new Tuple("neighbours_pathable",id, position.x, position.y), Drone.self2base);
 		Tuple tu = get(tp, Drone.self2base);
 		return tu.getElementAt(LinkedList.class, 2);
-	}
-	
-	private void evade (ArrayList<Object> list) {
-		//list is used so if list when drode returning it uses that
-		//and if drone is gathering it uses that list
-		
-		//decide if drone is winner
-		//if loser step aside 
-		
-		//if winner continue
 	}
 	
 	private ArrayList<Point> aStar(Point pointStart, Point pointEnd) throws InterruptedException, IOException{

@@ -12,7 +12,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 
 import baseNode.MapMerger;
-import resources.Empty;
+import resources.Empty; 
 
 public class ExpDrone extends AbstractDrone {
 	public static final String type = "EXPDRONE";
@@ -279,5 +279,10 @@ public class ExpDrone extends AbstractDrone {
 		Template tp = new Template(new ActualTemplateField("neighbours_all"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
 		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
 		return list;
+	}
+
+	@Override
+	protected void harvest() {
+		// do nothing
 	}
 }
