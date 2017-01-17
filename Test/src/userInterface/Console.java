@@ -10,6 +10,7 @@ import org.cmg.resp.knowledge.Tuple;
 
 import baseNode.*;
 import droneNode.*;
+import resources.Gold;
 
 public class Console implements Runnable {
 	Node base;
@@ -47,6 +48,7 @@ public class Console implements Runnable {
 				//delays the whole process
 				Thread.sleep(delay);
 				//puts go for userInterfaceAgent
+				
 				base.put(goUI);
 				base.get(rdyUI);
 				//puts go for MapMerger
@@ -58,10 +60,13 @@ public class Console implements Runnable {
 				for(Drone drone : drones){
 					drone.put(go);
 				}
+				
 				//gets ready signal from all drones
+				Long t = System.currentTimeMillis();
 				for(Drone drone : drones){
 					drone.get(rdy);
 				}
+				System.out.println((System.currentTimeMillis()-t));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

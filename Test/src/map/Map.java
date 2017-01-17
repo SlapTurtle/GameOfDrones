@@ -27,7 +27,7 @@ public class Map extends Node {
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Exp_drone.type), AnyInteger, AnyInteger, AnyString);
 
-	public Map(String name, String seed, VirtualPort port, int port_int) {
+	public Map(String name, String seed, VirtualPort port, int port_int, int retrieverCount) {
 		super(name, new TupleSpace());
 		
 		// Ports
@@ -35,10 +35,12 @@ public class Map extends Node {
 		Drone.self2map = new PointToPoint(name, new VirtualPortAddress(port_int));
 
 		// Agents
-		addAgent(new Retriever());
 		addAgent(new Hasher());
 		addAgent(new Generator());
-		addAgent(new DroneListener());	
+		addAgent(new DroneListener());
+		for(int i = 0; i < retrieverCount; i++){
+			addAgent(new Retriever());
+		}
 
 		// Generate map
 		System.out.println("Seed: " + seed);

@@ -10,7 +10,7 @@ import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 100;
+	public static final int DELAY = 0;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
@@ -21,17 +21,17 @@ public class Main {
 	
 	static final String seed = UUID.randomUUID().toString();
 	
-	static final int exploreDrones = 2;
-	static final int harvestDrones = 1;
+	static final int exploreDrones = 3;
+	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 
 	public static void run() throws InterruptedException{
 		//Map
-		Map map = new Map(mapID, seed, port, port_int);
+		Map map = new Map(mapID, seed, port, port_int, exploreDrones);
 		
 		//Base
-		Base base = new Base(baseID, port, port_int, startGoldCount, startTreeCount, exploreDrones, harvestDrones);
+		Base base = new Base(baseID, port, port_int, startGoldCount, startTreeCount, exploreDrones, harvestDrones, exploreDrones);
 		
 		//Drones
 		LinkedList<Drone> drones = new LinkedList<Drone>();

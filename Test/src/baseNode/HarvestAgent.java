@@ -11,6 +11,8 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import resources.*;
+
 public class HarvestAgent extends Agent {
 	
 	LinkedList<Point> pg = new LinkedList<Point>();
@@ -30,8 +32,16 @@ public class HarvestAgent extends Agent {
 			Tuple tu = get(in, Self.SELF);
 			String order = tu.getElementAt(String.class, 0);
 			String id = tu.getElementAt(String.class, 1);
-			put(new Tuple(order, id, getResourcePoint()),Self.SELF);
+			switch(id) {
+			case Gold.type: increaseCounter(id); 
+			case Tree.type: increaseCounter(id);
+			default: put(new Tuple(order, id, getResourcePoint()),Self.SELF); break;
+			}
 		}
+	}
+	
+	private void increaseCounter(String type){
+		
 	}
 	
 	private void getResources(){
