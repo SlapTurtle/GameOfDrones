@@ -64,24 +64,24 @@ public class Generator extends Agent {
 			}
 		}
 
-		for (int j = 1; j < 2; j++) {
+		for (int j = 1; j < 2; j++)
 			if (dice.roll(0.3))
 				populate(Water.class, "polygon", j, world, random);
-		}
+		
 
 		/* ROCK */
 		
-		for (int j = 2; j >= 0; j--) {
+		for (int j = 2; j >= 0; j--)
 			if (dice.roll(0.15)) {
 				populate(Rock.class, "polygon", j, world, random);
 				break;
 			}
-		}
+		
 
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++)
 			if (dice.roll(0.5))
 				populate(Rock.class, "polygon", random.nextInt(1), world, random);
-		}
+		
 		
 		/* TREE */
 		
@@ -93,11 +93,11 @@ public class Generator extends Agent {
 			}
 		}
 		
-		for (int j = 0; j < random.nextInt((int)(World.DEFAULT*1.5)) + World.DEFAULT; j++) {
-			if (dice.roll(0.4 * (j/2))) {
+		for (int j = 0; j < random.nextInt((int)(World.DEFAULT*1.5)) + World.DEFAULT; j++)
+			if (dice.roll(0.4 * (j/2)))
 				populate(Tree.class, "circular", 0, world, random);
-			}
-		}
+			
+		
 		
 		/* GOLD */
 
@@ -105,13 +105,12 @@ public class Generator extends Agent {
 		if (dice.roll(0.9 - gold * 0.22) && !world.center.equals(new Point(0,0)))
 			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
 		
-		for (int j = 0; j < gold + 3; j++) {
+		for (int j = 0; j < gold + 3; j++)
 			populate(Gold.class, "polygon", random.nextInt(1) + 1, world, random);
-		}
 		
-		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++) {
+		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++)
 			populate(Gold.class, "circular", 0, world, random);
-		}	
+		
 	}
 
 	/** Populates the current World with a given type, shape and size of a resource.
@@ -121,9 +120,8 @@ public class Generator extends Agent {
 			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
 			Point p = getRandomPoint(world, random);
 			int dist = (shape == "polygon") ? 2*size : size+1;
-			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p)) {
+			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p))
 				p = getRandomPoint(world, random);
-			}
 			Object res = constructor.newInstance(new Object[] {p, shape, size });
 			addResource((Resource) res, world, random);
 		} catch (Exception e) {
@@ -147,24 +145,22 @@ public class Generator extends Agent {
 	}
 
 	public void putResource(Resource resource, Point p) throws Exception {
-		Tuple t = new Tuple(resource.type, (int)p.getX(), (int)p.getY());
-		put(t, Self.SELF);
+		if (queryp(new Template(Map.AnyString, new ActualTemplateField(p.x), new ActualTemplateField(p.y))) == null)
+			put(new Tuple(resource.type, (int)p.getX(), (int)p.getY()), Self.SELF);
+		
 	}
 	
 	/** Adds a resource cluster's tubles to the Map Tublespace.
 	 * @param */
 	public void addResource(Resource resource, World world, Random random) throws Exception {
-		for (Point p : resource.getPoints(random)) {
-			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p)) {
+		for (Point p : resource.getPoints(random))
+			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p))
 				putResource(resource, p);
-			}
-		}
+		
 	}
 
 	public void addListeners(World world) throws InterruptedException, IOException {
-		System.out.println("adding listeners...");
 		LinkedList<Tuple> list = queryAll(getPoints);
-		
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
 			boolean exists = false;
 			for (Tuple t : list) {
@@ -173,11 +169,8 @@ public class Generator extends Agent {
 					break;
 				}
 			}
-			if (!exists) {
-				System.out.println("listener added at " + p.toString());
+			if (!exists)
 				put(new Tuple("listen", p), Self.SELF);
-			}
 		}
 	}
-	
 }
