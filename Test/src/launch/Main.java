@@ -12,7 +12,7 @@ import userInterface.*;
 
 public class Main {
 
-	public static final int DELAY = 500;
+	public static final int DELAY = 100;
 	public static final int FIELD = 40;
 	
 	static final int port_int = 8080;
@@ -40,7 +40,6 @@ public class Main {
 		
 		for(int i = 0; i<exploreDrones + harvestDrones; i++){
 			String type = (i < exploreDrones) ? "EXPDRONE" : "HARDRONE";
-			System.out.println(type);
 			Drone droneNode = new Drone(droneID+i, type, port, port_int, base, map);
 			drones.add(droneNode);
 		}

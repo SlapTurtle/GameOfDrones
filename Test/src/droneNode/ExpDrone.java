@@ -32,7 +32,17 @@ public class ExpDrone extends AbstractDrone {
 		beenHereBefore = false;
 		returnToCirculation = true;
 	}
-
+	
+	@Override
+	protected void droneAction() {
+		try {
+			explore();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * main function to move exp drone
 	 * @param d
@@ -201,17 +211,6 @@ public class ExpDrone extends AbstractDrone {
 		return q;
 	}
 	
-	
-	@Override
-	public void move(Point p) {
-		try{
-			super.move(p);
-			explore(p);
-		} catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	
 	private int getNewRadius() throws InterruptedException, IOException {
 		Template tp = new Template(new ActualTemplateField("Radius"), new FormalTemplateField(Integer.class));
 		Tuple tu = get(tp, Drone.self2base);
@@ -221,7 +220,7 @@ public class ExpDrone extends AbstractDrone {
 		return radius;
 	}
 	
-	private void explore(Point position) throws Exception {
+	private void explore() throws Exception {
 		//add explored location
 		//gets explorer lock
 		Tuple lock = get(new Template(new ActualTemplateField("ExpLock")),Drone.self2base);
@@ -279,10 +278,5 @@ public class ExpDrone extends AbstractDrone {
 		Template tp = new Template(new ActualTemplateField("neighbours_all"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
 		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
 		return list;
-	}
-
-	@Override
-	protected void harvest() {
-		// do nothing
 	}
 }

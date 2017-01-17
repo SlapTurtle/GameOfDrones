@@ -24,29 +24,26 @@ public abstract class AbstractDrone extends Agent {
 		this.position = position;
 	}
 	
-	//Main move method for drones
-	protected abstract Point moveDrone() throws Exception;
-	
 	@Override
 	protected final void doRun() throws Exception {
 		while(true){
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				move(moveDrone());
-				harvest();
+				if(move(moveDrone())) droneAction();
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	protected abstract void harvest();
 
-	public void move(Point p) throws InterruptedException, IOException {
-		if (p==null) return;
-		if (p.distance(position) > 1.21)
-		return;
+	//Main move method for drones
+	protected abstract Point moveDrone() throws Exception;
+	//Secondary effect (harvest, explore etc.)
+	protected abstract void droneAction();
+
+	protected final boolean move(Point p) throws InterruptedException, IOException {
+		if (p==null || p.distance(position) > 1.21) return false;
 		Template template = new Template(
 						new ActualTemplateField(type),
 						new FormalTemplateField(Integer.class),
@@ -57,6 +54,7 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 		get(template, Drone.self2map);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
+		return true;
 	}
 	
 	protected final LinkedList<Point> getNeighborPoints(Point p) {

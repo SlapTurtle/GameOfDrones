@@ -30,17 +30,18 @@ public class Drone extends Node {
 		self2drone.add(new PointToPoint(name, new VirtualPortAddress(port_int)));
 		
 		// Agents
+		Point p = (type == "HARDRONE") ? new Point(0,1) : new Point(0,0);
 		AbstractDrone AI;
 		switch(type){
 		default: AI = null;
-		case "HARDRONE": AI = new HarDrone(new Point(0,0)); break;
-		case "EXPDRONE": AI = new ExpDrone(new Point(0,0)); break;
+		case "HARDRONE": AI = new HarDrone(p); break;
+		case "EXPDRONE": AI = new ExpDrone(p); break;
 		}
 		addAgent(AI);
 		
 		// Add initial Location to Base
-		base.put(new Tuple(AI.type, 0, 0, AI.id));
-		map.put(new Tuple(AI.type, 0, 0, AI.id));
+		base.put(new Tuple(AI.type, p.x, p.y, AI.id));
+		map.put(new Tuple(AI.type, p.x, p.y, AI.id));
 		
 		// For UI Only
 		addAttribute(new Attribute("AI", AI));

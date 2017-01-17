@@ -11,6 +11,7 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import droneNode.HarDrone;
 import resources.Empty;
 import resources.Resource;
 
@@ -45,8 +46,7 @@ public class Retriever extends Agent {
 			}
 			put(new Tuple(order, id, list), Self.SELF);			
 		}
-	}
-	
+	}	
 	
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
 		LinkedList<Tuple> list = new LinkedList<Tuple>();
@@ -74,8 +74,15 @@ public class Retriever extends Agent {
 				queryp(templateXY(x,y+1)),
 				queryp(templateXY(x,y-1))				
 		};
-		for(int i = 0; i<res.length; i++){
-			if(res[i] == null || Resource.isPathable(res[i].getElementAt(String.class, 0))) {
+		Tuple dro[] = {
+				queryp(templateXYDrone(x+1,y)),
+				queryp(templateXYDrone(x-1,y)),
+				queryp(templateXYDrone(x,y+1)),
+				queryp(templateXYDrone(x,y-1))				
+		};
+		for(int i = 0; i<4; i++){
+			if(	(res[i] == null || Resource.isPathable(res[i].getElementAt(String.class, 0)))	&&
+				(dro[i] == null || Resource.isPathable(dro[i].getElementAt(String.class, 0))) 	){
 				int dx,dy;
 				switch(i){
 				default: dx = 1; dy = 0; break;
@@ -117,6 +124,15 @@ public class Retriever extends Agent {
 	
 	private Template templateXYExplore(int x, int y) {
 		return new Template(
+				new ActualTemplateField(x),
+				new ActualTemplateField(y),
+				new FormalTemplateField(String.class)
+			);
+	}
+	
+	private Template templateXYDrone(int x, int y) {
+		return new Template(
+				new ActualTemplateField(HarDrone.type),
 				new ActualTemplateField(x),
 				new ActualTemplateField(y),
 				new FormalTemplateField(String.class)

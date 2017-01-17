@@ -44,8 +44,11 @@ public class HarDrone extends AbstractDrone {
 			return null;
 	}
 	
-	//TODO is it here two turns?
 	@Override
+	protected void droneAction() {
+		harvest();
+	}
+	//TODO is it here two turns?
 	protected void harvest() {
 		if (super.position.equals(resourcePoint)) {
 			//TODO harvest by getting tuple
