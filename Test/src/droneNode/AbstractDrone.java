@@ -11,10 +11,6 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
-import baseNode.MapMerger;
-import map.*;
-import util.Position;
-
 public abstract class AbstractDrone extends Agent {
 	
 	//Assigned by Main class
@@ -45,6 +41,7 @@ public abstract class AbstractDrone extends Agent {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
 				//moves
 				move(moveDrone());
+				harvest();
 				//put rdy signal in own tuplespace
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
@@ -52,8 +49,10 @@ public abstract class AbstractDrone extends Agent {
 			}
 		}
 	}
+	
+	protected abstract void harvest();
 
-	private final void move(Point p) {
+	protected void move(Point p) {
 		if (p.distance(position) > 1.21)
 			return;
 		try {

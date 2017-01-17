@@ -11,13 +11,12 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 import baseNode.MapMerger;
-import util.Position;
 
 public class ExpDrone extends AbstractDrone {
 	public static final String type = "EXPDRONE";
 	public static int DroneCounter = 0;
 	
-	protected Position radiusPoint;
+	protected Point radiusPoint;
 	protected boolean returnToBase;
 	private boolean beenHereBefore;
 	private boolean returnToCirculation;
@@ -26,14 +25,14 @@ public class ExpDrone extends AbstractDrone {
 		
 	public ExpDrone(Point position) {
 		super(position, type, type + DroneCounter++);
-		radiusPoint = new Position(radius, 0);
+		radiusPoint = new Point(radius, 0);
 		returnToBase = false;
 		beenHereBefore = false;
 		returnToCirculation = false;
 	}
 
 	/**
-	 * Help function to move drone
+	 * main function to move exp drone
 	 * @param d
 	 * @param dir
 	 * @return
@@ -43,8 +42,8 @@ public class ExpDrone extends AbstractDrone {
 	@Override
 	protected Point moveDrone() throws Exception {
 		
-		Position d = new Position(position.x, position.y);
-		Point nP = new Point(d.getX(), d.getY());
+		Point d = new Point(position.x, position.y);
+		Point nP = new Point(d.x, d.x);
 		
 		if(returnToBase) return returnToBase(nP);
 		
@@ -56,7 +55,7 @@ public class ExpDrone extends AbstractDrone {
 		
 		int q = getQuadrant(d);
 		int dir=0;
-		Position[] posArr = getFieldsToCheck(d);
+		Point[] posArr = getFieldsToCheck(d);
 		dir = getDirFromRadius(posArr[1],posArr[0], radius);
 		//new place for drone to be is called NP
 		switch(q){
@@ -88,8 +87,7 @@ public class ExpDrone extends AbstractDrone {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private Point returnToCirculation(Point nP) throws InterruptedException, IOException {
-		radius = getNewRadius(); 
+	private Point returnToCirculation(Point nP) throws InterruptedException, IOException { 
 		if(nP.x==this.radius){
 			returnToCirculation=false;
 			beenHereBefore=true;
@@ -115,7 +113,7 @@ public class ExpDrone extends AbstractDrone {
 			returnToBase=false; 
 			beenHereBefore=false;
 			returnToCirculation=true;
-			radiusPoint.set(radius, radiusPoint.y);
+			radius = getNewRadius();
 		}
 		return nP;
 	}
@@ -126,17 +124,18 @@ public class ExpDrone extends AbstractDrone {
 		Tuple tu = get(tp,AbstractDrone.self2base);
 		int radius = tu.getElementAt(Integer.class, 1) + 2;
 		put(new Tuple("Radius", radius),self2base);
+		radiusPoint.move(radius, radiusPoint.y);
 		return radius;
 	}
 
 	/**
-	 * Gets the direction using {@link #pythagoras(Position)}method
+	 * Gets the direction using {@link #pythagoras(Point)}method
 	 * @param p1
 	 * @param p2
 	 * @param radius
 	 * @return int of what direction to move. 1 for up, -1 for left
 	 */
-	private int getDirFromRadius(Position p1, Position p2, int radius){
+	private int getDirFromRadius(Point p1, Point p2, int radius){
 		int dir=0;
 		double c1 = 0;
 		double c2 = 0;
@@ -158,9 +157,9 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return squared c in pythagoras
 	 */
-	private double pythagoras(Position p){
-		int a=p.getX();
-		int b=p.getY();
+	private double pythagoras(Point p){
+		int a=p.x;
+		int b=p.y;
 		
 		return Math.sqrt(Math.pow(a,2)+Math.pow(b, 2));
 	}
@@ -173,23 +172,23 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return
 	 */
-	private Position[] getFieldsToCheck(Position p){
-		Position[] arr = new Position[2];
+	private Point[] getFieldsToCheck(Point p){
+		Point[] arr = new Point[2];
 		int q = getQuadrant(p);
 		switch(q){
-			case 1 : arr[0]= new Position(p.getX()-1, p.getY());
-					 arr[1]= new Position(p.getX(), p.getY()+1);
+			case 1 : arr[0]= new Point(p.x-1, p.y);
+					 arr[1]= new Point(p.x, p.y+1);
 					 break;
 			
-			case 2 : arr[0]= new Position(p.getX(), p.getY()-1);
-			 		 arr[1]= new Position(p.getX()-1, p.getY());
+			case 2 : arr[0]= new Point(p.x, p.y-1);
+			 		 arr[1]= new Point(p.x-1, p.y);
 					 break;
-			case 3 : arr[0]= new Position(p.getX()+1, p.getY());
-			 		 arr[1]= new Position(p.getX(), p.getY()-1);
+			case 3 : arr[0]= new Point(p.x+1, p.y);
+			 		 arr[1]= new Point(p.x, p.y-1);
 					 break;
 			
-			case 4 : arr[0]= new Position(p.getX(), p.getY()+1);
-			 		 arr[1]= new Position(p.getX()+1, p.getY());
+			case 4 : arr[0]= new Point(p.x, p.y+1);
+			 		 arr[1]= new Point(p.x+1, p.y);
 					 break;
 	
 			default :
@@ -204,13 +203,13 @@ public class ExpDrone extends AbstractDrone {
 	 * @param p
 	 * @return
 	 */
-	private int getQuadrant(Position p) {
+	private int getQuadrant(Point p) {
 		int q=0;
 		
-		if(p.getX()>=0 && p.getY()>=0) q=1;
-		else if(p.getX()<=0 && p.getY()>=0) q=2;
-		else if(p.getX()<=0 && p.getY()<=0) q=3;
-		else if(p.getX()>=0 && p.getY()<=0) q=4;
+		if(p.x>=0 && p.y>=0) q=1;
+		else if(p.x<=0 && p.y>=0) q=2;
+		else if(p.x<=0 && p.y<=0) q=3;
+		else if(p.x>=0 && p.y<=0) q=4;
 		
 		return q;
 	}
@@ -223,5 +222,11 @@ public class ExpDrone extends AbstractDrone {
 			if(p.distance(new Point(0,0)) > radius && queryp(t0) == null)
 				put(new Tuple(MapMerger.ACTION_NEW, p.x, p.y), self2map);
 		}
+	}
+
+	@Override
+	protected void harvest() {
+		//do nothing
+		//this is not a harvester
 	}
 }

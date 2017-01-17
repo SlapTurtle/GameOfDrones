@@ -12,16 +12,17 @@ import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 
-import map.Map; //TEMP
 import util.AStarPoint;
-import util.Position;
 
 //test regular move
-//do resource part: //TODO get resource tuple from base ts and put in own ts: 	//if (.isEmpty()) hasHarvested=true;
-	//in get new moves: //TODO delete (get) resource from own ts //TODO increment (get->put) specific resource counter for base
+//resource part: general discussion which ressources: represented many places?
 //evade move
 
-//if astar can't find path
+
+//DONE:
+//if astar can't find path keep trying with ned point. Each point temporarily deleted. Added again when ressources from larger area is used
+//General a-star (distance calculation) : implemented with get pathable points
+//reconstruction of a star path
 
 //exception in get new moves
 
@@ -29,51 +30,81 @@ public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
 	
-	boolean hasHarvested;
 	LinkedList<Point> path;
+	Point resourcePoint;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
-		hasHarvested = false;
 		path = new LinkedList<Point>();
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
 			//drone is at base and it needs new moves
-			if (path.isEmpty()) 
+			if (path.isEmpty()) {
+				unloadResource();
 				getNewMoves();
-			
-			return regularMove();
+			}
+			Point regularPoint=path.getFirst();
+			//if (p.isAvailable) {
+				return path.removeFirst();
+			//}
+			//else {
+				//return evadeMove(regularPoint);
+			//}	
 	}
 	
-	private Point regularMove() {
-		return path.removeFirst();
-	}
-	
-	private Point getNewTarget() throws InterruptedException, IOException{
-		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
-		put(new Tuple("order",id), self2base);
-		Tuple tu = get(tp,AbstractDrone.self2base);
-		return tu.getElementAt(Point.class, 2);
+	@Override 
+	protected void harvest() {
+		if (super.position.equals(resourcePoint)) {
+			//TODO
+			//get resource tuple from base tuple space
+			//put resource tuple in own tuple space or represent it in another way for later storing in base
+		}	
 	}
 	
 	//TODO handling exception: what to do?
 	private void getNewMoves(){
 			Point target=null;
-			ArrayList moves=null;
-			try {
-				target = getNewTarget();
-				moves = aStar(position, target);
-			} catch (InterruptedException | IOException e) {
-				e.printStackTrace();
+			ArrayList<Point> moves=null;
+			while (moves==null) {
+				try {
+					target = getNewTarget();
+					moves = aStar(position, target);
+				} catch (InterruptedException | IOException e) {
+					e.printStackTrace();
+				}
 			}
-			
 			path.addAll(moves);
-			
 			Collections.reverse(moves);
 			path.addAll(moves);
+			this.resourcePoint=moves.get(0);
 	}
+	
+	private Point regularMove() {
+		return null; 
+	}
+	
+	private Point evadeMove (Point regularPoint) {
+		//TODO
+		//if other drones next point is point where i am standing
+			//if possible move to side: not player or eg. lake
+			//else move backwards
+		//else stand still this round
+		return null;
+	}
+	
+	private void unloadResource() {
+		//TODO
+		//delete resource storing
+		//increment base resourcer counter
+	}
+	
+	
+	
+	
+	
+	/* Help methods */
 	
 	//TODO what does this do?
 	//TODO self2base?: general point 2 point
@@ -84,14 +115,11 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(LinkedList.class, 2);
 	}
 	
-	private void evade (ArrayList<Object> list) {
-		//list is used so if list when drode returning it uses that
-		//and if drone is gathering it uses that list
-		
-		//decide if drone is winner
-		//if loser step aside 
-		
-		//if winner continue
+	private Point getNewTarget() throws InterruptedException, IOException{
+		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
+		put(new Tuple("order",id), self2base);
+		Tuple tu = get(tp,AbstractDrone.self2base);
+		return tu.getElementAt(Point.class, 2);
 	}
 	
 	private ArrayList<Point> aStar(Point pointStart, Point pointEnd) throws InterruptedException, IOException{
@@ -154,7 +182,6 @@ public class HarDrone extends AbstractDrone {
 			}
 			
 		}
-		
 		return null;
 	}
 	
