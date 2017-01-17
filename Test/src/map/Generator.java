@@ -38,8 +38,9 @@ public class Generator extends Agent {
 				World world = request.getElementAt(World.class, 1);
 				Random random = new Random(request.getElementAt(String.class, 2).hashCode());			
 				bounds = (int[])get(getBounds, Self.SELF).getElementAt(1);
-				
 				// PROCESS
+				Tuple t = new Tuple("bounds", adjustBounds(bounds, world));
+				put(t, Self.SELF);
 				populateMap(world, random);
 				addListeners(world);
 			} catch (Exception e) {
@@ -48,6 +49,36 @@ public class Generator extends Agent {
 
 		}
 	}
+	
+	public int[] adjustBounds(int[] bounds, World world) {
+		Point p = world.center;
+		if (p.x < 0) {
+			bounds[0] -= Map.DEFAULTGRID;
+		} else if (p.x > 0) {
+			bounds[1] += Map.DEFAULTGRID;
+		} else if (p.y < 0) {
+			bounds[2] -= Map.DEFAULTGRID;
+		} else if (p.y > 0) {
+			bounds[3] += Map.DEFAULTGRID;
+		}
+		return bounds;
+	}
+	
+//	public void adjustBounds() {
+//	if (center.getX() < map.center.getX()) {
+//		map.bounds[0] -= x;
+//		map.world.x += x;
+//	} else if (center.getX() > map.center.getX()) {
+//		map.bounds[1] += x;
+//		map.world.x += x;
+//	} else if (center.getY() < map.center.getY()) {
+//		map.bounds[2] -= y;
+//		map.world.y += y;
+//	} else {
+//		map.bounds[3] += x;
+//		map.world.y += y;
+//	}
+//}
 
 	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
 	public void populateMap(World world, Random random) {
