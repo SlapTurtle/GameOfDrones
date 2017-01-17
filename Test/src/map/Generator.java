@@ -23,7 +23,7 @@ public class Generator extends Agent {
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
 	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
-	
+
 	int[] bounds;
 
 	public Generator() {
