@@ -33,14 +33,18 @@ public abstract class AbstractDrone extends Agent {
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
 				move(moveDrone());
+				harvest();
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
+	
+	protected abstract void harvest();
 
 	public void move(Point p) throws InterruptedException, IOException {
+		if (p==null) return;
 		if (p.distance(position) > 1.21)
 		return;
 		Template template = new Template(

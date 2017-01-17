@@ -280,4 +280,9 @@ public class ExpDrone extends AbstractDrone {
 		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
 		return list;
 	}
+
+	@Override
+	protected void harvest() {
+		// do nothing
+	}
 }

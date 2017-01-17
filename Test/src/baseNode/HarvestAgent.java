@@ -59,7 +59,7 @@ public class HarvestAgent extends Agent {
 			return pt.removeFirst();
 		}	
 		getResources();
-		return getResourcePoint();
+		return null;
 	}
 	
 	
