@@ -2,9 +2,7 @@ package launch;
 
 import java.util.LinkedList;
 import java.util.UUID;
-
 import org.cmg.resp.topology.VirtualPort;
-
 import baseNode.*;
 import droneNode.*;
 import map.*;

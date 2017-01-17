@@ -35,7 +35,7 @@ public class Hasher extends Agent{
 	}
 
 	public String getExpansionHash(String seed, Point center, int hashlength) {
-		int newHash = h(Math.abs(seed.hashCode()), center.y-center.x, center.x+3, 2*center.y-1, seed.hashCode());
+		int newHash = h(Math.abs(seed.hashCode()), center.x, 3, 2*center.y, seed.hashCode());
 		return generateHash(newHash, hashlength);
 	}
 
@@ -47,10 +47,9 @@ public class Hasher extends Agent{
 	    	sb.append( AB.charAt( r.nextInt(AB.length()) ) );
 		return sb.toString();
 	}
-	
+
 	public int h(int A, int x, int B, int y, int C) {
-		
-		return (A / (x + B)) % (C - y);
+		return (y != C) ? (A / (x + B)) % (C - y) : (A / (x + B)) % (C*3 - y*2 + 1);
 	}
 	
 	

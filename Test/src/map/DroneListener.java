@@ -21,15 +21,14 @@ public class DroneListener extends Agent {
 	protected void doRun() {
 		while(true) {
 			try {
-				Thread.sleep(50);
 				for(Tuple t : queryAll(getPoints)) {
 					Point p = (Point)t.getElementAt(1);
 					LinkedList<Tuple> drones = queryAll(Map.TEMPLATE_EXPDRONE);
 					for (Tuple d : drones) {
 						Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
 						if (p.distance(dp) <= Map.DEFAULTGRID-2) {
-							//System.out.println("expanding map");
 							expandWorld(p);
+							break;
 						}
 					}
 				}
@@ -39,15 +38,15 @@ public class DroneListener extends Agent {
 		}
 	}
 
-	private boolean expandWorld(Point p) {		
+	private boolean expandWorld(Point p) {
 		World world = new World(p, Map.DEFAULTGRID);
-		try {		
+		try {
+			get(new Template(getPoints.getElementAt(0), new ActualTemplateField(p)), Self.SELF);
 			String identifier;
 			String seed = (String)query(new Template(new ActualTemplateField("seed"), Map.AnyString), Self.SELF).getElementAt(1);
 			put(new HashRequest(identifier = UUID.randomUUID().toString(), p, seed, Map.EXP_HASHLENGTH), Self.SELF);
 			get(new Template(new ActualTemplateField(identifier), Map.AnyString), Self.SELF);
 			put(new Tuple("generate", world, seed), Self.SELF);
-			//System.out.println("expansion succesful");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
