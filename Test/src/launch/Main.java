@@ -20,7 +20,7 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	static final String seed = UUID.randomUUID().toString();
-	
+
 	static final int exploreDrones = 5;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;

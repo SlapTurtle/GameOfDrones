@@ -27,11 +27,7 @@ public class Map extends Node {
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
 	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Exp_drone.type), AnyInteger, AnyInteger, AnyString);
 
-//	public Object render = new Object();
-//	Object syncRetrieval = new Object();
-
 	public Map(String name, String seed, VirtualPort port, int port_int) {
-		// new Node(name, new TupleSpace())
 		super(name, new TupleSpace());
 		
 		// Ports

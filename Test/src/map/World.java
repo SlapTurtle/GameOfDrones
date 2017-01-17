@@ -44,31 +44,7 @@ public class World {
 	
 	public void Init(Point center) {
 		this.center = center;
-		//System.out.println("Center is " + center.x + ", " + center.y);
-		
-//		if (!center.equals(new Point(0,0))) {
-//			System.out.println("Center is " + center.x + ", " + center.y);
-//			System.out.println("New world not part of initial map");
-//			adjustBounds();
-//		}
 	}
-	
-	/** Adjusts the bounds of the Map to contain the World. */
-//	public void adjustBounds() {
-//		if (center.getX() < map.center.getX()) {
-//			map.bounds[0] -= x;
-//			map.world.x += x;
-//		} else if (center.getX() > map.center.getX()) {
-//			map.bounds[1] += x;
-//			map.world.x += x;
-//		} else if (center.getY() < map.center.getY()) {
-//			map.bounds[2] -= y;
-//			map.world.y += y;
-//		} else {
-//			map.bounds[3] += x;
-//			map.world.y += y;
-//		}
-//	}
 	
 	public int set(int z) {
 		return (z > 0 && z < Integer.MAX_VALUE) ? z : DEFAULT;
