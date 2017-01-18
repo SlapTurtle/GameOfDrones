@@ -40,19 +40,19 @@ public class Retriever extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			Object response;
+			LinkedList<?> response;
 			switch(order){
 			default: response = null; break;
 			case "neighbours_explore" : response = getNeighboursExplore(x,y); break;
 			case "neighbours_all": response = getNeighbours(x,y); break;
 			case "neighbours_pathable": response = getPathableNeighbours(x,y); break;
-			case "single_pathable": response = getSinglePathable(x,y); break;
+			case "single_pathable": put(new Tuple(order, id, getSinglePathable(x,y)), Self.SELF); continue;
 			}
 			put(new Tuple(order, id, response), Self.SELF);			
 		}
 	}	
 	
-	private Object getSinglePathable(int x, int y) {
+	private int getSinglePathable(int x, int y) {
 		boolean b = false;
 		Tuple res = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));
 		Tuple dro = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyString));
@@ -60,7 +60,8 @@ public class Retriever extends Agent {
 			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
 				b = true;
 			}
-		return new Integer( (b) ? 1 : 0 );
+		if (b) return 1;
+		return 0;
 	}
 
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {

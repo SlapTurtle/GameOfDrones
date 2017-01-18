@@ -11,20 +11,18 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
 import util.AStarPoint;
 
 import resources.*;
 
-//evade move
+//michael deadlock: slave/stall
+//kan vi sikre at en drones run bliver kørt før en anden?
 
-//multiple harvester drones
+//teste med multiple harvester drones
 //exception in get new moves
-
-//get Opponentmoveposition
-//metode i retriever til tjek om punkt er pathable
-//metode i denne klasse der snakker med metode i retriever: kommunikation i orden?
 
 public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
@@ -46,7 +44,7 @@ public class HarDrone extends AbstractDrone {
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
-			//drone is at base and it needs new moves
+			
 		
 		/*if (stall) return null;
 		if (slave)
@@ -54,12 +52,12 @@ public class HarDrone extends AbstractDrone {
 			*/
 		
 		if (!path.isEmpty()) {
-				if (!isPositionOccupied())
-					return regularMove();
-				return evade();
-			}
-			getNewMoves();
-			return null;	
+			if (!isPositionOccupied())
+				return regularMove();
+			return evade();
+		}
+		getNewMoves();//drone is at base and it needs new moves
+		return null;	
 	}
 	
 	public Point nextMove() {
@@ -158,21 +156,51 @@ public class HarDrone extends AbstractDrone {
 	private Point evade () throws InterruptedException, IOException {
 		Point returnPoint=null;
 		Point opponentMovePosition=getOpponentMovePosition(); 
+		if (opponentMovePosition==null) return null; //if oponent doesn't have any planned moves stand still
 		if (opponentMovePosition.equals(super.position)) { //if opponents next move targets this drones current position
 			returnPoint=moveToSide(opponentMovePosition); //try move to side
 			if (returnPoint==null) 
 				returnPoint=moveBackwards(opponentMovePosition); //if not move to side try move backwards
+		}
+		if (returnPoint!=null) { //if we do any temporary move
+			this.path.addFirst(super.position); //add current position to path so that it can move bak to original path later
 		}
 		//if opponent drone does not targets this drones position
 		//or this drone can't move either back or to one of the sides: stand still: returnPoint=null
 		return returnPoint;  
 	}
 	
-	//TODO get opponents next move as point
-	private Point getOpponentMovePosition() {
-		Point opponentPosition=path.getFirst();
+	private Point getOpponentMovePosition() throws InterruptedException, IOException {
+		Point opponentPosition;
+		Point opponentNextMoveposition;
 		
-		return super.position;
+		for (PointToPoint ptp: Drone.self2drone) {
+			opponentPosition=getOpponentPosition(ptp);
+			if (opponentPosition==null) continue; //should not happen
+			if (opponentPosition.equals(path.getFirst())) {//this is drone standing in position we want to move to
+				return getOpponentNextMove(ptp);
+			}	
+			
+		}
+		return null; //should not happen
+	}
+	
+	private Point getOpponentNextMove(PointToPoint ptp) throws InterruptedException, IOException {
+		Template t= new Template(
+				new ActualTemplateField ("next_move"),
+				new FormalTemplateField(Point.class)
+		);
+		Tuple tup=query(t,ptp);
+		return (Point) tup.getElementAt(1);
+	}
+	
+	private Point getOpponentPosition(PointToPoint ptp) throws InterruptedException, IOException {
+		Template t= new Template(
+				new FormalTemplateField(Point.class)
+		);
+		
+		Tuple tup=query(t,ptp);
+		return (Point) tup.getElementAt(0);
 	}
 	
 	private Point moveBackwards(Point opponentPos) throws InterruptedException, IOException {
@@ -227,12 +255,12 @@ public class HarDrone extends AbstractDrone {
 	
 	//returns true if position is pathable
 	private boolean checkPosition (int x, int y) throws InterruptedException, IOException {
-		String order="position_pathable";
+		String order="single_pathable";
 		put (new Tuple(order,super.id,x,y),Drone.self2base);
 		Template t=new Template(
 				new ActualTemplateField(order),
 				new ActualTemplateField(super.id),
-				new FormalTemplateField(Integer.class)
+				new FormalTemplateField(Object.class)
 		);
 		Tuple tup=get(t,Drone.self2base);
 		int answer=(int) tup.getElementAt(2);
@@ -262,6 +290,10 @@ public class HarDrone extends AbstractDrone {
 
 	private void incrementTree() {
 		increment("TreeCounter");
+	}
+	
+	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+		put(new Tuple("next_move",path.getFirst()),Self.SELF);
 	}
 	//help functions
 	
