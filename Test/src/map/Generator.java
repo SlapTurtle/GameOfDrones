@@ -179,8 +179,6 @@ public class Generator extends Agent {
 			if(!p.equals(world.center) && !p.equals(new Point(0,0)) && tu == null){
 				put(new Tuple(p.x, p.y, "listen"), Self.SELF);
 			}
-			if (!exists)
-				put(new Tuple(p.x, p.y, "listen"), Self.SELF);
 		}
 	}
 }
