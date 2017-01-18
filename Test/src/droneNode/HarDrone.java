@@ -11,16 +11,15 @@ import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
+import org.cmg.resp.topology.Self;
 
 import util.AStarPoint;
 
-//test regular move
-//do resource part: //TODO get resource tuple from base ts and put in own ts: 	//if (.isEmpty()) hasHarvested=true;
-//in get new moves: //TODO delete (get) resource from own ts //TODO increment (get->put) specific resource counter for base
+import resources.*;
+
 //evade move
 
-//if astar can't find path
-
+//multiple harvester drones
 //exception in get new moves
 
 public class HarDrone extends AbstractDrone {
@@ -29,10 +28,12 @@ public class HarDrone extends AbstractDrone {
 	
 	LinkedList<Point> path;
 	Point resourcePoint;
+	boolean deliverResource;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
 		path = new LinkedList<Point>();
+		deliverResource=false;
 	}
 	
 	@Override
@@ -42,21 +43,48 @@ public class HarDrone extends AbstractDrone {
 				return regularMove();
 			getNewMoves();
 			return null;
+			
 	}
 	
 	@Override
 	protected void droneAction() {
 		harvest();
 	}
-	//TODO is it here two turns?
 	protected void harvest() {
-		if (super.position.equals(resourcePoint)) {
-			//TODO harvest by getting tuple
+		Template t = new Template(
+				new FormalTemplateField(String.class),
+				new ActualTemplateField(resourcePoint.x),
+				new ActualTemplateField(resourcePoint.y)
+		);
+		if (super.position.equals(resourcePoint)) { //if drone is at same position as resourcer
+			try {
+				Tuple tup=get(t,Drone.self2base);
+				put(tup,Self.SELF);
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		if(deliverResource) { //if drone is beside base and it just came home from collecting resource
+			try {
+				Tuple tup = get(t,Self.SELF);
+				String resource=(String) tup.getElementAt(0);
+				switch (resource) {
+				case Gold.type: incrementGold(); break;
+				case Tree.type: incrementTree(); break;
+				}
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			deliverResource=false;
+		}	
 	}
 	
 	private Point regularMove() {
-		return path.removeFirst();
+		Point p= path.removeFirst();
+		if (path.isEmpty()) deliverResource=true;
+		return p;
 	}
 	
 	//TODO handling exception: what to do?
@@ -73,10 +101,22 @@ public class HarDrone extends AbstractDrone {
 				}
 			}
 			
+			//way out
 			path.addAll(moves);
+			//omit start position (already here)
+			path.remove();
+			
+			//mark position of resource
+			resourcePoint=path.getLast();
+			
+			//turn moves list around for route back to base
 			Collections.reverse(moves);
+			
+			//omit start position of way back route (resource point)
+			moves.remove(0);
+			
+			//way home
 			path.addAll(moves);
-			resourcePoint=moves.get(0);
 	}
 
 	private void evade (ArrayList<Object> list) {
@@ -88,7 +128,29 @@ public class HarDrone extends AbstractDrone {
 			//stand still
 	}
 	
+	private void increment (String material) {
+		Template t=new Template(
+				new ActualTemplateField(material),
+				new FormalTemplateField(Integer.class)
+		);
+		try {
+			Tuple tup=get(t,Drone.self2base);
+			int resourceCounter=(Integer) tup.getElementAt(1);
+			System.out.println("Updated base resources. Before " + material + ": " + resourceCounter + " now " + material + ": " + (++resourceCounter));
+			put(new Tuple(tup.getElementAt(0), resourceCounter ),Drone.self2base);
+		} catch (InterruptedException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
+	private void incrementGold() {
+		increment("GoldCounter");
+	}
+
+	private void incrementTree() {
+		increment("TreeCounter");
+	}
 	//help functions
 	
 	private Point getNewTarget() throws InterruptedException, IOException{
@@ -100,9 +162,9 @@ public class HarDrone extends AbstractDrone {
 	
 	//TODO what does this do?
 	//TODO Drone.self2base?: general point 2 point
-	private LinkedList<Point> getPathablePoints() throws InterruptedException, IOException{
+	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("neighbours_pathable"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
-		put(new Tuple("neighbours_pathable",id, position.x, position.y), Drone.self2base);
+		put(new Tuple("neighbours_pathable",id, p.x, p.y), Drone.self2base);
 		Tuple tu = get(tp, Drone.self2base);
 		return tu.getElementAt(LinkedList.class, 2);
 	}
@@ -134,14 +196,18 @@ public class HarDrone extends AbstractDrone {
 				if(temp.fscore<current.fscore) current=temp;
 			}
 			
-			if(current.equals(end)) return reconstructPath(current);
+			if ((current.fscore-current.gscore)==1) {
+				AStarPoint endPoint=new AStarPoint(pointEnd.x,pointEnd.y);
+				endPoint.cameFrom=current;
+				return reconstructPath(endPoint);
+			}	
 			
 			//moving current to closedSet
 			openSet.remove(current);
 			closedSet.add(current);
 			
 			//hacks to get AStarPoint neigbors list
-			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(getPathablePoints()); //retriever
+			LinkedList<AStarPoint> neighbors = AStarPoint.convertPointList(getPathablePoints(current)); //retriever
 			
 			for(AStarPoint neighbor : neighbors){
 				//ignores already visited points.
@@ -169,6 +235,30 @@ public class HarDrone extends AbstractDrone {
 		}
 		
 		return null;
+	}
+	
+	private boolean droneAtPosition (Point p) {
+		Template tp = new Template(new ActualTemplateField("drone_at_position"), new ActualTemplateField(id), new FormalTemplateField(boolean.class));
+		try {
+			put(new Tuple("drone_at_position",id, p.x, p.y), Drone.self2base);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Tuple tu=null;
+		try {
+			tu = get(tp, Drone.self2base);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return tu.getElementAt(boolean.class, 2);
 	}
 	
 	private int distance(Point start, Point end){

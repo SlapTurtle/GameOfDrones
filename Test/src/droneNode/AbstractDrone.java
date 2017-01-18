@@ -12,7 +12,6 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 public abstract class AbstractDrone extends Agent {
-	
 	public String type;
 	public String id;
 	public Point position;
