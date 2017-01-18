@@ -29,21 +29,37 @@ public class HarDrone extends AbstractDrone {
 	LinkedList<Point> path;
 	Point resourcePoint;
 	boolean deliverResource;
+	boolean slave;
+	boolean stall;
 	
 	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
 		path = new LinkedList<Point>();
 		deliverResource=false;
+		slave=false;
+		stall=false;
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
 			//drone is at base and it needs new moves
-			if (!path.isEmpty()) 
-				return regularMove();
+		
+		/*if (stall) return null;
+		if (slave)
+			evade();
+			*/
+		
+		if (!path.isEmpty()) {
+				if (!isPositionOccupied())
+					return regularMove();
+				return evade();
+			}
 			getNewMoves();
-			return null;
-			
+			return null;	
+	}
+	
+	public Point nextMove() {
+		return path.getFirst();
 	}
 	
 	@Override
@@ -80,6 +96,8 @@ public class HarDrone extends AbstractDrone {
 			deliverResource=false;
 		}	
 	}
+	
+	
 	
 	private Point regularMove() {
 		Point p= path.removeFirst();
@@ -119,13 +137,45 @@ public class HarDrone extends AbstractDrone {
 			path.addAll(moves);
 	}
 
-	private void evade (ArrayList<Object> list) {
-		//if hardrone at postion targets current as next
-			//while (not move to side)
-				//move back
-			//move to side
-		//else 
-			//stand still
+	private boolean isPositionOccupied() throws InterruptedException, IOException {
+		put(new Tuple(path.get(0),super.id),Drone.self2base);
+		
+		Template t= new Template(
+				new FormalTemplateField(Integer.class),
+				new FormalTemplateField(String.class)
+		);
+		
+		Tuple tup=get(t,Drone.self2base);
+		int answer=(Integer) tup.getElementAt(0);
+		if (answer==1) return true;
+		return false;
+	}
+	
+	private Point evade () {
+		Point p=super.position; //TODO get opponents next move as point
+		if (p.equals(super.position)) { //if opponents next move targets this drones current position
+			//if not move to side
+			//move back
+		}
+		
+		//if opponent drone does not targets this drones position
+		//or this drone can't move either back or to one of the sides: stand still
+		return null; 
+	}
+	
+	private boolean moveToSide(Point opponentPos) {
+		int dx=Math.abs(opponentPos.x-super.position.x);
+		
+		//drodes are side by side
+		if (dx==1) {
+			//try move up 
+			//try move down
+		}
+		else { //drones are above/beneath each other
+			//try move right
+			//trye move left
+		}
+		return false;
 	}
 	
 	private void increment (String material) {

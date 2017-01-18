@@ -43,25 +43,10 @@ public class Retriever extends Agent {
 			case "neighbours_explore" : list = getNeighboursExplore(x,y); break;
 			case "neighbours_all": list = getNeighbours(x,y); break;
 			case "neighbours_pathable": list = getPathableNeighbours(x,y); break;
-			case "drone_at_position": list=getIsDroneAtPosition(x,y); break;
 			}
 			put(new Tuple(order, id, list), Self.SELF);			
 		}
 	}	
-	
-	
-	
-	private boolean getIsDroneAtPosition(int x,int y) {
-		Template t = new Template(
-				new FormalTemplateField(String.class),
-				new ActualTemplateField(x),
-				new ActualTemplateField(y),
-				new FormalTemplateField(String.class)
-		);
-		
-		Tuple in = queryp(t);
-		return in!=null;
-	}
 	
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
 		LinkedList<Tuple> list = new LinkedList<Tuple>();
