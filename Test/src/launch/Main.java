@@ -26,7 +26,7 @@ public class Main {
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 000; //will exceed due to computing power at some point
+	static final int minDelay = 300; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException{

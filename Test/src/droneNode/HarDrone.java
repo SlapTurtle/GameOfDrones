@@ -210,6 +210,13 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(Point.class, 2);
 	}
 	
+	private boolean getSinglePathable() throws InterruptedException, IOException{
+		Template tp = new Template(new ActualTemplateField("single_pathable"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
+		put(new Tuple("single_pathable",id), Drone.self2base);
+		Tuple tu = get(tp, Drone.self2base);
+		return (tu.getElementAt(Integer.class, 2) == 1) ;
+	}
+	
 	//TODO what does this do?
 	//TODO Drone.self2base?: general point 2 point
 	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
