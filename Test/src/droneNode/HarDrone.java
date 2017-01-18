@@ -22,6 +22,10 @@ import resources.*;
 //multiple harvester drones
 //exception in get new moves
 
+//get Opponentmoveposition
+//metode i retriever til tjek om punkt er pathable
+//metode i denne klasse der snakker med metode i retriever: kommunikation i orden?
+
 public class HarDrone extends AbstractDrone {
 	public static final String type = "HARDRONE";
 	public static int droneCounter = 0;
@@ -151,30 +155,88 @@ public class HarDrone extends AbstractDrone {
 		return false;
 	}
 	
-	private Point evade () {
-		Point p=super.position; //TODO get opponents next move as point
-		if (p.equals(super.position)) { //if opponents next move targets this drones current position
-			//if not move to side
-			//move back
+	private Point evade () throws InterruptedException, IOException {
+		Point returnPoint=null;
+		Point opponentMovePosition=getOpponentMovePosition(); 
+		if (opponentMovePosition.equals(super.position)) { //if opponents next move targets this drones current position
+			returnPoint=moveToSide(opponentMovePosition); //try move to side
+			if (returnPoint==null) 
+				returnPoint=moveBackwards(opponentMovePosition); //if not move to side try move backwards
 		}
-		
 		//if opponent drone does not targets this drones position
-		//or this drone can't move either back or to one of the sides: stand still
-		return null; 
+		//or this drone can't move either back or to one of the sides: stand still: returnPoint=null
+		return returnPoint;  
 	}
 	
-	private boolean moveToSide(Point opponentPos) {
+	//TODO get opponents next move as point
+	private Point getOpponentMovePosition() {
+		Point opponentPosition=path.getFirst();
+		
+		return super.position;
+	}
+	
+	private Point moveBackwards(Point opponentPos) throws InterruptedException, IOException {
+		int dx=opponentPos.x-super.position.x;
+		
+		Point backwardsPosition;
+		if (dx==1) { //opponent drone is to the right of this drone
+			backwardsPosition=new Point(super.position.x-1,super.position.y); //try move to the left
+		}
+		else if (dx==-1){ //opponent drone is to the left of this drone
+			backwardsPosition=new Point(super.position.x+1,super.position.y); //try move to the right
+		}
+		else { //opponent drone is either above or under this drone
+			int dy=opponentPos.y-super.position.y;
+			if (dy==1){ //opponent drone is under this drone
+				backwardsPosition=new Point(super.position.x,super.position.y-1); //try move up
+			}
+			else {//opponent drone is above this drone
+				backwardsPosition=new Point(super.position.x,super.position.y+1); //try move down
+			}
+		}
+		if (checkPosition(backwardsPosition.x,backwardsPosition.y)) return backwardsPosition;
+		return null;
+	}
+	
+	private Point moveToSide(Point opponentPos) throws InterruptedException, IOException {
 		int dx=Math.abs(opponentPos.x-super.position.x);
 		
 		//drodes are side by side
 		if (dx==1) {
-			//try move up 
+			//try move up
+			if (checkPosition(super.position.x,super.position.y-1)) {
+				return new Point(super.position.x,super.position.y-1);
+			}
 			//try move down
+			if (checkPosition(super.position.x,super.position.y+1)) {
+				return new Point(super.position.x,super.position.y+1);
+			}
 		}
 		else { //drones are above/beneath each other
 			//try move right
-			//trye move left
+			if (checkPosition(super.position.x+1,super.position.y)) {
+				return new Point(super.position.x+1,super.position.y);
+			}
+			//try move left
+			if (checkPosition(super.position.x-1,super.position.y)) {
+				return new Point(super.position.x-1,super.position.y);
+			}
 		}
+		return null;
+	}
+	
+	//returns true if position is pathable
+	private boolean checkPosition (int x, int y) throws InterruptedException, IOException {
+		String order="position_pathable";
+		put (new Tuple(order,super.id,x,y),Drone.self2base);
+		Template t=new Template(
+				new ActualTemplateField(order),
+				new ActualTemplateField(super.id),
+				new FormalTemplateField(Integer.class)
+		);
+		Tuple tup=get(t,Drone.self2base);
+		int answer=(int) tup.getElementAt(2);
+		if (answer==1) return true; 
 		return false;
 	}
 	
