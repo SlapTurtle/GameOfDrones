@@ -20,13 +20,13 @@ public class Main {
 	static final String seed = "AuAuLamNiklasMartinnezMikael";
 	
 	//Base
-	static final int exploreDrones = 5;
-	static final int harvestDrones = 0;
+	static final int exploreDrones = 3;
+	static final int harvestDrones = 1;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 500; //will exceed due to computing power at some point
+	static final int minDelay = 000; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException{

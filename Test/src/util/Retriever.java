@@ -3,6 +3,7 @@ package util;
 import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.UUID;
 
 import org.cmg.resp.behaviour.Agent;
@@ -93,7 +94,7 @@ public class Retriever extends Agent {
 			Tuple tu = itres.next();
 			int x = tu.getElementAt(Integer.class, 1);
 			int y = tu.getElementAt(Integer.class, 2);
-			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0) || (y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
 				itres.remove();
 			}
 		}
@@ -103,7 +104,7 @@ public class Retriever extends Agent {
 			Tuple tu = itdrone.next();
 			int x = tu.getElementAt(Integer.class, 1);
 			int y = tu.getElementAt(Integer.class, 2);
-			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0) || (y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
 				itdrone.remove();
 			}
 		}
