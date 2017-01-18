@@ -11,7 +11,7 @@ import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
 import droneNode.Drone;
-import resources.Expdrone;
+import resources.Exp_drone;
 import util.Retriever;
 
 import java.awt.Point;
@@ -25,7 +25,7 @@ public class Map extends Node {
 	public static final FormalTemplateField AnyPoint = new FormalTemplateField(Point.class);
 	public static final FormalTemplateField AnyWorld = new FormalTemplateField(World.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
-	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Expdrone.type), AnyInteger, AnyInteger, AnyString);
+	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Exp_drone.type), AnyInteger, AnyInteger, AnyString);
 
 	public Map(String name, String seed, VirtualPort port, int port_int, int retrieverCount) {
 		super(name, new TupleSpace());

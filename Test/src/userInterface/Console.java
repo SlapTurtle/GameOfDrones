@@ -50,24 +50,22 @@ public class Console implements Runnable {
 				//puts go for UserInterfaceAgent
 				base.put(goUI);
 				base.get(rdyUI);
-				//puts go for DroneListener
 				//puts go for MapMerger
 				base.put(goMM);
 				base.get(rdyMM);
 				//Prints board
 				PrintString();
-//				UserInterfaceAgentBase.getMap();
-//				int[] list = UserInterfaceAgentBase.bounds;
-//				System.out.println("explored bounds: {"+list[0]+","+list[1]+","+list[2]+","+list[3]+"}");
 				//puts go signal to all drones
 				for(Drone drone : drones){
 					drone.put(go);
 				}
 				
 				//gets ready signal from all drones
+				Long t = System.currentTimeMillis();
 				for(Drone drone : drones){
 					drone.get(rdy);
 				}
+				System.out.println((System.currentTimeMillis()-t));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
