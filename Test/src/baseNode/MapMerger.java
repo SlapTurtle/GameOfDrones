@@ -25,6 +25,8 @@ public class MapMerger extends Agent {
 	protected void doRun() throws Exception {
 		while(true){
 			get(new Template(new ActualTemplateField("goMM")), Self.SELF);
+
+			Long t = System.currentTimeMillis();
 			Tuple trange = query(new Template(new ActualTemplateField(MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF);
 			int range = trange.getElementAt(Integer.class, 1) + 1;
 			

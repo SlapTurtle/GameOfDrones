@@ -37,14 +37,14 @@ public class Retriever extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			Object list;
+			Object responce;
 			switch(order){
-			default: list = null; break;
-			case "neighbours_explore" : list = getNeighboursExplore(x,y); break;
-			case "neighbours_all": list = getNeighbours(x,y); break;
-			case "neighbours_pathable": list = getPathableNeighbours(x,y); break;
+			default: responce = null; break;
+			case "neighbours_explore" : responce = getNeighboursExplore(x,y); break;
+			case "neighbours_all": responce = getNeighbours(x,y); break;
+			case "neighbours_pathable": responce = getPathableNeighbours(x,y); break;
 			}
-			put(new Tuple(order, id, list), Self.SELF);			
+			put(new Tuple(order, id, responce), Self.SELF);			
 		}
 	}	
 	

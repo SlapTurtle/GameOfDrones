@@ -1,6 +1,7 @@
 package map;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.UUID;
 import org.cmg.resp.behaviour.Agent;
@@ -13,33 +14,30 @@ import org.cmg.resp.topology.Self;
 import launch.Main;
 
 public class DroneListener extends Agent {
-
-	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString);
+	
+	public static final int sensitivity = (Map.DEFAULTGRID/2) + 5;
+	Template getAnyListner = new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString);
+	Template getOnlyListener = new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField("listen"));
 	
 	public DroneListener() {
 		super(UUID.randomUUID().toString());
 	}
 
-	protected void doRun() {
+	protected void doRun() throws InterruptedException, IOException {
 		while(true) {
-			try {
-				Thread.sleep(Main.DELAY + Map.DEFAULTGRID);
-				LinkedList<Tuple> l = queryAll(getPoints);
-				for(Tuple t : l) {
-					Point p = new Point(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1));
-					if (t.getElementAt(String.class, 2) == "listen" && !p.equals(new Point(0,0))) {
-						LinkedList<Tuple> drones = queryAll(Map.TEMPLATE_EXPDRONE);
-						for (Tuple d : drones) {
-							Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
-							if (p.distance(dp) <= Map.DEFAULTGRID-2) {
-								expandWorld(p);
-								break;
-							}
+			LinkedList<Tuple> l = queryAll(getOnlyListener);
+			LinkedList<Tuple> drones = queryAll(Map.TEMPLATE_EXPDRONE);
+			for(Tuple t : l) {
+				Point p = new Point(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1));
+				if (!p.equals(new Point(0,0))) {
+					for (Tuple d : drones) {
+						Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
+						if (p.distance(dp) <= sensitivity) {
+							expandWorld(p);
+							break;
 						}
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -47,19 +45,17 @@ public class DroneListener extends Agent {
 	private boolean expandWorld(Point p) {
 		World world = new World(p, Map.DEFAULTGRID);
 		try {
-			Tuple t = get(new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y), new ActualTemplateField("listen")), Self.SELF);
-			put(new Tuple(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1), "unlisten"), Self.SELF);
-			String identifier;
-			String seed = (String)query(new Template(new ActualTemplateField("seed"), Map.AnyString), Self.SELF).getElementAt(1);
-			put(new HashRequest(identifier = UUID.randomUUID().toString(), p, seed, Map.EXP_HASHLENGTH), Self.SELF);
-			get(new Template(new ActualTemplateField(identifier), Map.AnyString), Self.SELF);
+			get(new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y), new ActualTemplateField("listen")), Self.SELF);
+			put(new Tuple(p.x, p.y, "unlisten"), Self.SELF);
+//			String identifier = UUID.randomUUID().toString();
+//			put(new HashRequest(identifier, p, seed, Map.EXP_HASHLENGTH), Self.SELF);			//<-- request hasher
+//			get(new Template(new ActualTemplateField(identifier), Map.AnyString), Self.SELF); 	//<-- hashers response not used?
+			String seed = query(new Template(new ActualTemplateField("seed"), Map.AnyString), Self.SELF).getElementAt(String.class, 1);
 			put(new Tuple("generate", world, seed), Self.SELF);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-	}
-	
-	
+	}	
 }

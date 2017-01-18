@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.UUID;
 import resources.*;
 
 /** Agent used for the generation of content in a given world. */
@@ -22,7 +21,7 @@ public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
-	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField("listen"));
+	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString);
 
 	int[] bounds;
 
@@ -129,9 +128,9 @@ public class Generator extends Agent {
 
 	/** Populates the current World with a given type, shape and size of a resource.
 	 * @params */
-	public void populate(Class classname, String shape, int size, World world, Random random) {
+	public void populate(Class<?> classname, String shape, int size, World world, Random random) {
 		try {
-			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
+			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, Integer.class);
 			Point p = getRandomPoint(world, random);
 			int dist = (shape == "polygon") ? 2*size : size+1;
 			while(!world.pointInWorldDistance(p, dist) && world.pointNearCenter(p))
@@ -160,8 +159,7 @@ public class Generator extends Agent {
 
 	public void putResource(Resource resource, Point p) throws Exception {
 		if (queryp(new Template(Map.AnyString, new ActualTemplateField(p.x), new ActualTemplateField(p.y))) == null)
-			put(new Tuple(resource.type, (int)p.getX(), (int)p.getY()), Self.SELF);
-		
+			put(new Tuple(resource.type, p.x, p.y), Self.SELF);
 	}
 	
 	/** Adds a resource cluster's tubles to the Map Tublespace.
@@ -170,21 +168,14 @@ public class Generator extends Agent {
 		for (Point p : resource.getPoints(random))
 			if (world.pointInWorld(bounds, p) && !world.pointNearCenter(p))
 				putResource(resource, p);
-		
 	}
 
 	public void addListeners(World world) throws InterruptedException, IOException {
-		LinkedList<Tuple> list = queryAll(new Template(getPoints.getElementAt(0), getPoints.getElementAt(1), Map.AnyString));
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
-			boolean exists = false;
-			for (Tuple t : list) {
-				if (p.equals(new Point(t.getElementAt(Integer.class, 0), t.getElementAt(Integer.class, 1)))) {
-					exists = true;
-					break;
-				}
-			}
-			if (!exists)
+			Tuple tu = queryp(new Template(new ActualTemplateField(p.x),new ActualTemplateField(p.y),new FormalTemplateField(String.class)));
+			if(!p.equals(world.center) && !p.equals(new Point(0,0)) && tu == null){
 				put(new Tuple(p.x, p.y, "listen"), Self.SELF);
+			}
 		}
 	}
 }

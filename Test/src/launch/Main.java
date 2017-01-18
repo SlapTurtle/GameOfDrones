@@ -19,7 +19,7 @@ public class Main {
 	static final String mapID = "mapNode";
 	static final String droneID = "droneNode";
 	
-	static final String seed = UUID.randomUUID().toString();
+	static final String seed = "AuAuLamNiklasMartinnezMikael";
 	
 	static final int exploreDrones = 3;
 	static final int harvestDrones = 0;
