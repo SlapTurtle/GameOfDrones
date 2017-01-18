@@ -272,6 +272,13 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(Point.class, 2);
 	}
 	
+	private boolean getSinglePathable(Point p) throws InterruptedException, IOException{
+		Template tp = new Template(new ActualTemplateField("single_pathable"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
+		put(new Tuple("single_pathable",id, p.x, p.y), Drone.self2map);
+		Tuple tu = get(tp, Drone.self2base);
+		return (tu.getElementAt(Integer.class, 2) == 1) ;
+	}
+	
 	//TODO what does this do?
 	//TODO Drone.self2base?: general point 2 point
 	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
@@ -347,30 +354,6 @@ public class HarDrone extends AbstractDrone {
 		}
 		
 		return null;
-	}
-	
-	private boolean droneAtPosition (Point p) {
-		Template tp = new Template(new ActualTemplateField("drone_at_position"), new ActualTemplateField(id), new FormalTemplateField(boolean.class));
-		try {
-			put(new Tuple("drone_at_position",id, p.x, p.y), Drone.self2base);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Tuple tu=null;
-		try {
-			tu = get(tp, Drone.self2base);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return tu.getElementAt(boolean.class, 2);
 	}
 	
 	private int distance(Point start, Point end){

@@ -50,7 +50,7 @@ public abstract class AbstractDrone extends Agent {
 
 	protected final boolean move(Point p) throws InterruptedException, IOException {
 		if (p==null || p.distance(position) > 1.21) return false;
-		Template template = new Template(
+		Template template = new Template(   
 						new ActualTemplateField(type),
 						new FormalTemplateField(Integer.class),
 						new FormalTemplateField(Integer.class),

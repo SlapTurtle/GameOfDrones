@@ -12,21 +12,22 @@ import baseNode.*;
 import droneNode.*;
 
 public class Console implements Runnable {
+	
 	Node base;
 	Node map;
 	LinkedList<Drone> drones;
 	int delay;
-	int size;
+	boolean displayTime;
 	
 	String[][] board;
 	UserInterfaceAgent UserInterfaceAgentBase;
 
-	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, int size) {
+	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, boolean displayTime) {
 		this.base = base;
 		this.map = map;
 		this.drones = drones;
 		this.delay = delay;
-		this.size = size;
+		this.displayTime = displayTime;
 		
 		UserInterfaceAgentBase = new UserInterfaceAgent();
 		base.addAgent(UserInterfaceAgentBase);
@@ -35,36 +36,55 @@ public class Console implements Runnable {
 	}
 
 	public void run() {
-		try {
-			Template rdy = new Template(new ActualTemplateField("ready"));
-			Template rdyUI = new Template(new ActualTemplateField("readyUI"));
-			Template rdyMM = new Template(new ActualTemplateField("readyMM"));
-			Tuple go = new Tuple("go");
-			Tuple goUI = new Tuple("goUI");
-			Tuple goMM = new Tuple("goMM");
-			
-			while(true) {
-				//delays the whole process
-				Thread.sleep(delay);
-				//puts go for userInterfaceAgent
-				base.put(goUI);
-				base.get(rdyUI);
-				//puts go for MapMerger
-				base.put(goMM);
-				base.get(rdyMM);
-				//Prints board
-				PrintString();
-				//puts go signal to all drones
-				for(Drone drone : drones){
-					drone.put(go);
+		Template rdy = new Template(new ActualTemplateField("ready"));
+		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
+		Template rdyMM = new Template(new ActualTemplateField("readyMM"));
+		Tuple go = new Tuple("go");
+		Tuple goUI = new Tuple("goUI");
+		Tuple goMM = new Tuple("goMM");
+		
+		Thread gt, dt;
+		while(true) {
+			Long t = System.currentTimeMillis();
+			gt = new Thread(() -> {
+				try {
+					//puts go for MapMerger
+					base.put(goMM);
+					base.get(rdyMM);
+					//Prints board
+					PrintString();
+					//puts go signal to all drones
+					for(Drone drone : drones){
+						drone.put(go);
+					}
+					//gets ready signal from all drones
+					for(Drone drone : drones){
+						drone.get(rdy);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				//gets ready signal from all drones
-				for(Drone drone : drones){
-					drone.get(rdy);
+			});
+			dt = new Thread(() -> {
+				try {
+					//waits for delay
+					Thread.sleep(delay);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+			});
+			try {
+				dt.start();
+				gt.start();
+				dt.join();
+				gt.join();
+				dt.stop();
+				gt.stop();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			if(displayTime) System.out.println("Time: "+(System.currentTimeMillis() - t));
+			System.out.println("\n\n\n");
 		}
 	}
 
@@ -97,6 +117,5 @@ public class Console implements Runnable {
 			}
 			System.out.println();
 		}
-		System.out.println("\n\n\n\n\n");
 	}	
 }

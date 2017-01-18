@@ -11,7 +11,7 @@ import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
 import droneNode.Drone;
-import resources.Exp_drone;
+import resources.Expdrone;
 import util.Retriever;
 
 import java.awt.Point;
@@ -25,13 +25,9 @@ public class Map extends Node {
 	public static final FormalTemplateField AnyPoint = new FormalTemplateField(Point.class);
 	public static final FormalTemplateField AnyWorld = new FormalTemplateField(World.class);
 	public static final Template TEMPLATE_ALL = new Template(AnyString, AnyInteger, AnyInteger);
-	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Exp_drone.type), AnyInteger, AnyInteger, AnyString);
+	public static final Template TEMPLATE_EXPDRONE = new Template(new ActualTemplateField(Expdrone.type), AnyInteger, AnyInteger, AnyString);
 
-//	public Object render = new Object();
-//	Object syncRetrieval = new Object();
-
-	public Map(String name, String seed, VirtualPort port, int port_int) {
-		// new Node(name, new TupleSpace())
+	public Map(String name, String seed, VirtualPort port, int port_int, int retrieverCount) {
 		super(name, new TupleSpace());
 		
 		// Ports
@@ -39,10 +35,12 @@ public class Map extends Node {
 		Drone.self2map = new PointToPoint(name, new VirtualPortAddress(port_int));
 
 		// Agents
-		addAgent(new Retriever());
+		addAgent(new DroneListener());
 		addAgent(new Hasher());
 		addAgent(new Generator());
-		addAgent(new DroneListener());	
+		for(int i = 0; i < retrieverCount; i++){
+			addAgent(new Retriever());
+		}
 
 		// Generate map
 		System.out.println("Seed: " + seed);

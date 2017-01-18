@@ -22,7 +22,7 @@ public class Generator extends Agent {
 	
 	Template getT = new Template(new ActualTemplateField("generate"), Map.AnyWorld, Map.AnyString);
 	Template getBounds = new Template(new ActualTemplateField("bounds"), new FormalTemplateField(int[].class));
-	Template getPoints = new Template(new ActualTemplateField("listen"), new FormalTemplateField(Point.class));
+	Template getPoints = new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField("listen"));
 
 	int[] bounds;
 
@@ -46,7 +46,6 @@ public class Generator extends Agent {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 	
@@ -63,22 +62,7 @@ public class Generator extends Agent {
 		}
 		return bounds;
 	}
-	
-//	public void adjustBounds() {
-//	if (center.getX() < map.center.getX()) {
-//		map.bounds[0] -= x;
-//		map.world.x += x;
-//	} else if (center.getX() > map.center.getX()) {
-//		map.bounds[1] += x;
-//		map.world.x += x;
-//	} else if (center.getY() < map.center.getY()) {
-//		map.bounds[2] -= y;
-//		map.world.y += y;
-//	} else {
-//		map.bounds[3] += x;
-//		map.world.y += y;
-//	}
-//}
+
 
 	/** Primary method used to initiate the content generation algorithm of the Generator Agent of a given World. */
 	public void populateMap(World world, Random random) {
@@ -141,7 +125,6 @@ public class Generator extends Agent {
 		
 		for (int j = 0; j < random.nextInt((int)(World.DEFAULT/6) + 1) + 6; j++)
 			populate(Gold.class, "circular", 0, world, random);
-		
 	}
 
 	/** Populates the current World with a given type, shape and size of a resource.
@@ -177,8 +160,7 @@ public class Generator extends Agent {
 
 	public void putResource(Resource resource, Point p) throws Exception {
 		if (queryp(new Template(Map.AnyString, new ActualTemplateField(p.x), new ActualTemplateField(p.y))) == null)
-			put(new Tuple(resource.type, (int)p.getX(), (int)p.getY()), Self.SELF);
-		
+			put(new Tuple(resource.type, p.x, p.y), Self.SELF);
 	}
 	
 	/** Adds a resource cluster's tubles to the Map Tublespace.
@@ -191,17 +173,12 @@ public class Generator extends Agent {
 	}
 
 	public void addListeners(World world) throws InterruptedException, IOException {
-		LinkedList<Tuple> list = queryAll(getPoints);
+		LinkedList<Tuple> list = queryAll(new Template(getPoints.getElementAt(0), getPoints.getElementAt(1), Map.AnyString));
 		for (Point p : World.getNeighbors(world.center, World.DEFAULT)) {
-			boolean exists = false;
-			for (Tuple t : list) {
-				if (p.equals((Point)t.getElementAt(1))) {
-					exists = true;
-					break;
-				}
+			Tuple tu = queryp(new Template(new ActualTemplateField(p.x),new ActualTemplateField(p.y),new FormalTemplateField(String.class)));
+			if(!p.equals(world.center) && !p.equals(new Point(0,0)) && tu == null){
+				put(new Tuple(p.x, p.y, "listen"), Self.SELF);
 			}
-			if (!exists)
-				put(new Tuple("listen", p), Self.SELF);
 		}
 	}
 }

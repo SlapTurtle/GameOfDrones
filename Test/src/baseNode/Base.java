@@ -12,7 +12,7 @@ import util.*;
 
 public class Base extends Node {
 
-	public Base(String name, VirtualPort port, int port_int, int startGoldCount, int startTreeCount, int exploreDrones, int harvestDrones) {
+	public Base(String name, VirtualPort port, int port_int, int startGoldCount, int startTreeCount, int exploreDrones, int harvestDrones, int retrieverCount) {
 		// new Node(name, new TupleSpace())
 		super(name, new TupleSpace());
 		
@@ -23,7 +23,9 @@ public class Base extends Node {
 		// Agents
 		addAgent(new MapMerger());
 		addAgent(new HarvestAgent());
-		addAgent(new Retriever());
+		for(int i = 0; i < retrieverCount; i++){
+			addAgent(new Retriever());
+		}
 		
 		// Setup
 		if(exploreDrones > 0){

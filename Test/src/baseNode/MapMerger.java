@@ -25,11 +25,20 @@ public class MapMerger extends Agent {
 	protected void doRun() throws Exception {
 		while(true){
 			get(new Template(new ActualTemplateField("goMM")), Self.SELF);
+			
+			LinkedList<Tuple> list = getAll(new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField(ACTION_NEW)));
+			for(Tuple t : list) {
+				int x = t.getElementAt(Integer.class, 0);
+				int y = t.getElementAt(Integer.class, 1);
+				put(new Tuple(x,y,MapMerger.ACTION_OLD),Self.SELF);
+				//Update map
+			}
+			
 			Tuple trange = query(new Template(new ActualTemplateField(MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF);
 			int range = trange.getElementAt(Integer.class, 1) + 1;
 			
 			//checks that a ring exists
-			LinkedList<Tuple> list = queryAll(new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField(ACTION_OLD)));
+			list = queryAll(new Template(Map.AnyInteger, Map.AnyInteger, new ActualTemplateField(ACTION_OLD)));
 			LinkedList<Tuple> get = new LinkedList<Tuple>();
 			for(Tuple tu : list){
 				int x = tu.getElementAt(Integer.class, 0);
