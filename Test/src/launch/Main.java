@@ -17,10 +17,10 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	//Map generate
-	static final String seed = "AuAuLamNiklasMartinnezMikael";
+	static final String seed = UUID.randomUUID().toString();
 	
 	//Base
-	static final int exploreDrones = 3;
+	static final int exploreDrones = 2;
 	static final int harvestDrones = 1;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
