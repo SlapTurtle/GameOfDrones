@@ -12,7 +12,7 @@ import org.cmg.resp.topology.Self;
 /** Class responsible for hash functions associated with world expansion. */
 public class Hasher extends Agent{
 
-	Template getT = new Template(new ActualTemplateField("hash"), Map.AnyString, Map.AnyPoint, Map.AnyString, Map.AnyInteger);
+	Template getT = new Template(new ActualTemplateField("hash"), Map.AnyPoint, Map.AnyString, Map.AnyInteger, Map.AnyWorld);
 
 	public Hasher() {
 		super("hasher");
@@ -22,14 +22,15 @@ public class Hasher extends Agent{
 		while(true) {
 			// REQUEST
 			Tuple request = get(getT, Self.SELF);
-			String target = request.getElementAt(String.class, 1);
-			Point center = request.getElementAt(Point.class, 2);
-			String seed = request.getElementAt(String.class, 3);
-			int hashlength = request.getElementAt(Integer.class, 4);
+			Point center = request.getElementAt(Point.class, 1);
+			String seed = request.getElementAt(String.class, 2);
+			int hashlength = request.getElementAt(Integer.class, 3);
+			World world = request.getElementAt(World.class, 4);
 			// PROCESS
 			String hash = getExpansionHash(seed, center, hashlength);
 			// RESPONSE
-			Tuple response = new Tuple(target, hash);
+			Tuple response = new Tuple("generate", world, hash);
+//			Tuple response = new Tuple(target, hash);
 			put(response, Self.SELF);
 		}
 	}

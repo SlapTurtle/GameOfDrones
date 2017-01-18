@@ -8,8 +8,8 @@ import org.cmg.resp.knowledge.Tuple;
 
 public class HashRequest extends Tuple {
 	
-	public HashRequest(String identifier, Point center, String seed, int hashlength) {
-		super("hash", identifier, center, seed, hashlength);
+	public HashRequest(Point center, String seed, int hashlength, World world) {
+		super("hash", center, seed, hashlength, world);
 	}
 
 }
