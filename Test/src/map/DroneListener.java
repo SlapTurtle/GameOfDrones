@@ -22,7 +22,7 @@ public class DroneListener extends Agent {
 		while(true) {
 			try {
 				for(Tuple t : queryAll(getPoints)) {
-					Point p = (Point)t.getElementAt(1);
+					Point p = t.getElementAt(Point.class, 1);
 					LinkedList<Tuple> drones = queryAll(Map.TEMPLATE_EXPDRONE);
 					for (Tuple d : drones) {
 						Point dp = new Point((int)d.getElementAt(1), (int)d.getElementAt(2));
