@@ -9,41 +9,44 @@ import map.*;
 import userInterface.*;
 
 public class Main {
-
-	public static final int DELAY = 0;
-	public static final int FIELD = 40;
-	
+	//Node Configurations.
 	static final int port_int = 8080;
-	public static final VirtualPort port = new VirtualPort(port_int);
+	static final VirtualPort port = new VirtualPort(port_int);
 	static final String baseID = "baseNode";
 	static final String mapID = "mapNode";
 	static final String droneID = "droneNode";
 	
+	//Map generate
 	static final String seed = "AuAuLamNiklasMartinnezMikael";
 	
-	static final int exploreDrones = 3;
+	//Base
+	static final int exploreDrones = 5;
 	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
+	
+	//UI
+	static final int minDelay = 500; //will exceed due to computing power at some point
+	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException{
 		//Map
 		Map map = new Map(mapID, seed, port, port_int, exploreDrones);
 		
 		//Base
-		Base base = new Base(baseID, port, port_int, startGoldCount, startTreeCount, exploreDrones, harvestDrones, exploreDrones);
+		Base base = new Base(baseID, port, port_int, startGoldCount, startTreeCount, exploreDrones, harvestDrones, exploreDrones+harvestDrones);
 		
 		//Drones
 		LinkedList<Drone> drones = new LinkedList<Drone>();
 		
 		for(int i = 0; i<exploreDrones + harvestDrones; i++){
-			String type = (i < exploreDrones) ? "EXPDRONE" : "HARDRONE";
+			String type = (i < exploreDrones) ? ExpDrone.type : HarDrone.type;
 			Drone droneNode = new Drone(droneID+i, type, port, port_int, base, map);
 			drones.add(droneNode);
 		}
 		
 		//UI
-		new Console(base, map, drones, DELAY, FIELD);
+		new Console(base, map, drones, minDelay, displayTime);
 		
 		
 	}

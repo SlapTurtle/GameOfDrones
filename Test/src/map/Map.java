@@ -35,9 +35,9 @@ public class Map extends Node {
 		Drone.self2map = new PointToPoint(name, new VirtualPortAddress(port_int));
 
 		// Agents
+		addAgent(new DroneListener());
 		addAgent(new Hasher());
 		addAgent(new Generator());
-		addAgent(new DroneListener());
 		for(int i = 0; i < retrieverCount; i++){
 			addAgent(new Retriever());
 		}

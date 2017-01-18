@@ -1,6 +1,7 @@
 package util;
 
 import java.awt.Point;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -11,7 +12,8 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
-import droneNode.HarDrone;
+import map.Map;
+import resources.Hardrone;
 import resources.Empty;
 import resources.Resource;
 
@@ -41,7 +43,7 @@ public class Retriever extends Agent {
 			switch(order){
 			default: responce = null; break;
 			case "neighbours_explore" : responce = getNeighboursExplore(x,y); break;
-			case "neighbours_all": responce = getNeighbours(x,y); break;
+			 case "neighbours_all": responce = getNeighbours(x,y); break;
 			case "neighbours_pathable": responce = getPathableNeighbours(x,y); break;
 			}
 			put(new Tuple(order, id, responce), Self.SELF);			
@@ -49,93 +51,121 @@ public class Retriever extends Agent {
 	}	
 	
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
+		LinkedList<Tuple> re = new LinkedList<Tuple>();
 		LinkedList<Tuple> list = new LinkedList<Tuple>();
+		list = queryAll(new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString));
+		Iterator<Tuple> it = list.iterator(); 
+		while(it.hasNext()){
+			Tuple tu = it.next();
+			int x = tu.getElementAt(Integer.class, 0);
+			int y = tu.getElementAt(Integer.class, 1);
+			if(!(y <= y0+1 && y >= y0-1 && x <= x0+1 && x >= x0-1) || (x==x0 && y==y0)){
+				it.remove();
+			}
+		}
 		for (int y = y0-1; y <= y0+1; y++) {
 			for (int x = x0-1; x <= x0+1; x++) { 
 				if (!(x == x0 && y == y0)) {
-					Tuple tu = queryp(templateXYExplore(x,y));
+					Tuple tu = null;
+					for(Tuple t : list){
+						if(x == t.getElementAt(Integer.class, 0) && (y == t.getElementAt(Integer.class, 1))){
+							tu = t;
+						}
+					}
 					if(tu != null) {
-						list.add(tu);
+						re.add(tu);
 					}
 					else{
-						list.add(new Tuple(x, y, Empty.type));
+						re.add(new Tuple(x, y, Empty.type));
 					}
 				}
 			}
 		}
-		return list;
+		return re;
 	}
 	
-	private LinkedList<Point> getPathableNeighbours(int x, int y) {
-		LinkedList<Point> list = new LinkedList<Point>();
-		Tuple res[] = {
-				queryp(templateXY(x+1,y)),
-				queryp(templateXY(x-1,y)),
-				queryp(templateXY(x,y+1)),
-				queryp(templateXY(x,y-1))				
-		};
-		Tuple dro[] = {
-				queryp(templateXYDrone(x+1,y)),
-				queryp(templateXYDrone(x-1,y)),
-				queryp(templateXYDrone(x,y+1)),
-				queryp(templateXYDrone(x,y-1))				
-		};
-		for(int i = 0; i<4; i++){
-			if(	(res[i] == null || Resource.isPathable(res[i].getElementAt(String.class, 0)))	&&
-				(dro[i] == null || Resource.isPathable(dro[i].getElementAt(String.class, 0))) 	){
-				int dx,dy;
-				switch(i){
-				default: dx = 1; dy = 0; break;
-				case 1: dx = -1; dy = 0; break;
-				case 2: dx = 0; dy = 1; break;
-				case 3: dx = 0; dy = -1; break;
-				}
-				list.add(new Point(x+dx,y+dy));
+	private LinkedList<Point> getPathableNeighbours(int x0, int y0) {
+		LinkedList<Point> re= new LinkedList<Point>();
+		
+		LinkedList<Tuple> listres = queryAll(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));		
+		Iterator<Tuple> itres = listres.iterator();
+		while(itres.hasNext()){
+			Tuple tu = itres.next();
+			int x = tu.getElementAt(Integer.class, 1);
+			int y = tu.getElementAt(Integer.class, 2);
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+				itres.remove();
 			}
-		}		
-		return list;
+		}
+		LinkedList<Tuple> listdrone = queryAll(new Template(new ActualTemplateField(Hardrone.type), Map.AnyInteger, Map.AnyInteger, Map.AnyString));
+		Iterator<Tuple> itdrone = listdrone.iterator();
+		while(itdrone.hasNext()){
+			Tuple tu = itdrone.next();
+			int x = tu.getElementAt(Integer.class, 1);
+			int y = tu.getElementAt(Integer.class, 2);
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+				itdrone.remove();
+			}
+		}
+		for(int i = 0; i<4; i++){
+			int dx,dy;
+			switch(i){
+			default: dx = 1; dy = 0; break;
+			case 1: dx = -1; dy = 0; break;
+			case 2: dx = 0; dy = 1; break;
+			case 3: dx = 0; dy = -1; break;
+			}
+			Tuple res = null;
+			for(Tuple t : listres){
+				if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+					res = t;
+				}
+			}
+			Tuple dro = null;
+			for(Tuple t : listdrone){
+				if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+					dro = t;
+				}
+			}
+			if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
+				(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) 	){
+				re.add(new Point(x0+dx,y0+dy));
+			}
+		}
+		return re;
 	}
 	
 	private LinkedList<Tuple> getNeighbours(int x0, int y0) {
+		LinkedList<Tuple> re = new LinkedList<Tuple>();
 		LinkedList<Tuple> list = new LinkedList<Tuple>();
+		list = queryAll(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));
+		Iterator<Tuple> it = list.iterator(); 
+		while(it.hasNext()){
+			Tuple tu = it.next();
+			int x = tu.getElementAt(Integer.class, 1);
+			int y = tu.getElementAt(Integer.class, 2);
+			if(!(y <= y0+1 && y >= y0-1 && x <= x0+1 && x >= x0-1) || (x==x0 && y==y0)){
+				it.remove();
+			}
+		}
 		for (int y = y0-1; y <= y0+1; y++) {
 			for (int x = x0-1; x <= x0+1; x++) { 
 				if (!(x == x0 && y == y0)) {
-					Tuple tu = queryp(templateXY(x,y));
+					Tuple tu = null;
+					for(Tuple t : list){
+						if(x == t.getElementAt(Integer.class, 1) && (y == t.getElementAt(Integer.class, 2))){
+							tu = t;
+						}
+					}
 					if(tu != null) {
-						list.add(tu);
+						re.add(tu);
 					}
 					else{
-						list.add(new Tuple(Empty.type, x, y));
+						re.add(new Tuple(Empty.type, x, y));
 					}
 				}
 			}
 		}
-		return list;
+		return re;
 	}	
-	
-	private Template templateXY(int x, int y) {
-		return new Template(
-				new FormalTemplateField(String.class),
-				new ActualTemplateField(x),
-				new ActualTemplateField(y)
-			);
-	}
-	
-	private Template templateXYExplore(int x, int y) {
-		return new Template(
-				new ActualTemplateField(x),
-				new ActualTemplateField(y),
-				new FormalTemplateField(String.class)
-			);
-	}
-	
-	private Template templateXYDrone(int x, int y) {
-		return new Template(
-				new ActualTemplateField(HarDrone.type),
-				new ActualTemplateField(x),
-				new ActualTemplateField(y),
-				new FormalTemplateField(String.class)
-			);
-	}
 }

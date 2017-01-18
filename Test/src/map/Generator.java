@@ -129,7 +129,7 @@ public class Generator extends Agent {
 
 	/** Populates the current World with a given type, shape and size of a resource.
 	 * @params */
-	public void populate(Class<?> classname, String shape, int size, World world, Random random) {
+	public void populate(Class classname, String shape, int size, World world, Random random) {
 		try {
 			Constructor<?> constructor = classname.getConstructor(Point.class, String.class, int.class);
 			Point p = getRandomPoint(world, random);
