@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
@@ -58,10 +59,6 @@ public class HarDrone extends AbstractDrone {
 		}
 		getNewMoves();//drone is at base and it needs new moves
 		return null;	
-	}
-	
-	public Point nextMove() {
-		return path.getFirst();
 	}
 	
 	@Override
@@ -296,7 +293,12 @@ public class HarDrone extends AbstractDrone {
 	}
 	
 	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
-		put(new Tuple("next_move",path.getFirst()),Self.SELF);
+		try {
+			Point p=path.getFirst();
+			put(new Tuple("next_move",p),Self.SELF);
+		} catch (NoSuchElementException e) {
+		}
+		
 	}
 	//help functions
 	

@@ -12,7 +12,6 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 public abstract class AbstractDrone extends Agent {
-	
 	public String type;
 	public String id;
 	public Point position;
@@ -22,10 +21,24 @@ public abstract class AbstractDrone extends Agent {
 		this.type = type;
 		this.id = id;
 		this.position = position;
+		
 	}
 	
+	protected abstract void putNextMoveInTupleSpace() throws InterruptedException, IOException;
+	
 	@Override
-	protected final void doRun() throws InterruptedException, IOException {
+	protected final void doRun() throws Exception {
+		
+		//put own position in tuple space
+		try {
+			put(new Tuple(this.position),Self.SELF);
+		} catch (InterruptedException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		//put next position in tuple space //this should always be null since a star algorithm has not run yet
+		putNextMoveInTupleSpace();
+		
 		while(true){
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
@@ -40,7 +53,7 @@ public abstract class AbstractDrone extends Agent {
 	//Main move method for drones
 	protected abstract Point moveDrone() throws Exception;
 	//Secondary effect (harvest, explore etc.)
-	protected abstract void droneAction() throws Exception;
+	protected abstract void droneAction();
 
 	protected final boolean move(Point p) throws InterruptedException, IOException {
 		if (p==null || p.distance(position) > 1.21) return false;
@@ -54,8 +67,21 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 		get(template, Drone.self2map);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
-		get(new Template(new FormalTemplateField(Point.class)),Self.SELF);
+		
+		//update position in own tuple space
+		template= new Template(
+				new FormalTemplateField(Point.class)
+		);
+		get(template,Self.SELF);
 		put(new Tuple(this.position),Self.SELF);
+		
+		//update next position in own tuple space
+		template= new Template(
+				new ActualTemplateField ("next_move"),
+				new FormalTemplateField(Point.class)
+		);
+		Tuple tup=getp(template);
+		putNextMoveInTupleSpace();
 		return true;
 	}
 	

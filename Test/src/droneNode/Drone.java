@@ -46,9 +46,6 @@ public class Drone extends Node {
 		map.put(new Tuple(AI.type, p.x, p.y, AI.id));
 		this.put(new Tuple(p),Self.SELF);
 		
-		// For UI Only
-		addAttribute(new Attribute("AI", AI));
-		
 		// Go!
 		start();
 	}
