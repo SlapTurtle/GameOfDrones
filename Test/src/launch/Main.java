@@ -18,7 +18,6 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	//Map generate
-//	static final String seed = "yourseed";
 	static final String seed = UUID.randomUUID().toString();
 	
 	//Base
@@ -28,7 +27,7 @@ public class Main {
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 100; //will exceed due to computing power at some point
+	static final int minDelay = 300; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException, IOException{
