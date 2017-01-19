@@ -43,9 +43,15 @@ public class Console implements Runnable {
 		Tuple go = new Tuple("go");
 		Tuple goMM = new Tuple("goMM");
 		
+		Long t = System.currentTimeMillis();
 		Thread gt, dt;
 		while(true) {
-			Long t = System.currentTimeMillis();
+			if(displayTime){
+				System.out.println("Time: "+(System.currentTimeMillis() - t));
+				System.out.println("Seed: "+seed);
+			}
+			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+			t = System.currentTimeMillis();
 			gt = new Thread(() -> {
 				try {
 					//puts go for MapMerger
@@ -83,9 +89,6 @@ public class Console implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			if(displayTime) System.out.println("Time: "+(System.currentTimeMillis() - t));
-			System.out.println(seed);
-			System.out.println("\n\n\n");
 		}
 	}
 

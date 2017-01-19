@@ -16,9 +16,8 @@ import resources.*;
 
 public class HarvestAgent extends Agent {
 	
-	LinkedList<Point> pg = new LinkedList<Point>();
-	LinkedList<Point> pt = new LinkedList<Point>();
-	Point center = new Point(0,0);
+	LinkedList<Point> pg;
+	LinkedList<Point> pt;
 	
 	public HarvestAgent() {
 		super("HarvestAgent");
