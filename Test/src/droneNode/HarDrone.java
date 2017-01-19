@@ -45,7 +45,6 @@ public class HarDrone extends AbstractDrone {
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
-		
 		if (!path.isEmpty()) {
 			if (!isPositionOccupied()){
 				return regularMove();}

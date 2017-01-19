@@ -17,6 +17,7 @@ public class Console implements Runnable {
 	Node map;
 	LinkedList<Drone> drones;
 	int delay;
+	String seed;
 	boolean displayTime;
 	
 	String[][] board;
@@ -82,7 +83,10 @@ public class Console implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			if(displayTime) System.out.println("Time: "+(System.currentTimeMillis() - t));
+			if(displayTime){
+				System.out.println("Time: "+(System.currentTimeMillis() - t));
+				System.out.println("");
+			}
 		}
 	}
 

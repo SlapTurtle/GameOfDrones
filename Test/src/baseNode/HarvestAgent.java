@@ -61,8 +61,9 @@ public class HarvestAgent extends Agent {
 		pt = quickSort(pt);
 	}
 	
-	public Point getResourcePoint(){		
+	public Point getResourcePoint(){
 		if (!pg.isEmpty()){
+			System.out.println();
 			return pg.removeFirst();
 		}
 		else if (!pt.isEmpty()){
