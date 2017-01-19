@@ -28,13 +28,13 @@ public class Main {
 	
 	
 	//Base
-	static final int exploreDrones = 3;
-	static final int harvestDrones = 2; //MAX 4 due to spawn points
+	public static final int exploreDrones = 3;
+	public static final int harvestDrones = 2; //MAX 4 due to spawn points
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 350; //will exceed due to computing power at some point
+	static final int minDelay = 300; //will exceed due to computing power at some point
 
 	public static void run() throws InterruptedException, IOException{
 		if(seed == null)

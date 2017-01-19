@@ -277,18 +277,4 @@ public class ExpDrone extends AbstractDrone {
 		LinkedList<Tuple> list = get(tp, p2p).getElementAt(LinkedList.class, 2);
 		return list;
 	}
-
-	
-
-	@Override
-	protected void getLock() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void putLock() {
-		// TODO Auto-generated method stub
-		
-	}
 }

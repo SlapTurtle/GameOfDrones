@@ -28,28 +28,17 @@ public abstract class AbstractDrone extends Agent {
 	@Override
 	protected final void doRun() throws Exception {
 		
-		//put own position in tuple space
-		try {
-			put(new Tuple(this.position),Self.SELF);
-		} catch (InterruptedException | IOException e) {
-			e.printStackTrace();
-		}
-		
 		while(true){
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				getLock();
-				if(move(moveDrone())) droneAction();
-				putLock();
+				move(moveDrone());
+				droneAction();
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	protected abstract void getLock() throws InterruptedException, IOException;
-	protected abstract void putLock() throws InterruptedException, IOException;
 	
 
 	//Main move method for drones
@@ -69,6 +58,8 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 		get(template, Drone.self2map);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
+		get(new Template(new FormalTemplateField(Point.class)), Self.SELF);
+		put(new Tuple(p), Self.SELF);
 		return true;
 	}
 	
