@@ -78,10 +78,9 @@ public abstract class AbstractDrone extends Agent {
 		//update next position in own tuple space
 		template= new Template(
 				new ActualTemplateField ("next_move"),
-				new FormalTemplateField(Point.class)
+				new FormalTemplateField(Integer.class),
+				new FormalTemplateField(Integer.class)
 		);
-		Tuple tup=getp(template);
-		putNextMoveInTupleSpace();
 		return true;
 	}
 	

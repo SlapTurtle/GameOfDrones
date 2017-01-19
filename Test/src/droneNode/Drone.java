@@ -16,12 +16,14 @@ import org.cmg.resp.topology.VirtualPortAddress;
 import baseNode.Base;
 import droneNode.AbstractDrone;
 import map.Map;
+import resources.Hardrone;
 
 public class Drone extends Node {
 	public static PointToPoint self2base;
 	public static PointToPoint self2map;
 	public static LinkedList<PointToPoint> self2drone;
 	
+	public static int count = 0;
 	public Drone(String name, String type, VirtualPort port, int port_int, Base base, Map map) throws InterruptedException, IOException {
 		// new Node(name, new TupleSpace())
 		super(name, new TupleSpace());
@@ -32,7 +34,17 @@ public class Drone extends Node {
 		self2drone.add(new PointToPoint(name, new VirtualPortAddress(port_int)));
 		
 		// Agents
-		Point p = (type == "HARDRONE") ? new Point(0,1) : new Point(0,0);
+		Point q = null;
+		if(type.equals(Hardrone.type)){
+			switch(count++){
+			default: q = new Point(0,1); break;
+			case 1: q = new Point(0,-1); break;
+			case 2: q = new Point(1,-0); break;
+			case 3: q = new Point(-1,0); break;
+			}
+		}
+		
+		Point p = (type.equals(Hardrone.type)) ? q : new Point(0,0);
 		AbstractDrone AI;
 		switch(type){
 		default: AI = null;
