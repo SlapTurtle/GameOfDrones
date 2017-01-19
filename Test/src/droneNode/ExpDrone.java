@@ -12,11 +12,10 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 
 import baseNode.MapMerger;
-import resources.Empty; 
+import resources.Empty;
+import resources.Expdrone; 
 
 public class ExpDrone extends AbstractDrone {
-	public static final String type = "EXPDRONE";
-	public static int DroneCounter = 0;
 	
 	protected Point radiusPoint;
 	protected boolean returnToBase;
@@ -24,8 +23,8 @@ public class ExpDrone extends AbstractDrone {
 	private boolean returnToCirculation;
 	int radius;
 	
-	public ExpDrone(Point position) {
-		super(position, type, type + DroneCounter++);
+	public ExpDrone(Point position, String name) {
+		super(position, Expdrone.type, name);
 		radius = 0;
 		radiusPoint = new Point(radius, 0);
 		returnToBase = false;

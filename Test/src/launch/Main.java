@@ -7,6 +7,8 @@ import org.cmg.resp.topology.VirtualPort;
 import baseNode.*;
 import droneNode.*;
 import map.*;
+import resources.Expdrone;
+import resources.Hardrone;
 import userInterface.*;
 
 public class Main {
@@ -23,7 +25,7 @@ public class Main {
 	
 	//Base
 	static final int exploreDrones = 2;
-	static final int harvestDrones = 4;
+	static final int harvestDrones = 2;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
@@ -41,8 +43,8 @@ public class Main {
 		//Drones
 		LinkedList<Drone> drones = new LinkedList<Drone>();
 		
-		for(int i = 0; i<exploreDrones + harvestDrones; i++){
-			String type = (i < exploreDrones) ? ExpDrone.type : HarDrone.type;
+		for(int i = 0; i < exploreDrones + harvestDrones; i++){
+			String type = (i < exploreDrones) ? Expdrone.type : Hardrone.type;
 			Drone droneNode = new Drone(droneID+i, type, port, port_int, base, map);
 			drones.add(droneNode);
 		}
