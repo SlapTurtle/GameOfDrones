@@ -230,8 +230,7 @@ public class ExpDrone extends AbstractDrone {
 			if(tu.getElementAt(String.class, 2).equals(Empty.type)){
 				int x = tu.getElementAt(Integer.class, 0);
 				int y = tu.getElementAt(Integer.class, 1);
-				if(Math.abs(x) > range || Math.abs(y) > range){
-					
+				if(Math.abs(x) > range || Math.abs(y) > range){					
 					put(new Tuple(x,y,MapMerger.ACTION_NEW), Drone.self2base);
 				}
 			}
@@ -281,7 +280,8 @@ public class ExpDrone extends AbstractDrone {
 	}
 
 	@Override
-	protected void putNextMoveInTupleSpace() {
-		//do nothing
+	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		
 	}
 }

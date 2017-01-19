@@ -45,18 +45,16 @@ public class HarDrone extends AbstractDrone {
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
-			
-		
-		/*if (stall) return null;
-		if (slave)
-			evade();
-			*/
-		
+		System.out.println("hej");
 		if (!path.isEmpty()) {
-			if (!isPositionOccupied())
+			if (!isPositionOccupied()){
+				System.out.println("hej2");
 				return regularMove();
+			}
+			System.out.println("hej1");
 			return evade();
 		}
+		System.out.println("hej0");
 		getNewMoves();//drone is at base and it needs new moves
 		return null;	
 	}
@@ -137,17 +135,7 @@ public class HarDrone extends AbstractDrone {
 	}
 
 	private boolean isPositionOccupied() throws InterruptedException, IOException {
-		put(new Tuple(path.get(0),super.id),Drone.self2base);
-		
-		Template t= new Template(
-				new FormalTemplateField(Integer.class),
-				new FormalTemplateField(String.class)
-		);
-		
-		Tuple tup=get(t,Drone.self2base);
-		int answer=(Integer) tup.getElementAt(0);
-		if (answer==1) return true;
-		return false;
+		return getSinglePathable(path.get(0));
 	}
 	
 	private Point evade () throws InterruptedException, IOException {
@@ -252,17 +240,7 @@ public class HarDrone extends AbstractDrone {
 	
 	//returns true if position is pathable
 	private boolean checkPosition (int x, int y) throws InterruptedException, IOException {
-		String order="single_pathable";
-		put (new Tuple(order,super.id,x,y),Drone.self2base);
-		Template t=new Template(
-				new ActualTemplateField(order),
-				new ActualTemplateField(super.id),
-				new FormalTemplateField(Object.class)
-		);
-		Tuple tup=get(t,Drone.self2base);
-		int answer=(int) tup.getElementAt(2);
-		if (answer==1) return true; 
-		return false;
+		return getSinglePathable(new Point(x,y));
 	}
 	
 	private void increment (String material) {

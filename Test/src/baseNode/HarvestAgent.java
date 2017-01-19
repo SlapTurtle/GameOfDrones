@@ -1,7 +1,6 @@
 package baseNode;
 
 import java.awt.Point;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -12,15 +11,13 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
-import droneNode.Drone;
-import resources.Hardrone;
+import resources.*;
 
 public class HarvestAgent extends Agent {
 	
 	LinkedList<Point> pg = new LinkedList<Point>();
 	LinkedList<Point> pt = new LinkedList<Point>();
 	Point center = new Point(0,0);
-	
 	
 	public HarvestAgent() {
 		super("HarvestAgent");
@@ -30,52 +27,21 @@ public class HarvestAgent extends Agent {
 
 	@Override
 	protected void doRun() throws Exception {
-		Template in = new Template( new ActualTemplateField("order"), new FormalTemplateField(String.class));
-		Template positionCheck = new Template(new FormalTemplateField(Point.class), new FormalTemplateField(String.class));
-		
+		Template in = new Template(new ActualTemplateField("order"), new FormalTemplateField(String.class));
 		while(true){
-			//using tuples to communicate position of next resource the harvest should gather
-			Tuple tu = getp(in);
-			if (tu!=null) {
-				String id = tu.getElementAt(String.class, 1);
-				order(id);
+			Tuple tu = get(in, Self.SELF);
+			String order = tu.getElementAt(String.class, 0);
+			String id = tu.getElementAt(String.class, 1);
+			switch(id) {
+			case Gold.type: increaseCounter(id); 
+			case Tree.type: increaseCounter(id);
+			default: put(new Tuple(order, id, getResourcePoint()),Self.SELF); break;
 			}
-			
-			//using tuples to communicate to drone if another drone is at requested position
-			tu=getp(positionCheck);
-			if (tu!=null) {
-				Point p=(Point) tu.getElementAt(0);
-				String id = tu.getElementAt(String.class, 1);
-				positionCheck(p,id);
-			}
-			
-			
 		}
 	}
-	private void positionCheck(Point p, String id) throws InterruptedException, IOException {
-		Template t = new Template(
-				new ActualTemplateField(Hardrone.type),
-				new ActualTemplateField(p.x),
-				new ActualTemplateField(p.y),
-				new FormalTemplateField(String.class)
-		);
-		
-		Tuple in = queryp(t);
-		
-		int droneAtPosition;
-		if (in==null) droneAtPosition=0;
-		else droneAtPosition=1;
-		put(new Tuple(droneAtPosition, id),Self.SELF);
-	}
 	
-	private Point getOpponentNextMove(Point p) {
+	private void increaseCounter(String type){
 		
-		return null;
-	}
-
-	
-	private void order(String id) throws InterruptedException, IOException {
-		put(new Tuple("order", id, getResourcePoint()),Self.SELF);
 	}
 	
 	private void getResources(){
@@ -95,9 +61,8 @@ public class HarvestAgent extends Agent {
 		pt = quickSort(pt);
 	}
 	
-	public Point getResourcePoint(){
+	public Point getResourcePoint(){		
 		if (!pg.isEmpty()){
-			System.out.println();
 			return pg.removeFirst();
 		}
 		else if (!pt.isEmpty()){
