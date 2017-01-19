@@ -1,6 +1,7 @@
 package baseNode;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -19,7 +20,6 @@ public class HarvestAgent extends Agent {
 	LinkedList<Point> pt = new LinkedList<Point>();
 	Point center = new Point(0,0);
 	
-	
 	public HarvestAgent() {
 		super("HarvestAgent");
 		pg = new LinkedList<Point>();
@@ -33,16 +33,8 @@ public class HarvestAgent extends Agent {
 			Tuple tu = get(in, Self.SELF);
 			String order = tu.getElementAt(String.class, 0);
 			String id = tu.getElementAt(String.class, 1);
-			switch(id) {
-			case Gold.type: increaseCounter(id); 
-			case Tree.type: increaseCounter(id);
-			default: put(new Tuple(order, id, getResourcePoint()),Self.SELF); break;
-			}
+			put(new Tuple(order, id, getResourcePoint()),Self.SELF);
 		}
-	}
-	
-	private void increaseCounter(String type){
-		
 	}
 	
 	private void getResources(){
@@ -62,15 +54,25 @@ public class HarvestAgent extends Agent {
 		pt = quickSort(pt);
 	}
 	
-	public Point getResourcePoint(){		
-		if (!pg.isEmpty()){
-			return pg.removeFirst();
+	public Point getResourcePoint() throws InterruptedException, IOException{		
+		if (pg.size() != 0){
+			Point p =  pg.removeFirst();
+			markResource(p);
+			return p;
 		}
-		else if (!pt.isEmpty()){
-			return pt.removeFirst();
+		else if (pt.size() != 0){
+			Point p =  pt.removeFirst();
+			markResource(p);
+			return p;
 		}	
 		getResources();
 		return null;
+	}
+	
+	private void markResource(Point p) throws InterruptedException, IOException{
+		Template t = new Template(new FormalTemplateField(String.class), new ActualTemplateField(p.x), new ActualTemplateField(p.y));
+		Tuple tu = get(t, Self.SELF);
+		put(new Tuple(tu.getElementAt(0), tu.getElementAt(1), tu.getElementAt(2), 0), Self.SELF);
 	}
 	
 	
