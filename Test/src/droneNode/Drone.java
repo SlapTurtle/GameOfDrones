@@ -16,6 +16,7 @@ import org.cmg.resp.topology.VirtualPortAddress;
 import baseNode.Base;
 import droneNode.AbstractDrone;
 import map.Map;
+import resources.Expdrone;
 import resources.Hardrone;
 
 public class Drone extends Node {
@@ -48,8 +49,8 @@ public class Drone extends Node {
 		AbstractDrone AI;
 		switch(type){
 		default: AI = null;
-		case "HARDRONE": AI = new HarDrone(p); break;
-		case "EXPDRONE": AI = new ExpDrone(p); break;
+		case Hardrone.type: AI = new HarDrone(p, name); break;
+		case Expdrone.type: AI = new ExpDrone(p, name); break;
 		}
 		addAgent(AI);
 		

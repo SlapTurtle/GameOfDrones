@@ -34,6 +34,11 @@ public class UserInterfaceAgent extends Agent {
 				new FormalTemplateField(String.class),
 				new FormalTemplateField(Integer.class),
 				new FormalTemplateField(Integer.class));
+		Template tt = new Template(
+				new FormalTemplateField(String.class),
+				new FormalTemplateField(Integer.class),
+				new FormalTemplateField(Integer.class),
+				new FormalTemplateField(Integer.class));
 		Template td = new Template(
 				new FormalTemplateField(String.class),
 				new FormalTemplateField(Integer.class),
@@ -79,6 +84,14 @@ public class UserInterfaceAgent extends Agent {
 		}
 		//add all resources
 		list = queryAll(tr);
+		for(Tuple tu : list){
+			String str = tu.getElementAt(String.class, 0);
+			int x = tu.getElementAt(Integer.class, 1);
+			int y = tu.getElementAt(Integer.class, 2);
+			board[x-bounds[1]][y-bounds[3]] = str;
+		}
+		//add more resources
+		list = queryAll(tt);
 		for(Tuple tu : list){
 			String str = tu.getElementAt(String.class, 0);
 			int x = tu.getElementAt(Integer.class, 1);

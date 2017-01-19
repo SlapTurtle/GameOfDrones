@@ -1,6 +1,7 @@
 package util;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -13,6 +14,7 @@ import org.cmg.resp.knowledge.Template;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
+import baseNode.MapMerger;
 import map.Map;
 import resources.Hardrone;
 import resources.Empty;
@@ -55,13 +57,14 @@ public class Retriever extends Agent {
 	private int getSinglePathable(int x, int y) {
 		boolean b = false;
 		Tuple res = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));
+		Tuple res2 = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyInteger));
 		Tuple dro = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyString));
 		if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
+			(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0)))	&&
 			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
 				b = true;
 			}
-		if (b) return 1;
-		return 0;
+		return (b) ? 1:0 ;
 	}
 
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
@@ -98,7 +101,7 @@ public class Retriever extends Agent {
 		return re;
 	}
 	
-	private LinkedList<Point> getPathableNeighbours(int x0, int y0) {
+	private LinkedList<Point> getPathableNeighbours(int x0, int y0) throws InterruptedException, IOException {
 		LinkedList<Point> re= new LinkedList<Point>();
 		
 		LinkedList<Tuple> listres = queryAll(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));		
@@ -111,6 +114,16 @@ public class Retriever extends Agent {
 				itres.remove();
 			}
 		}
+		LinkedList<Tuple> listres2 = queryAll(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyInteger));		
+		Iterator<Tuple> itres2 = listres2.iterator();
+		while(itres2.hasNext()){
+			Tuple tu = itres2.next();
+			int x = tu.getElementAt(Integer.class, 1);
+			int y = tu.getElementAt(Integer.class, 2);
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0) || (y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+				itres2.remove();
+			}
+		}
 		LinkedList<Tuple> listdrone = queryAll(new Template(new ActualTemplateField(Hardrone.type), Map.AnyInteger, Map.AnyInteger, Map.AnyString));
 		Iterator<Tuple> itdrone = listdrone.iterator();
 		while(itdrone.hasNext()){
@@ -121,6 +134,8 @@ public class Retriever extends Agent {
 				itdrone.remove();
 			}
 		}
+		
+		int range = query(new Template(new ActualTemplateField(MapMerger.MAP_EDGE), new FormalTemplateField(Integer.class)),Self.SELF).getElementAt(Integer.class, 1);
 		for(int i = 0; i<4; i++){
 			int dx,dy;
 			switch(i){
@@ -129,21 +144,37 @@ public class Retriever extends Agent {
 			case 2: dx = 0; dy = 1; break;
 			case 3: dx = 0; dy = -1; break;
 			}
-			Tuple res = null;
-			for(Tuple t : listres){
-				if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
-					res = t;
+			Tuple tu = queryp(new Template(new ActualTemplateField(x0+dx), new ActualTemplateField(y0+dy), Map.AnyString));
+			if(tu != null || ((Math.abs(y0+dy) <= range) && (Math.abs(x0+dx) <= range))){
+				Tuple res = null;
+				for(Tuple t : listres){
+					if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+						res = t;
+					}
 				}
-			}
-			Tuple dro = null;
-			for(Tuple t : listdrone){
-				if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
-					dro = t;
+				Tuple res2 = null;
+				for(Tuple t : listres2){
+					if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+						res2 = t;
+					}
 				}
-			}
-			if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
-				(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) 	){
-				re.add(new Point(x0+dx,y0+dy));
+				Tuple dro = null;
+				for(Tuple t : listdrone){
+					if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+						dro = t;
+					}
+				}
+				Tuple exp = null;
+				for(Tuple t : listdrone){
+					if(x0 + dx == t.getElementAt(Integer.class, 1) && (y0 + dy == t.getElementAt(Integer.class, 2))){
+						dro = t;
+					}
+				}
+				if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
+					(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0)))	&&
+					(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) 	){
+					re.add(new Point(x0+dx,y0+dy));
+				}
 			}
 		}
 		return re;

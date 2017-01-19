@@ -7,6 +7,8 @@ import org.cmg.resp.topology.VirtualPort;
 import baseNode.*;
 import droneNode.*;
 import map.*;
+import resources.Expdrone;
+import resources.Hardrone;
 import userInterface.*;
 
 public class Main {
@@ -18,6 +20,7 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	//Map generate
+//	static final String seed = "yourseed";
 	static final String seed = UUID.randomUUID().toString();
 	
 	//Base
@@ -27,7 +30,7 @@ public class Main {
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 300; //will exceed due to computing power at some point
+	static final int minDelay = 500; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException, IOException{
@@ -40,14 +43,14 @@ public class Main {
 		//Drones
 		LinkedList<Drone> drones = new LinkedList<Drone>();
 		
-		for(int i = 0; i<exploreDrones + harvestDrones; i++){
-			String type = (i < exploreDrones) ? ExpDrone.type : HarDrone.type;
+		for(int i = 0; i < exploreDrones + harvestDrones; i++){
+			String type = (i < exploreDrones) ? Expdrone.type : Hardrone.type;
 			Drone droneNode = new Drone(droneID+i, type, port, port_int, base, map);
 			drones.add(droneNode);
 		}
 		
 		//UI
-		new Console(base, map, drones, minDelay, displayTime);
+		new Console(base, map, drones, minDelay, seed, displayTime);
 		
 		
 	}
