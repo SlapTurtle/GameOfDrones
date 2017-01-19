@@ -57,7 +57,8 @@ public class HarDrone extends AbstractDrone {
 		Template t = new Template(
 				new FormalTemplateField(String.class),
 				new ActualTemplateField(resourcePoint.x),
-				new ActualTemplateField(resourcePoint.y)
+				new ActualTemplateField(resourcePoint.y),
+				new FormalTemplateField(Integer.class)
 		);
 		if (super.position.equals(resourcePoint)) { //if drone is at same position as resourcer
 			try {

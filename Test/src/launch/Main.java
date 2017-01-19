@@ -25,12 +25,12 @@ public class Main {
 	
 	//Base
 	static final int exploreDrones = 2;
-	static final int harvestDrones = 2;
+	static final int harvestDrones = 4;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 100; //will exceed due to computing power at some point
+	static final int minDelay = 500; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException, IOException{
@@ -50,7 +50,7 @@ public class Main {
 		}
 		
 		//UI
-		new Console(base, map, drones, minDelay, displayTime);
+		new Console(base, map, drones, minDelay, seed, displayTime);
 		
 		
 	}

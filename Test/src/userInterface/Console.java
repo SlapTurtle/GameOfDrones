@@ -17,16 +17,18 @@ public class Console implements Runnable {
 	Node map;
 	LinkedList<Drone> drones;
 	int delay;
+	String seed;
 	boolean displayTime;
 	
 	String[][] board;
 	UserInterfaceAgent UserInterfaceAgentBase;
 
-	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, boolean displayTime) {
+	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, String seed, boolean displayTime) {
 		this.base = base;
 		this.map = map;
 		this.drones = drones;
 		this.delay = delay;
+		this.seed = seed;
 		this.displayTime = displayTime;
 		
 		UserInterfaceAgentBase = new UserInterfaceAgent();
@@ -82,6 +84,7 @@ public class Console implements Runnable {
 				e.printStackTrace();
 			}
 			if(displayTime) System.out.println("Time: "+(System.currentTimeMillis() - t));
+			System.out.println(seed);
 			System.out.println("\n\n\n");
 		}
 	}
@@ -97,7 +100,7 @@ public class Console implements Runnable {
 		
 		for (int y = 0; y < b2; y++) {
 			for (int x = 0; x < b1; x++) {
-				char c = 'X';
+				char c = '+';
 				if(board[x][y] != null) {
 					switch (board[x][y]) {
 					case "BASE": c = 'B'; break;
@@ -107,7 +110,7 @@ public class Console implements Runnable {
 					case "HARDRONE": c = 'H'; break;
 					case "TREE": c = 'T'; break;
 					case "WATER": c = 'W'; break;
-					case "EMPTY": c = '.'; break;
+					case "EMPTY": c = ' '; break;
 					default: 	 c = '?'; break;
 					}
 				}
