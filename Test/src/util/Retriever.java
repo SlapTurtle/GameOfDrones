@@ -184,7 +184,7 @@ public class Retriever extends Agent {
 			if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))		&&
 				(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0)))	&&
 				(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) 	&&
-				(exp != null || (Math.abs(x0 + dx) <= range && Math.abs(y0 + dy) <= range))				){
+				(exp != null || (Math.abs(x0 + dx) <= range && Math.abs(y0 + dy) <= range))	){
 				re.add(new Point(x0+dx,y0+dy));
 			}
 		}

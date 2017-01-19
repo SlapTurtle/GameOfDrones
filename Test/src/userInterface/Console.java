@@ -10,6 +10,7 @@ import org.cmg.resp.knowledge.Tuple;
 
 import baseNode.*;
 import droneNode.*;
+import map.Map;
 
 public class Console implements Runnable {
 	
@@ -18,18 +19,16 @@ public class Console implements Runnable {
 	LinkedList<Drone> drones;
 	int delay;
 	String seed;
-	boolean displayTime;
 	
 	String[][] board;
 	UserInterfaceAgent UserInterfaceAgentBase;
 
-	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, String seed, boolean displayTime) {
+	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, String seed) {
 		this.base = base;
 		this.map = map;
 		this.drones = drones;
 		this.delay = delay;
 		this.seed = seed;
-		this.displayTime = displayTime;
 		
 		UserInterfaceAgentBase = new UserInterfaceAgent();
 		base.addAgent(UserInterfaceAgentBase);
@@ -38,58 +37,61 @@ public class Console implements Runnable {
 	}
 
 	public void run() {
-		Template rdy = new Template(new ActualTemplateField("ready"));
-		Template rdyMM = new Template(new ActualTemplateField("readyMM"));
-		Tuple go = new Tuple("go");
-		Tuple goMM = new Tuple("goMM");
-		
-		Long t = System.currentTimeMillis();
-		Thread gt, dt;
-		while(true) {
-			if(displayTime){
-				System.out.println("Time: "+(System.currentTimeMillis() - t));
-				System.out.println("Seed: "+seed);
-			}
-			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-			t = System.currentTimeMillis();
-			gt = new Thread(() -> {
+		try{
+			Template rdy = new Template(new ActualTemplateField("ready"));
+			Template rdyMM = new Template(new ActualTemplateField("readyMM"));
+			Tuple go = new Tuple("go");
+			Tuple goMM = new Tuple("goMM");
+			
+			Long t = System.currentTimeMillis();
+			Thread gt, dt;
+			while(true) {
+				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+				System.out.print(" | Gold: "+base.query(new Template(new ActualTemplateField("GoldCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
+				System.out.print(" | Tree: "+base.query(new Template(new ActualTemplateField("TreeCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
+				//System.out.print(" | Time for 1 move: "+(System.currentTimeMillis() - t)+" ms");
+				System.out.print(" | Seed: "+seed);
+				System.out.println(" | ");
+				t = System.currentTimeMillis();		
+				gt = new Thread(() -> {
+					try {
+						//puts go for MapMerger
+						base.put(goMM);
+						base.get(rdyMM);
+						//Prints board
+						PrintString();
+						//puts go signal to all drones
+						for(Drone drone : drones){
+							drone.put(go);
+						}
+						//gets ready signal from all drones
+						for(Drone drone : drones){
+							drone.get(rdy);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+				dt = new Thread(() -> {
+					try {
+						//waits for delay
+						Thread.sleep(delay);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 				try {
-					//puts go for MapMerger
-					base.put(goMM);
-					base.get(rdyMM);
-					//Prints board
-					PrintString();
-					//puts go signal to all drones
-					for(Drone drone : drones){
-						drone.put(go);
-					}
-					//gets ready signal from all drones
-					for(Drone drone : drones){
-						drone.get(rdy);
-					}
-				} catch (Exception e) {
+					dt.start();
+					gt.start();
+					dt.join();
+					gt.join();
+					dt.stop();
+					gt.stop();
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			});
-			dt = new Thread(() -> {
-				try {
-					//waits for delay
-					Thread.sleep(delay);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-			try {
-				dt.start();
-				gt.start();
-				dt.join();
-				gt.join();
-				dt.stop();
-				gt.stop();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
-		}
+		} catch(Exception e) {}
 	}
 
 	public void PrintString() throws InterruptedException, IOException {

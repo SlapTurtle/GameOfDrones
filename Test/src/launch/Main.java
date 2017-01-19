@@ -20,20 +20,22 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	//Map generate
-//	static final String seed = "yourseed";
-	static final String seed = "d775c9dc-a559-4ea3-9bbb-2b902cbffe3e";
+	//This string can be set whatever is liked. The same seed, will always generate the same map.
+	//Leave the seed as null to randomly generate a seed.
+	static String seed = "d775c9dc-a559-4ea3-9bbb-2b902cbffe3e";
 	
 	//Base
-	static final int exploreDrones = 4;
-	static final int harvestDrones = 4; //MAX 4 due to spawn points
+	static final int exploreDrones = 3;
+	static final int harvestDrones = 2; //MAX 4 due to spawn points
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 00; //will exceed due to computing power at some point
-	static final boolean displayTime = true; //displays actual time in milliseconds.
+	static final int minDelay = 500; //will exceed due to computing power at some point
 
 	public static void run() throws InterruptedException, IOException{
+		if(seed == null)
+			seed = UUID.randomUUID().toString();
 		//Map
 		Map map = new Map(mapID, seed, port, port_int, exploreDrones);
 		
@@ -50,7 +52,7 @@ public class Main {
 		}
 		
 		//UI
-		new Console(base, map, drones, minDelay, seed, displayTime);
+		new Console(base, map, drones, minDelay, seed);
 		
 		
 	}
