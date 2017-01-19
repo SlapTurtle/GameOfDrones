@@ -12,6 +12,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.Self;
 
 public abstract class AbstractDrone extends Agent {
+	
 	public String type;
 	public String id;
 	public Point position;
@@ -21,17 +22,10 @@ public abstract class AbstractDrone extends Agent {
 		this.type = type;
 		this.id = id;
 		this.position = position;
-		
 	}
 	
 	@Override
 	protected final void doRun() throws Exception {
-		try {
-			put(new Tuple(this.position),Self.SELF);
-		} catch (InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		while(true){
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
@@ -60,14 +54,6 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 		get(template, Drone.self2map);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
-		
-		//update position in own tuple space
-		template= new Template(
-				new FormalTemplateField(Point.class)
-		);
-		get(template,Self.SELF);
-		put(new Tuple(this.position),Self.SELF);
-		
 		return true;
 	}
 	

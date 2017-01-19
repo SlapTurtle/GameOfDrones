@@ -21,12 +21,12 @@ public class Main {
 	
 	//Base
 	static final int exploreDrones = 2;
-	static final int harvestDrones = 1;
+	static final int harvestDrones = 0;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 300; //will exceed due to computing power at some point
+	static final int minDelay = 00; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException{

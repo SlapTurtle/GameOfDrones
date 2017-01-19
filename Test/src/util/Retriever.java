@@ -3,7 +3,6 @@ package util;
 import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.UUID;
 
 import org.cmg.resp.behaviour.Agent;
@@ -40,29 +39,17 @@ public class Retriever extends Agent {
 			int x = in.getElementAt(Integer.class, 2);
 			int y = in.getElementAt(Integer.class, 3);
 			
-			Object response;
+			Object responce;
 			switch(order){
-			default: response = null; break;
-			case "neighbours_explore" : response = getNeighboursExplore(x,y); break;
-			case "neighbours_all": response = getNeighbours(x,y); break;
-			case "neighbours_pathable": response = getPathableNeighbours(x,y); break;
-			case "single_pathable": response = getSinglePathable(x,y); break;
+			default: responce = null; break;
+			case "neighbours_explore" : responce = getNeighboursExplore(x,y); break;
+			 case "neighbours_all": responce = getNeighbours(x,y); break;
+			case "neighbours_pathable": responce = getPathableNeighbours(x,y); break;
 			}
-			put(new Tuple(order, id, response), Self.SELF);			
+			put(new Tuple(order, id, responce), Self.SELF);			
 		}
 	}	
 	
-	private Object getSinglePathable(int x, int y) {
-		boolean b = false;
-		Tuple res = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));
-		Tuple dro = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyString));
-		if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
-			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
-				b = true;
-			}
-		return new Integer( (b) ? 1 : 0 );
-	}
-
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {
 		LinkedList<Tuple> re = new LinkedList<Tuple>();
 		LinkedList<Tuple> list = new LinkedList<Tuple>();
@@ -106,7 +93,7 @@ public class Retriever extends Agent {
 			Tuple tu = itres.next();
 			int x = tu.getElementAt(Integer.class, 1);
 			int y = tu.getElementAt(Integer.class, 2);
-			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0) || (y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
 				itres.remove();
 			}
 		}
@@ -116,7 +103,7 @@ public class Retriever extends Agent {
 			Tuple tu = itdrone.next();
 			int x = tu.getElementAt(Integer.class, 1);
 			int y = tu.getElementAt(Integer.class, 2);
-			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0) || (y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
+			if(!((x == x0+1 && y == y0) || (x == x0-1 && y == y0)) || !((y == y0+1 && x == x0) || (y == y0-1 && x == x0))){
 				itdrone.remove();
 			}
 		}
