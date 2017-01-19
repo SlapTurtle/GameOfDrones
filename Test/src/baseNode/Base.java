@@ -40,6 +40,7 @@ public class Base extends Node {
 		put(new Tuple("ExpDroneCounter", exploreDrones));
 		put(new Tuple("HarDroneCounter", harvestDrones));
 		put(new Tuple("mapEdge", 0));
+		put(new Tuple("lock","droneNode"+exploreDrones));
 		
 		// Adds initially explored tiles
 		for (int y = -1; y <= +1; y++) {

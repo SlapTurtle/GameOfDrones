@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import javax.print.StreamPrintService;
-
 import org.cmg.resp.knowledge.ActualTemplateField;
 import org.cmg.resp.knowledge.FormalTemplateField;
 import org.cmg.resp.knowledge.Template;
@@ -17,30 +15,31 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
+import launch.Main;
 import util.AStarPoint;
 
 import resources.*;
 
 public class HarDrone extends AbstractDrone {
-	
+	private static int lockCounter;
 	LinkedList<Point> path;
 	Point resourcePoint;
-	boolean deliverResource;
-	boolean slave;
-	boolean stall;
+	private boolean deliverResource;
 	
 	public HarDrone(Point position, String id) throws InterruptedException, IOException {
 		super(position, Hardrone.type, id);
 		path = new LinkedList<Point>();
 		deliverResource=false;
-		slave=false;
-		stall=false;
+		lockCounter=0;
+		System.out.println(id);
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{		
+		
 		if (!path.isEmpty()) {
-			if (!isPositionOccupied()) return regularMove();
+			if (!isADroneAtNextPosition())
+				return returns(regularMove());
 			return returns(evade());
 		}
 		getNewMoves();
@@ -54,12 +53,12 @@ public class HarDrone extends AbstractDrone {
 	
 	@Override
 	protected void droneAction() throws InterruptedException, IOException {
-		if(resourcePoint != null){
-			harvest();
-		}
+		harvest();
+		//update next position in own tuple space
+		Tuple tup = getp(new Template(new ActualTemplateField ("next_move"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class)));
+		
 	}
-	
-	private void harvest() throws InterruptedException, IOException {
+	protected void harvest() throws InterruptedException, IOException {
 		Template t = new Template(
 				new FormalTemplateField(String.class),
 				new ActualTemplateField(resourcePoint.x),
@@ -67,17 +66,45 @@ public class HarDrone extends AbstractDrone {
 				new FormalTemplateField(Integer.class)
 		);
 		if (super.position.equals(resourcePoint)) { //if drone is at same position as resourcer
-			put(get(t,Drone.self2base),Self.SELF);
+			try {
+				Tuple tup=get(t,Drone.self2base);
+				put(tup,Self.SELF);
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(deliverResource) { //if drone is beside base and it just came home from collecting resource
-			Tuple tup = get(t,Self.SELF);
-			String resource=(String) tup.getElementAt(0);
-			switch (resource) {
-			case Gold.type: incrementGold(); break;
-			case Tree.type: incrementTree(); break;
+			try {
+				Tuple tup = get(t,Self.SELF);
+				String resource=(String) tup.getElementAt(0);
+				switch (resource) {
+				case Gold.type: incrementGold(); break;
+				case Tree.type: incrementTree(); break;
+				}
+			} catch (InterruptedException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			deliverResource=false;
 		}
+	}
+	
+	//returns true if there is a drone at position
+	//returns false if position is available
+	private boolean isADroneAtNextPosition () throws InterruptedException, IOException {
+		Point p=path.getFirst();
+		put(new Tuple("drone_at_position",id, p.x, p.y), Drone.self2base);
+		
+		Template tp = new Template(new ActualTemplateField("drone_at_position"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
+		
+		Tuple tu = get(tp, Drone.self2base);
+		int answer=tu.getElementAt(Integer.class, 2);
+		
+		if (answer==1) {
+			return true;
+		}
+		return false;
 	}
 	
 	private Point regularMove() {
@@ -86,6 +113,7 @@ public class HarDrone extends AbstractDrone {
 		return p;
 	}
 	
+	//TODO handling exception: what to do?
 	private void getNewMoves(){
 			Point target=null;
 			ArrayList<Point> moves=null;
@@ -101,7 +129,6 @@ public class HarDrone extends AbstractDrone {
 			
 			//way out
 			path.addAll(moves);
-			
 			//omit start position (already here)
 			path.remove();
 			
@@ -116,10 +143,6 @@ public class HarDrone extends AbstractDrone {
 			
 			//way home
 			path.addAll(moves);
-	}
-
-	private boolean isPositionOccupied() throws InterruptedException, IOException {
-		return !getSinglePathable(path.get(0));
 	}
 	
 	private Point evade () throws InterruptedException, IOException {
@@ -141,6 +164,7 @@ public class HarDrone extends AbstractDrone {
 	
 	private Point getOpponentMovePosition() throws InterruptedException, IOException {
 		Point opponentPosition;
+		Point opponentNextMoveposition;
 		
 		for (PointToPoint ptp: Drone.self2drone) {
 			opponentPosition=getOpponentPosition(ptp);
@@ -238,7 +262,8 @@ public class HarDrone extends AbstractDrone {
 		);
 		try {
 			Tuple tup=get(t,Drone.self2base);
-			int resourceCounter=(Integer) tup.getElementAt(1) + 1;
+			int resourceCounter=(Integer) tup.getElementAt(1);
+			System.out.println("Updated base resources. Before " + material + ": " + resourceCounter + " now " + material + ": " + (++resourceCounter));
 			put(new Tuple(tup.getElementAt(0), resourceCounter ),Drone.self2base);
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
@@ -254,17 +279,33 @@ public class HarDrone extends AbstractDrone {
 		increment("TreeCounter");
 	}
 	
-	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
-		getAll(new Template(new ActualTemplateField ("next_move"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class)));
-		try {
-			Point p=path.getFirst();
-			put(new Tuple("next_move",p.x, p.y),Self.SELF);
-		} catch (NoSuchElementException e) {
-			put(new Tuple("next_move",position.x, position.y),Self.SELF);
-		}
+	private void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+		//update position in own tuple space
+		Template t= new Template(
+				new FormalTemplateField(Point.class)
+		);
 		
+		getp(t);
+		put(new Tuple(this.position),Self.SELF);
+		
+		t= new Template(
+				new ActualTemplateField("next_move"),
+				new FormalTemplateField(int.class),
+				new FormalTemplateField(int.class)
+		);
+		
+		getp(t);
+		
+		Point p=null;
+		try {
+			p=path.getFirst();
+		} catch (NoSuchElementException e) {
+		}
+		if (p!=null) {
+			put(new Tuple("next_move",p.x, p.y),Self.SELF);
+		}
 	}
-
+	//help functions
 	
 	private Point getNewTarget() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));
@@ -273,12 +314,15 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(Point.class, 2);
 	}
 	
+	//if pathable = 1 we can move to this: return true
+	//if pathable != 1 (=0) we can't move to this: return false
 	private boolean getSinglePathable(Point p) throws InterruptedException, IOException{
-		if(p.equals(resourcePoint)) return true;
 		Template tp = new Template(new ActualTemplateField("single_pathable"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
 		put(new Tuple("single_pathable",id, p.x, p.y), Drone.self2base);
 		Tuple tu = get(tp, Drone.self2base);
-		return (tu.getElementAt(Integer.class, 2) == 1) ;
+		int answer=(int) tu.getElementAt(2);
+		if (answer==1) return true;
+		return false;
 	}
 	
 	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
@@ -371,5 +415,28 @@ public class HarDrone extends AbstractDrone {
 			path.add(0,current);
 		}
 		return AStarPoint.convertToPointList(path);
+	}
+
+	@Override
+	protected void getLock() throws InterruptedException, IOException {
+		if (super.id.equals("droneNode2")) {
+			System.out.println("..");
+		}
+		
+		Template t=new Template(
+				new ActualTemplateField("lock"),
+				new ActualTemplateField(super.id)
+		);
+		get(t,Drone.self2base);
+	}
+
+	@Override
+	protected void putLock() throws InterruptedException, IOException {
+		//4: number of har drones
+		//2: number of exp drones
+		//make sure initial lock put is equal to first number of har drone (equal to number of exp drones)
+		HarDrone.lockCounter++;
+		Tuple lock=new Tuple("lock","droneNode"+((lockCounter%Main.harvestDrones)+Main.exploreDrones));
+		put(lock,Drone.self2base);
 	}
 }
