@@ -21,28 +21,15 @@ public abstract class AbstractDrone extends Agent {
 		this.type = type;
 		this.id = id;
 		this.position = position;
-		
 	}
-	
-	protected abstract void putNextMoveInTupleSpace() throws InterruptedException, IOException;
 	
 	@Override
 	protected final void doRun() throws Exception {
-		
-		//put own position in tuple space
-		try {
-			put(new Tuple(this.position),Self.SELF);
-		} catch (InterruptedException | IOException e) {
-			e.printStackTrace();
-		}
-		
-		//put next position in tuple space //this should always be null since a star algorithm has not run yet
-		putNextMoveInTupleSpace();
-		
 		while(true){
 			try {
 				get(new Template(new ActualTemplateField("go")), Self.SELF);
-				if(move(moveDrone())) droneAction();
+				move(moveDrone());
+				droneAction();
 				put(new Tuple("ready"),Self.SELF);
 			} catch (Exception e){
 				e.printStackTrace();
@@ -69,18 +56,8 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
 		
 		//update position in own tuple space
-		template= new Template(
-				new FormalTemplateField(Point.class)
-		);
-		get(template,Self.SELF);
+		get(new Template(new FormalTemplateField(Point.class)),Self.SELF);
 		put(new Tuple(this.position),Self.SELF);
-		
-		//update next position in own tuple space
-		template= new Template(
-				new ActualTemplateField ("next_move"),
-				new FormalTemplateField(Integer.class),
-				new FormalTemplateField(Integer.class)
-		);
 		return true;
 	}
 	

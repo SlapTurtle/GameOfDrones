@@ -21,16 +21,16 @@ public class Main {
 	
 	//Map generate
 //	static final String seed = "yourseed";
-	static final String seed = UUID.randomUUID().toString();
+	static final String seed = "d775c9dc-a559-4ea3-9bbb-2b902cbffe3e";
 	
 	//Base
-	static final int exploreDrones = 2;
-	static final int harvestDrones = 4;
+	static final int exploreDrones = 4;
+	static final int harvestDrones = 4; //MAX 4 due to spawn points
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 500; //will exceed due to computing power at some point
+	static final int minDelay = 00; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
 	public static void run() throws InterruptedException, IOException{

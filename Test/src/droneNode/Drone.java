@@ -54,6 +54,10 @@ public class Drone extends Node {
 		}
 		addAgent(AI);
 		
+		if(AI.type.equals(Hardrone.type)){
+			this.put(new Tuple("next_move", p.x, p.y), Self.SELF);
+		}
+		
 		// Add initial Location to Base
 		base.put(new Tuple(AI.type, p.x, p.y, AI.id));
 		map.put(new Tuple(AI.type, p.x, p.y, AI.id));
