@@ -65,8 +65,11 @@ public class HarDrone extends AbstractDrone {
 	}
 	
 	@Override
-	protected void droneAction() {
+	protected void droneAction() throws InterruptedException, IOException {
 		harvest();
+		//update next position in own tuple space
+		Tuple tup = get(new Template(new ActualTemplateField ("next_move"), new FormalTemplateField(Point.class)),Self.SELF);
+		putNextMoveInTupleSpace();
 	}
 	protected void harvest() {
 		Template t = new Template(

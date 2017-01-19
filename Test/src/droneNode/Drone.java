@@ -1,6 +1,7 @@
 package droneNode;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.cmg.resp.comp.Node;
@@ -8,6 +9,7 @@ import org.cmg.resp.knowledge.Attribute;
 import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.knowledge.ts.TupleSpace;
 import org.cmg.resp.topology.PointToPoint;
+import org.cmg.resp.topology.Self;
 import org.cmg.resp.topology.VirtualPort;
 import org.cmg.resp.topology.VirtualPortAddress;
 
@@ -20,7 +22,7 @@ public class Drone extends Node {
 	public static PointToPoint self2map;
 	public static LinkedList<PointToPoint> self2drone;
 	
-	public Drone(String name, String type, VirtualPort port, int port_int, Base base, Map map) {
+	public Drone(String name, String type, VirtualPort port, int port_int, Base base, Map map) throws InterruptedException, IOException {
 		// new Node(name, new TupleSpace())
 		super(name, new TupleSpace());
 		
@@ -42,6 +44,7 @@ public class Drone extends Node {
 		// Add initial Location to Base
 		base.put(new Tuple(AI.type, p.x, p.y, AI.id));
 		map.put(new Tuple(AI.type, p.x, p.y, AI.id));
+		this.put(new Tuple(p),Self.SELF);
 		
 		// For UI Only
 		addAttribute(new Attribute("AI", AI));
