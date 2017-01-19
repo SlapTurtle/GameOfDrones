@@ -23,7 +23,7 @@ public class Main {
 	
 	//Base
 	static final int exploreDrones = 2;
-	static final int harvestDrones = 0;
+	static final int harvestDrones = 1;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
