@@ -20,23 +20,22 @@ import util.AStarPoint;
 import resources.*;
 
 public class HarDrone extends AbstractDrone {
-	
+	private static int lockCounter;
 	LinkedList<Point> path;
 	Point resourcePoint;
-	boolean deliverResource;
-	boolean slave;
-	boolean stall;
+	private boolean deliverResource;
 	
 	public HarDrone(Point position, String id) throws InterruptedException, IOException {
 		super(position, Hardrone.type, id);
 		path = new LinkedList<Point>();
 		deliverResource=false;
-		slave=false;
-		stall=false;
+		lockCounter=0;
+		System.out.println(id);
 	}
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{		
+		
 		if (!path.isEmpty()) {
 			if (!isADroneAtNextPosition())
 				return returns(regularMove());
@@ -279,7 +278,7 @@ public class HarDrone extends AbstractDrone {
 		increment("TreeCounter");
 	}
 	
-	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+	private void putNextMoveInTupleSpace() throws InterruptedException, IOException {
 		//update position in own tuple space
 		Template t= new Template(
 				new FormalTemplateField(Point.class)
@@ -415,5 +414,28 @@ public class HarDrone extends AbstractDrone {
 			path.add(0,current);
 		}
 		return AStarPoint.convertToPointList(path);
+	}
+
+	@Override
+	protected void getLock() throws InterruptedException, IOException {
+		if (super.id.equals("droneNode2")) {
+			System.out.println("..");
+		}
+		
+		Template t=new Template(
+				new ActualTemplateField("lock"),
+				new ActualTemplateField(super.id)
+		);
+		get(t,Drone.self2base);
+	}
+
+	@Override
+	protected void putLock() throws InterruptedException, IOException {
+		//4: number of har drones
+		//2: number of exp drones
+		//make sure initial lock put is equal to first number of har drone (equal to number of exp drones)
+		HarDrone.lockCounter++;
+		Tuple lock=new Tuple("lock","droneNode"+((lockCounter%4)+2));
+		put(lock,Drone.self2base);
 	}
 }

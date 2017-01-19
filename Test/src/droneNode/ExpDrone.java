@@ -278,8 +278,16 @@ public class ExpDrone extends AbstractDrone {
 		return list;
 	}
 
+	
+
 	@Override
-	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+	protected void getLock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void putLock() {
 		// TODO Auto-generated method stub
 		
 	}
