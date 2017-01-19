@@ -22,7 +22,7 @@ public class Console implements Runnable {
 	String[][] board;
 	UserInterfaceAgent UserInterfaceAgentBase;
 
-	public Console(Node base, Node map, LinkedList<Drone> drones, int delay, boolean displayTime) {
+	public Console(Node base, Node map, LinkedList<Drone> drones, String seed, int delay, boolean displayTime) {
 		this.base = base;
 		this.map = map;
 		this.drones = drones;
@@ -43,6 +43,7 @@ public class Console implements Runnable {
 		
 		Thread gt, dt;
 		while(true) {
+			System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 			Long t = System.currentTimeMillis();
 			gt = new Thread(() -> {
 				try {
@@ -82,7 +83,6 @@ public class Console implements Runnable {
 				e.printStackTrace();
 			}
 			if(displayTime) System.out.println("Time: "+(System.currentTimeMillis() - t));
-			System.out.println("\n\n\n");
 		}
 	}
 
@@ -97,7 +97,7 @@ public class Console implements Runnable {
 		
 		for (int y = 0; y < b2; y++) {
 			for (int x = 0; x < b1; x++) {
-				char c = 'X';
+				char c = '+';
 				if(board[x][y] != null) {
 					switch (board[x][y]) {
 					case "BASE": c = 'B'; break;
@@ -107,7 +107,7 @@ public class Console implements Runnable {
 					case "HARDRONE": c = 'H'; break;
 					case "TREE": c = 'T'; break;
 					case "WATER": c = 'W'; break;
-					case "EMPTY": c = '.'; break;
+					case "EMPTY": c = ' '; break;
 					default: 	 c = '?'; break;
 					}
 				}

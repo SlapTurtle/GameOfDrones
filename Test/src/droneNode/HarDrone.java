@@ -46,17 +46,12 @@ public class HarDrone extends AbstractDrone {
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
 		
-		/*if (stall) return null;
-		if (slave)
-			evade();
-			*/
-		
 		if (!path.isEmpty()) {
 			if (!isPositionOccupied()){
 				return regularMove();}
 			return evade();
 		}
-		getNewMoves();//drone is at base and it needs new moves
+		getNewMoves();
 		return null;	
 	}
 	
@@ -140,18 +135,6 @@ public class HarDrone extends AbstractDrone {
 
 	private boolean isPositionOccupied() throws InterruptedException, IOException {
 		return getSinglePathable(path.get(0));
-//		put(new Tuple(path.get(0),super.id),Drone.self2base);
-//		
-//		Template t= new Template(
-//				new FormalTemplateField(Integer.class),
-//				new FormalTemplateField(String.class)
-//		);
-//		System.out.println("hej9");
-//		Tuple tup=get(t,Drone.self2base);
-//		System.out.println("hej10");
-//		int answer=(Integer) tup.getElementAt(0);
-//		if (answer==1) return true;
-//		return false;
 	}
 	
 	private Point evade () throws InterruptedException, IOException {
@@ -192,9 +175,7 @@ public class HarDrone extends AbstractDrone {
 				new FormalTemplateField(Integer.class),
 				new FormalTemplateField(Integer.class)
 		);
-		System.out.println("hej3");
 		Tuple tup=query(t,ptp);
-		System.out.println("hej4");
 		return (Point) tup.getElementAt(1);
 	}
 	
