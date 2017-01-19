@@ -60,8 +60,7 @@ public class Retriever extends Agent {
 			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
 				b = true;
 			}
-		if (b) return 1;
-		return 0;
+		return (b) ? 1:0 ;
 	}
 
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {

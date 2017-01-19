@@ -1,5 +1,6 @@
 package launch;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.UUID;
 import org.cmg.resp.topology.VirtualPort;
@@ -17,19 +18,20 @@ public class Main {
 	static final String droneID = "droneNode";
 	
 	//Map generate
+//	static final String seed = "yourseed";
 	static final String seed = UUID.randomUUID().toString();
 	
 	//Base
 	static final int exploreDrones = 2;
-	static final int harvestDrones = 1;
+	static final int harvestDrones = 4;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 300; //will exceed due to computing power at some point
+	static final int minDelay = 100; //will exceed due to computing power at some point
 	static final boolean displayTime = true; //displays actual time in milliseconds.
 
-	public static void run() throws InterruptedException{
+	public static void run() throws InterruptedException, IOException{
 		//Map
 		Map map = new Map(mapID, seed, port, port_int, exploreDrones);
 		
@@ -51,7 +53,7 @@ public class Main {
 		
 	}
 
-	public static void main(String[] args) throws InterruptedException{
+	public static void main(String[] args) throws InterruptedException, IOException{
 		run();
 	}
 }
