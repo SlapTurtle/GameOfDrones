@@ -22,7 +22,10 @@ public class Main {
 	//Map generate
 	//This string can be set whatever is liked. The same seed, will always generate the same map.
 	//Leave the seed as null to randomly generate a seed.
-	static String seed = "d775c9dc-a559-4ea3-9bbb-2b902cbffe3e";
+	//static String seed = null;
+	//SUGGESTED SEED:
+	static String seed = "22c9e190-232a-4b33-ba76-022efa516fd0";
+	
 	
 	//Base
 	static final int exploreDrones = 3;
@@ -31,7 +34,7 @@ public class Main {
 	static final int startTreeCount = 0;
 	
 	//UI
-	static final int minDelay = 500; //will exceed due to computing power at some point
+	static final int minDelay = 350; //will exceed due to computing power at some point
 
 	public static void run() throws InterruptedException, IOException{
 		if(seed == null)

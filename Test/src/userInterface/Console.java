@@ -49,7 +49,7 @@ public class Console implements Runnable {
 				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 				System.out.print(" | Gold: "+base.query(new Template(new ActualTemplateField("GoldCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
 				System.out.print(" | Tree: "+base.query(new Template(new ActualTemplateField("TreeCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
-				System.out.print(" | Time for 1 move: "+(System.currentTimeMillis() - t)+" ms");
+				System.out.print(" | Time/move: "+(System.currentTimeMillis() - t)+" ms");
 				System.out.print(" | Seed: "+seed);
 				System.out.println(" | ");
 				t = System.currentTimeMillis();		
