@@ -53,7 +53,7 @@ public abstract class AbstractDrone extends Agent {
 	//Main move method for drones
 	protected abstract Point moveDrone() throws Exception;
 	//Secondary effect (harvest, explore etc.)
-	protected abstract void droneAction() throws Exception;
+	protected abstract void droneAction();
 
 	protected final boolean move(Point p) throws InterruptedException, IOException {
 		if (p==null || p.distance(position) > 1.21) return false;
@@ -78,9 +78,10 @@ public abstract class AbstractDrone extends Agent {
 		//update next position in own tuple space
 		template= new Template(
 				new ActualTemplateField ("next_move"),
-				new FormalTemplateField(Integer.class),
-				new FormalTemplateField(Integer.class)
+				new FormalTemplateField(Point.class)
 		);
+		Tuple tup=getp(template);
+		putNextMoveInTupleSpace();
 		return true;
 	}
 	

@@ -38,8 +38,10 @@ public class Console implements Runnable {
 
 	public void run() {
 		Template rdy = new Template(new ActualTemplateField("ready"));
+		Template rdyUI = new Template(new ActualTemplateField("readyUI"));
 		Template rdyMM = new Template(new ActualTemplateField("readyMM"));
 		Tuple go = new Tuple("go");
+		Tuple goUI = new Tuple("goUI");
 		Tuple goMM = new Tuple("goMM");
 		
 		Thread gt, dt;

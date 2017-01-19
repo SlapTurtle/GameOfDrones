@@ -35,7 +35,7 @@ public class HarDrone extends AbstractDrone {
 	boolean slave;
 	boolean stall;
 	
-	public HarDrone(Point position) throws InterruptedException, IOException {
+	public HarDrone(Point position) {
 		super(position, type, type + droneCounter++);
 		path = new LinkedList<Point>();
 		deliverResource=false;
@@ -45,23 +45,27 @@ public class HarDrone extends AbstractDrone {
 	
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{
+			
+		
+		/*if (stall) return null;
+		if (slave)
+			evade();
+			*/
+		
 		if (!path.isEmpty()) {
-			if (!isPositionOccupied()){
-				return regularMove();}
+			if (!isPositionOccupied())
+				return regularMove();
 			return evade();
 		}
-		getNewMoves();
+		getNewMoves();//drone is at base and it needs new moves
 		return null;	
 	}
 	
 	@Override
-	protected void droneAction() throws InterruptedException, IOException {
+	protected void droneAction() {
 		harvest();
-		//update next position in own tuple space
-		Tuple tup = getp(new Template(new ActualTemplateField ("next_move"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class)));
-		putNextMoveInTupleSpace();
 	}
-	protected void harvest() throws InterruptedException, IOException {
+	protected void harvest() {
 		Template t = new Template(
 				new FormalTemplateField(String.class),
 				new ActualTemplateField(resourcePoint.x),
@@ -89,7 +93,7 @@ public class HarDrone extends AbstractDrone {
 				e.printStackTrace();
 			}
 			deliverResource=false;
-		}
+		}	
 	}
 	
 	
@@ -133,7 +137,17 @@ public class HarDrone extends AbstractDrone {
 	}
 
 	private boolean isPositionOccupied() throws InterruptedException, IOException {
-		return getSinglePathable(path.get(0));
+		put(new Tuple(path.get(0),super.id),Drone.self2base);
+		
+		Template t= new Template(
+				new FormalTemplateField(Integer.class),
+				new FormalTemplateField(String.class)
+		);
+		
+		Tuple tup=get(t,Drone.self2base);
+		int answer=(Integer) tup.getElementAt(0);
+		if (answer==1) return true;
+		return false;
 	}
 	
 	private Point evade () throws InterruptedException, IOException {
@@ -171,8 +185,7 @@ public class HarDrone extends AbstractDrone {
 	private Point getOpponentNextMove(PointToPoint ptp) throws InterruptedException, IOException {
 		Template t= new Template(
 				new ActualTemplateField ("next_move"),
-				new FormalTemplateField(Integer.class),
-				new FormalTemplateField(Integer.class)
+				new FormalTemplateField(Point.class)
 		);
 		Tuple tup=query(t,ptp);
 		return (Point) tup.getElementAt(1);
@@ -239,7 +252,17 @@ public class HarDrone extends AbstractDrone {
 	
 	//returns true if position is pathable
 	private boolean checkPosition (int x, int y) throws InterruptedException, IOException {
-		return getSinglePathable(new Point(x,y));
+		String order="single_pathable";
+		put (new Tuple(order,super.id,x,y),Drone.self2base);
+		Template t=new Template(
+				new ActualTemplateField(order),
+				new ActualTemplateField(super.id),
+				new FormalTemplateField(Object.class)
+		);
+		Tuple tup=get(t,Drone.self2base);
+		int answer=(int) tup.getElementAt(2);
+		if (answer==1) return true; 
+		return false;
 	}
 	
 	private void increment (String material) {
@@ -269,7 +292,7 @@ public class HarDrone extends AbstractDrone {
 	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
 		try {
 			Point p=path.getFirst();
-			put(new Tuple("next_move",p.x, p.y),Self.SELF);
+			put(new Tuple("next_move",p),Self.SELF);
 		} catch (NoSuchElementException e) {
 		}
 		
@@ -285,7 +308,7 @@ public class HarDrone extends AbstractDrone {
 	
 	private boolean getSinglePathable(Point p) throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("single_pathable"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
-		put(new Tuple("single_pathable",id, p.x, p.y), Drone.self2base);
+		put(new Tuple("single_pathable",id, p.x, p.y), Drone.self2map);
 		Tuple tu = get(tp, Drone.self2base);
 		return (tu.getElementAt(Integer.class, 2) == 1) ;
 	}
