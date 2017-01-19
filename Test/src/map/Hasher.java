@@ -30,7 +30,6 @@ public class Hasher extends Agent{
 			String hash = getExpansionHash(seed, center, hashlength);
 			// RESPONSE
 			Tuple response = new Tuple("generate", world, hash);
-//			Tuple response = new Tuple(target, hash);
 			put(response, Self.SELF);
 		}
 	}

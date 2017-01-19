@@ -110,17 +110,4 @@ public class UserInterfaceAgent extends Agent {
 		board[-bounds[1]][-bounds[3]] = "BASE";
 		return board;
 	}
-	
-	public LinkedList<Tuple> queryAllTuples(boolean a, boolean b, boolean c, boolean d){
-		Template explore = new Template(Map.AnyInteger, Map.AnyInteger, Map.AnyString);
-		Template resource = new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger);
-		Template drones = new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyString);
-		Template fields = new Template(Map.AnyString, Map.AnyInteger);
-		LinkedList<Tuple> LISTALL = new LinkedList<Tuple>();
-		if(a) LISTALL.addAll(queryAll(explore));
-		if(b) LISTALL.addAll(queryAll(resource));
-		if(c) LISTALL.addAll(queryAll(drones));
-		if(d) LISTALL.addAll(queryAll(fields));
-		return LISTALL;
-	}
 }

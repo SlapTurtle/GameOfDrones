@@ -86,7 +86,6 @@ public class HarDrone extends AbstractDrone {
 		return p;
 	}
 	
-	//TODO handling exception: what to do?
 	private void getNewMoves(){
 			Point target=null;
 			ArrayList<Point> moves=null;
@@ -265,7 +264,7 @@ public class HarDrone extends AbstractDrone {
 		}
 		
 	}
-	//help functions
+
 	
 	private Point getNewTarget() throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("order"), new ActualTemplateField(id), new FormalTemplateField(Point.class));

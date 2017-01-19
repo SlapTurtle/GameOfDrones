@@ -49,7 +49,7 @@ public class Console implements Runnable {
 				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 				System.out.print(" | Gold: "+base.query(new Template(new ActualTemplateField("GoldCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
 				System.out.print(" | Tree: "+base.query(new Template(new ActualTemplateField("TreeCounter"),Map.AnyInteger)).getElementAt(Integer.class, 1));
-				//System.out.print(" | Time for 1 move: "+(System.currentTimeMillis() - t)+" ms");
+				System.out.print(" | Time for 1 move: "+(System.currentTimeMillis() - t)+" ms");
 				System.out.print(" | Seed: "+seed);
 				System.out.println(" | ");
 				t = System.currentTimeMillis();		
@@ -95,9 +95,6 @@ public class Console implements Runnable {
 	}
 
 	public void PrintString() throws InterruptedException, IOException {
-		//1=explore : 2=resource : 3=drones : 4=baseField
-		//System.out.println(UserInterfaceAgentBase.queryAllTuples(true, false, false, false));
-		//System.out.println(UserInterfaceAgentMap.queryAllTuples(false, true, false, false));
 		
 		board = UserInterfaceAgentBase.getMap();
 		int b1 = UserInterfaceAgentBase.bounds[0]-UserInterfaceAgentBase.bounds[1]+1;

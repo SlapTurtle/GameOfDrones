@@ -48,10 +48,7 @@ public class DroneListener extends Agent {
 			get(new Template(new ActualTemplateField(p.x), new ActualTemplateField(p.y), new ActualTemplateField("listen")), Self.SELF);
 			put(new Tuple(p.x, p.y, "unlisten"), Self.SELF);
 			String seed = query(new Template(new ActualTemplateField("seed"), Map.AnyString), Self.SELF).getElementAt(String.class, 1);
-//			String identifier = UUID.randomUUID().toString();
 			put(new HashRequest(p, seed, Map.EXP_HASHLENGTH, world), Self.SELF);
-//			String hash = get(new Template(new ActualTemplateField(identifier), Map.AnyString), Self.SELF).getElementAt(String.class, 1);
-//			put(new Tuple("generate", world, hash), Self.SELF);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
