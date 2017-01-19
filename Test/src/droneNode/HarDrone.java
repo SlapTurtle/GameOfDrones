@@ -316,8 +316,6 @@ public class HarDrone extends AbstractDrone {
 		return (tu.getElementAt(Integer.class, 2) == 1) ;
 	}
 	
-	//TODO what does this do?
-	//TODO Drone.self2base?: general point 2 point
 	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("neighbours_pathable"), new ActualTemplateField(id), new FormalTemplateField(LinkedList.class));
 		put(new Tuple("neighbours_pathable",id, p.x, p.y), Drone.self2base);
