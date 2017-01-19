@@ -80,7 +80,7 @@ public abstract class AbstractDrone extends Agent {
 				new ActualTemplateField ("next_move"),
 				new FormalTemplateField(Point.class)
 		);
-		Tuple tup=get(template,Self.SELF);
+		Tuple tup=getp(template);
 		putNextMoveInTupleSpace();
 		return true;
 	}
