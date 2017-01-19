@@ -48,23 +48,67 @@ public class Retriever extends Agent {
 			case "neighbours_explore" : response = getNeighboursExplore(x,y); break;
 			case "neighbours_all": response = getNeighbours(x,y); break;
 			case "neighbours_pathable": response = getPathableNeighbours(x,y); break;
-			case "single_pathable": put(new Tuple(order, id, getSinglePathable(x,y)), Self.SELF); continue;
+			case "single_pathable": temp(order,id,x,y); continue;
+			case "drone_at_position": put(new Tuple(order, id, getIsADroneAtPosition(x,y)), Self.SELF);  continue;
 			}
 			put(new Tuple(order, id, response), Self.SELF);			
 		}
-	}	
+	}
 	
-	private int getSinglePathable(int x, int y) {
+	private void temp (String order, String id, int x, int y) {
+		System.out.println("start exe"); 
+		try {
+			put(new Tuple(order, id, getSinglePathable(x,y)), Self.SELF);
+		} catch (InterruptedException | IOException e) {
+			System.out.println("put went wrong");
+		} 
+		System.out.println("end exe"); 
+		System.out.println("Order " + order + " ID" + id + " pathable " + getIsADroneAtPosition(x,y));
+	}
+	
+	//returns 1 if pathable
+	//returns 0 if not pathable
+//	private int getSinglePathable(int x, int y) {
+//		boolean b = false;
+//		Tuple res = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y)));
+//		
+//		Tuple res2 = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyInteger));
+//		
+//		Tuple dro = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyString));
+//		if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
+//			(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0)))	&&
+//			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
+//				b = true;
+//			}
+//		return (b) ? 1:0 ;
+//	}
+	
+	private int getSinglePathable(int x, int y) throws InterruptedException, IOException {
 		boolean b = false;
-		Tuple res = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger));
-		Tuple res2 = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyInteger));
-		Tuple dro = queryp(new Template(Map.AnyString, Map.AnyInteger, Map.AnyInteger, Map.AnyString));
+		int range = query(new Template(new ActualTemplateField(MapMerger.MAP_EDGE), Map.AnyInteger),Self.SELF).getElementAt(Integer.class, 1);
+		Tuple res = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y)));
+		Tuple res2 = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyInteger));
+		Tuple dro = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyString));
+		Tuple exp = queryp(new Template(new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyString));
 		if(	(res == null || Resource.isPathable(res.getElementAt(String.class, 0)))	&&
-			(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0)))	&&
-			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) ){
+			(res2 == null || Resource.isPathable(res2.getElementAt(String.class, 0))) &&
+			(dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))) &&
+			(exp != null || (Math.abs(x) <= range && Math.abs(y) <= range))	){
 				b = true;
 			}
 		return (b) ? 1:0 ;
+	}
+	
+	//returns 1 if there is a drone at position
+	//returns 0 if position is available
+	private int getIsADroneAtPosition(int x, int y) {
+		boolean b = true;
+		Tuple dro = queryp(new Template(Map.AnyString, new ActualTemplateField(x), new ActualTemplateField(y), Map.AnyString));
+		if (dro == null || Resource.isPathable(dro.getElementAt(String.class, 0))){
+			b = false;
+		}
+		if (b) return 1;
+		return 0;
 	}
 
 	private LinkedList<Tuple> getNeighboursExplore(int x0, int y0) {

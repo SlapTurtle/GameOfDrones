@@ -67,20 +67,6 @@ public abstract class AbstractDrone extends Agent {
 		put(new Tuple(type, p.x, p.y, id), Drone.self2base);
 		get(template, Drone.self2map);
 		put(new Tuple(type, p.x, p.y, id), Drone.self2map);
-		
-		//update position in own tuple space
-		template= new Template(
-				new FormalTemplateField(Point.class)
-		);
-		get(template,Self.SELF);
-		put(new Tuple(this.position),Self.SELF);
-		
-		//update next position in own tuple space
-		template= new Template(
-				new ActualTemplateField ("next_move"),
-				new FormalTemplateField(Integer.class),
-				new FormalTemplateField(Integer.class)
-		);
 		return true;
 	}
 	

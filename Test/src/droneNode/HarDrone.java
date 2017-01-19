@@ -38,12 +38,17 @@ public class HarDrone extends AbstractDrone {
 	@Override
 	protected Point moveDrone() throws InterruptedException, IOException{		
 		if (!path.isEmpty()) {
-			if (!isPositionOccupied()){
-				return regularMove();}
-			return evade();
+			if (!isADroneAtNextPosition())
+				return returns(regularMove());
+			return returns(evade());
 		}
 		getNewMoves();
 		return null;	
+	}
+	
+	private Point returns (Point p) throws InterruptedException, IOException{
+		putNextMoveInTupleSpace();
+		return p;
 	}
 	
 	@Override
@@ -51,7 +56,7 @@ public class HarDrone extends AbstractDrone {
 		harvest();
 		//update next position in own tuple space
 		Tuple tup = getp(new Template(new ActualTemplateField ("next_move"), new FormalTemplateField(Integer.class), new FormalTemplateField(Integer.class)));
-		putNextMoveInTupleSpace();
+		
 	}
 	protected void harvest() throws InterruptedException, IOException {
 		Template t = new Template(
@@ -85,7 +90,22 @@ public class HarDrone extends AbstractDrone {
 		}
 	}
 	
-	
+	//returns true if there is a drone at position
+	//returns false if position is available
+	private boolean isADroneAtNextPosition () throws InterruptedException, IOException {
+		Point p=path.getFirst();
+		put(new Tuple("drone_at_position",id, p.x, p.y), Drone.self2base);
+		
+		Template tp = new Template(new ActualTemplateField("drone_at_position"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
+		
+		Tuple tu = get(tp, Drone.self2base);
+		int answer=tu.getElementAt(Integer.class, 2);
+		
+		if (answer==1) {
+			return true;
+		}
+		return false;
+	}
 	
 	private Point regularMove() {
 		Point p= path.removeFirst();
@@ -124,17 +144,13 @@ public class HarDrone extends AbstractDrone {
 			//way home
 			path.addAll(moves);
 	}
-
-	private boolean isPositionOccupied() throws InterruptedException, IOException {
-		return getSinglePathable(path.get(0));
-	}
 	
 	private Point evade () throws InterruptedException, IOException {
 		Point returnPoint=null;
 		Point opponentMovePosition=getOpponentMovePosition(); 
 		if (opponentMovePosition==null) return null; //if oponent doesn't have any planned moves stand still
 		if (opponentMovePosition.equals(super.position)) { //if opponents next move targets this drones current position
-			returnPoint=moveToSide(opponentMovePosition); //try move to side
+			returnPoint=moveToSide(path.getFirst()); //try move to side
 			if (returnPoint==null) 
 				returnPoint=moveBackwards(opponentMovePosition); //if not move to side try move backwards
 		}
@@ -170,7 +186,9 @@ public class HarDrone extends AbstractDrone {
 		System.out.println("hej3");
 		Tuple tup=query(t,ptp);
 		System.out.println("hej4");
-		return (Point) tup.getElementAt(1);
+		int x=(int)tup.getElementAt(1);
+		int y=(int)tup.getElementAt(2);
+		return (new Point(x,y));
 	}
 	
 	private Point getOpponentPosition(PointToPoint ptp) throws InterruptedException, IOException {
@@ -262,12 +280,30 @@ public class HarDrone extends AbstractDrone {
 	}
 	
 	protected void putNextMoveInTupleSpace() throws InterruptedException, IOException {
+		//update position in own tuple space
+		Template t= new Template(
+				new FormalTemplateField(Point.class)
+		);
+		
+		getp(t);
+		put(new Tuple(this.position),Self.SELF);
+		
+		t= new Template(
+				new ActualTemplateField("next_move"),
+				new FormalTemplateField(int.class),
+				new FormalTemplateField(int.class)
+		);
+		
+		getp(t);
+		
+		Point p=null;
 		try {
-			Point p=path.getFirst();
-			put(new Tuple("next_move",p.x, p.y),Self.SELF);
+			p=path.getFirst();
 		} catch (NoSuchElementException e) {
 		}
-		
+		if (p!=null) {
+			put(new Tuple("next_move",p.x, p.y),Self.SELF);
+		}
 	}
 	//help functions
 	
@@ -278,11 +314,15 @@ public class HarDrone extends AbstractDrone {
 		return tu.getElementAt(Point.class, 2);
 	}
 	
+	//if pathable = 1 we can move to this: return true
+	//if pathable != 1 (=0) we can't move to this: return false
 	private boolean getSinglePathable(Point p) throws InterruptedException, IOException{
 		Template tp = new Template(new ActualTemplateField("single_pathable"), new ActualTemplateField(id), new FormalTemplateField(Integer.class));
 		put(new Tuple("single_pathable",id, p.x, p.y), Drone.self2base);
 		Tuple tu = get(tp, Drone.self2base);
-		return (tu.getElementAt(Integer.class, 2) == 1) ;
+		int answer=(int) tu.getElementAt(2);
+		if (answer==1) return true;
+		return false;
 	}
 	
 	private LinkedList<Point> getPathablePoints(Point p) throws InterruptedException, IOException{
