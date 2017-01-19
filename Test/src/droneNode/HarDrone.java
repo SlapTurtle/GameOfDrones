@@ -15,6 +15,7 @@ import org.cmg.resp.knowledge.Tuple;
 import org.cmg.resp.topology.PointToPoint;
 import org.cmg.resp.topology.Self;
 
+import launch.Main;
 import util.AStarPoint;
 
 import resources.*;
@@ -435,7 +436,7 @@ public class HarDrone extends AbstractDrone {
 		//2: number of exp drones
 		//make sure initial lock put is equal to first number of har drone (equal to number of exp drones)
 		HarDrone.lockCounter++;
-		Tuple lock=new Tuple("lock","droneNode"+((lockCounter%4)+2));
+		Tuple lock=new Tuple("lock","droneNode"+((lockCounter%Main.harvestDrones)+Main.exploreDrones));
 		put(lock,Drone.self2base);
 	}
 }

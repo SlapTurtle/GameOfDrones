@@ -24,8 +24,8 @@ public class Main {
 	static final String seed = UUID.randomUUID().toString();
 	
 	//Base
-	static final int exploreDrones = 2;
-	static final int harvestDrones = 4;
+	public static final int exploreDrones = 2;
+	public static final int harvestDrones = 4;
 	static final int startGoldCount = 0;
 	static final int startTreeCount = 0;
 	
